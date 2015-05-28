@@ -5,20 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>HPCC Systems - Visualization Framework</title>
     <link rel="stylesheet" href="test.css">
-    <script src="../widgets/lib/requirejs/require.js"></script>
+    <script src="http://rawgit.com/jrburke/requirejs/2.1.17/require.js"></script>
+    <script src="../src/config.js"></script>
+    <!--  Uncomment to develop
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="../src/config.js"></script>
+    -->
+    <!--  Uncomment to test build
+    <script src="../dist-amd/hpcc-viz.js"></script>
+    <script src="../dist-amd/hpcc-bundles.js"></script>
+    <script>
+        require.config({
+            paths: {
+                "src": "../dist-amd",
+                "font-awesome": "../dist-amd/font-awesome/css/font-awesome.min"
+            }
+        });
+    </script>
+    -->
     <script>
         var graph = null;
+
         function doTest() {
-            require(["../widgets/config"], function () {
-                requirejs.config({
-                    baseUrl: "../widgets"
-                });
-                require(["d3/d3",
+                require([
                     "src/common/Surface", "src/common/ResizeSurface", "src/common/Text", "src/common/TextBox", "src/common/Shape", "src/common/FAChar", "src/common/Icon", "src/common/List", "src/common/Menu", "src/common/Palette",
                     "src/graph/Edge", "src/graph/Vertex",
                     "src/tree/SunburstPartition", "src/tree/CirclePacking", "src/tree/Dendrogram",
                     "src/other/MorphText", "src/other/Slider", "src/other/Table"
-                ], function (d3,
+                ], function (
                     Surface, ResizeSurface, Text, TextBox, Shape, FAChar, Icon, List, Menu, Palette,
                     Edge, Vertex,
                     SunburstPartition, CirclePacking, Dendrogram,
@@ -37,13 +51,44 @@
                     var timeoutStep = 500;
                     var timeoutIdx = 0;
 
-                    setTimeout(function () { displayComposition(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displayCharts(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displayMaps(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displayGraphHierarchies(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displaySurfaces(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displayOther(); }, timeoutStep * timeoutIdx++);
-                    setTimeout(function () { displayPalettes(); }, timeoutStep * timeoutIdx++);
+                    var def = window.location.search.split("?")[1];
+                    switch (def) {
+                        case "composition":
+                            displayComposition();
+                            break;
+                        case "charts":
+                            displayCharts();
+                            break;
+                        case "amcharts":
+                            displayAmCharts();
+                            break;
+                        case "maps":
+                            displayMaps();
+                            break;
+                        case "hierarchies":
+                            displayGraphHierarchies();
+                            break;
+                        case "surfaces":
+                            displaySurfaces();
+                            break;
+                        case "other":
+                            displayOther();
+                            break;
+                        case "palettes":
+                            displayPalettes();
+                            break;
+                        default:
+                            setTimeout(function () { displayComposition(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayCharts(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayAmCharts(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayMaps(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayGraphHierarchies(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displaySurfaces(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayOther(); }, timeoutStep * timeoutIdx++);
+                            setTimeout(function () { displayPalettes(); }, timeoutStep * timeoutIdx++);
+                            break;
+                    }
+
 
                     function displayComposition() {
                         //  Composition ---
@@ -134,7 +179,7 @@
                     function displayCharts() {
                         require(["src/chart/Pie", "src/chart/Bubble", "src/chart/Column", "src/chart/Line",
                             "src/google/Pie", "src/google/Bar", "src/google/Column", "src/google/Line",
-                            "src/c3/Pie", "src/c3/Donut", "src/c3/Line", "src/c3/Column", "src/c3/Bar", "src/c3/Step", "src/c3/Area", "src/c3/Scatter"
+                            "src/c3chart/Pie", "src/c3chart/Donut", "src/c3chart/Line", "src/c3chart/Column", "src/c3chart/Bar", "src/c3chart/Step", "src/c3chart/Area", "src/c3chart/Scatter"
                         ], function (Pie, Bubble, Column, Line,
                             GPie, GBar, GColumn, GLine,
                             C3Pie, C3Donut, C3Line, C3Column, C3Bar, C3Step, C3Area, C3Scatter) {
@@ -227,6 +272,72 @@
                         });
                     }
 
+                    function displayAmCharts() {
+                        require(["src/amchart/Area", "src/amchart/Bar", "src/amchart/Bubble", "src/amchart/Candle", "src/amchart/FloatingColumn", "src/amchart/Funnel", "src/amchart/Gauge", "src/amchart/Line", "src/amchart/Pie", "src/amchart/Polar", "src/amchart/Pyramid", "src/amchart/Scatter"],
+                            function (AmArea, AmBar, AmBubble, AmCandle, AmFloatingColumn, AmFunnel, AmGauge, AmLine, AmPie, AmPolar, AmPyramid, AmScatter) {
+                            new AmArea()
+                                .target("amarea")
+                                .testData()
+                                .render()
+                            ;
+                            new AmBar()
+                                .target("ambar")
+                                .testData()
+                                .render()
+                            ;
+                            new AmBubble()
+                                .target("ambubble")
+                                .testData()
+                                .render()
+                            ;
+                            new AmCandle()
+                                .target("amcandle")
+                                .testData()
+                                .render()
+                            ;
+                            new AmFloatingColumn()
+                                .target("amfloatingcolumn")
+                                .testData()
+                                .render()
+                            ;
+                            new AmFunnel()
+                                .target("amfunnel")
+                                .testData()
+                                .render()
+                            ;
+                            new AmGauge()
+                                .target("amgauge")
+                                .testData()
+                                .render()
+                            ;
+                            new AmLine()
+                                .target("amline")
+                                .testData()
+                                .render()
+                            ;
+                            new AmPie()
+                                .target("ampie")
+                                .testData()
+                                .render()
+                            ;
+                            new AmPyramid()
+                                .target("ampyramid")
+                                .testData()
+                                .render()
+                            ;
+                            new AmScatter()
+                                .target("amscatter")
+                                .testData()
+                                .render()
+                            ;
+                            new AmPolar()
+                                .target("ampolar")
+                                .testData()
+                                .render()
+                            ;
+                        });
+                    }
+
                     function displayMaps() {
                         //  Maps ---
                         require(["src/map/ChoroplethStates"], function (ChoroplethStates) {
@@ -307,14 +418,14 @@
                                 .title("2D Charts")
                                 .icon_faChar("\uf080")
                                 .mode("2d")
-                                .chart_type("COLUMN")
+                                .chartType("COLUMN")
                                 .testData()
                                 .render()
                             ;
                             new MultiChartSurface()
                                 .target("multiSurface")
                                 .testData()
-                                .chart_type("GOOGLE_COLUMN")
+                                .chartType("GOOGLE_COLUMN")
                                 .title("Multi Charts")
                                 .icon_faChar("\uf080")
                                 .mode("multi")
@@ -357,7 +468,7 @@
                             .render();
                         ;
 
-                        require(["src/other/WordCloud", "lib/wordcloud/d3.layout.cloud"], function (WordCloud) {
+                        require(["src/other/WordCloud"], function (WordCloud) {
                             var wordCloud = new WordCloud()
                                 .target("wordCloud")
                                 .testData()
@@ -367,18 +478,7 @@
 
                         new Table()
                             .target("table")
-                            .columns(["Lat", "Long", "Pin"])
-                            .data([
-                                [ 37.665074, -122.384375, "green-dot.png" ],
-                                [ 32.690680, -117.178540 ],
-                                [ 39.709455, -104.969859 ],
-                                [ 41.244123, -95.961610 ],
-                                [ 32.688980, -117.192040 ],
-                                [ 45.786490, -108.526600 ],
-                                [ 45.796180, -108.535652 ],
-                                [ 45.774320, -108.494370 ],
-                                [ 45.777062, -108.549835, "red-dot.png" ]
-                            ])
+                            .testData()
                             .render()
                         ;
                         var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
@@ -409,13 +509,13 @@
 
                     function displayPalettes() {
                         //  Palettes  ---
-                        require(["d3/d3", "src/common/Palette"], function (d3, Palette) {
+                        require(["src/common/Palette"], function (Palette) {
                             var customArr = document.getElementById("customColors").value.split("\n");
                             var steps = document.getElementById("steps").value;
                             Palette.test("#ordinal", "#brewer", "#custom", customArr, steps);
                         });
                     }
-                });
+
             });
         }
         doLayout = function (graph, layout) {
@@ -423,8 +523,8 @@
         }
         function doPalette() {
             require([
-                    "d3/d3", "src/common/Palette"
-                ], function (d3, Palette) {
+                    "src/common/Palette"
+                ], function (Palette) {
                 var customArr = document.getElementById("customColors").value.split("\n");
                 var steps = document.getElementById("steps").value;
                 Palette.test("#ordinal", "#brewer", "#custom", customArr, steps);
@@ -489,6 +589,21 @@
             <div id="gbar" class="small thumb"></div>
             <div id="gcolumn" class="small thumb"></div>
             <div id="gline" class="small thumb"></div>
+            <br style="clear:both" />
+            AmCharts
+            <br style="clear:both" />
+            <div id="amarea" class="large thumb"></div>
+            <div id="ambar" class="large thumb"></div>
+            <div id="ambubble" class="large thumb"></div>
+            <div id="amcandle" class="large thumb"></div>
+            <div id="amfloatingcolumn" class="large thumb"></div>
+            <div id="amfunnel" class="large thumb"></div>
+            <div id="amgauge" class="large thumb"></div>
+            <div id="amline" class="large thumb"></div>
+            <div id="ampie" class="large thumb"></div>
+            <div id="ampolar" class="large thumb"></div>
+            <div id="ampyramid" class="large thumb"></div>
+            <div id="amscatter" class="large thumb"></div>
             <br style="clear:both" />
             Maps
             <br style="clear:both" />
