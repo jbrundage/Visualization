@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/HTMLWidget","../other/Paginator","css!./Table"], factory);
+        define(["d3", "../common/HTMLWidget","../other/Paginator", "../other/Bag", "css!./Table"], factory);
     } else {
-        root.other_Table = factory(root.d3, root.common_HTMLWidget, root.other_Paginator);
+        root.other_Table = factory(root.d3, root.common_HTMLWidget, root.other_Paginator, root.other_Bag);
     }
-}(this, function (d3, HTMLWidget, Paginator) {
+}(this, function (d3, HTMLWidget, Paginator, Bag) {
     function Table() {
         HTMLWidget.call(this);
         this._tag = "div";
@@ -13,6 +13,7 @@
         this._currentSort = "";
         this._columns = [];
         this._paginator = new Paginator();
+        this._selection = new Bag.Selection();
     }
     Table.prototype = Object.create(HTMLWidget.prototype);
     Table.prototype._class += " other_Table";
@@ -46,6 +47,41 @@
         this.table = element.append("table");
         this.thead = this.table.append("thead").append("tr");
         this.tbody = this.table.append("tbody");
+    };
+
+    Table.prototype._generateTempCell = function() {
+        var trow = this.tbody.selectAll("tr").data([[0]]);
+        trow
+            .enter()
+            .append("tr")
+        ;
+        var tcell = trow.selectAll("td").data(function (row, i) {
+            return row;
+        });
+        tcell.enter()
+            .append("td")
+            .text(function (d) {
+                return d;
+            })
+        ;
+        tcell.exit()
+            .remove()
+        ;
+        return tcell;
+    };
+
+    Table.prototype._calcRowsPerPage = function(th) {
+        if (this._paginator.numItems() === 0) { // only run on first render
+            this._paginator.numItems(1);
+            this.itemsPerPage(1);
+            this._paginator.render();
+        }
+
+        var thHeight = this.calcHeight(th);
+        var tcellHeight = this.calcHeight(this._generateTempCell());
+        var paginatorHeight = this.calcHeight(this._paginator.element());
+        var ipp = Math.ceil((this.height() - thHeight - paginatorHeight) / tcellHeight) || 1;
+        return ipp;
     };
 
     Table.prototype.update = function (domNode, element) {
@@ -101,12 +137,15 @@
                 this._paginator.target(domNode);
             }
 
+            var ipp = this._calcRowsPerPage(th);
+            this.itemsPerPage(ipp);
+
             this._paginator.numItems(this._data.length);
             this._tNumPages = Math.ceil(this._paginator.numItems() / this.itemsPerPage()) || 1;
-            if (this.pageNumber() > this._tNumPages ) { this.pageNumber(1); } // resets if current pagenum selected out of range
+            if (this.pageNumber() > this._tNumPages) { this.pageNumber(1); } // resets if current pagenum selected out of range
 
             this._paginator._onSelect = function(p, d) {
-                console.log('page: '+ p);
+                console.log('page: ' + p);
                 context.pageNumber(p);
                 context.render();
                 return;
@@ -137,7 +176,32 @@
             .on("click", function (d) {
                 context.click(context.rowToObj(d));
             })
+            .on("click.selectionBag", function (d) {
+                var domNode = this;
+                var newObj = {
+                  "_id": d,
+                  element: function() {
+                        return d3.select(domNode);
+                    }
+                };
+                context._selection.click(newObj, d3.event);
+            })
         ;
+
+        rows
+            .attr("class", function (d) {
+                var domNode = this;
+                var newObj = {
+                  "_id": d,
+                  element: function() {
+                        return d3.select(domNode);
+                    }
+                };
+                if (context._selection.isSelected(newObj)) {
+                    return "selected";
+                }
+            });
+
 
         rows.exit()
             .remove()
@@ -160,7 +224,6 @@
         cells.exit()
             .remove()
         ;
-
         this._paginator.render();
     };
 
@@ -200,6 +263,28 @@
         }
         this._currentSort = column;
         this.render();
+    };
+
+    Table.prototype.Selection = function (_) {
+        if (!arguments.length) {
+            var tg = [];
+            for (var i = 0; i < this._selection.get().length; i++) {
+                tg[i] = this._selection.get()[i]._id;
+            }
+            return tg;
+        } else {
+            var ts = [];
+            for (var j = 0; j < _.length; j++) {
+                ts[j] = {
+                    "_id": _[j],
+                    element: function() {
+                      return d3.select(null);
+                    }
+                };
+            }
+            return this._selection.set(ts);
+        }
+        return this;
     };
     return Table;
 }));

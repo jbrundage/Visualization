@@ -64,6 +64,9 @@
                             <option value="src/google/Column">Google Column</option>
                             <option value="src/google/Line">Google Line</option>
                             <option value="src/google/Area">Google Area</option>
+                            <option value="src/google/Scatter">Google Scatter</option>
+                            <option value="src/google/Timeline">Google Timeline</option>
+                            <option value="src/google/TreeMap">Google TreeMap</option>
                             <option value="src/chart/Column">Column</option>
                             <option value="src/chart/Bubble">Bubble</option>
                             <option value="src/chart/Line">Line</option>
@@ -76,6 +79,7 @@
                             <option value="src/tree/Dendrogram">Tree Dendrogram</option>
                             <option value="src/tree/CirclePacking">Tree CirclePacking</option>
                             <option value="src/tree/SunburstPartition">Tree SunburstPartition</option>
+                            <option value="src/graph/Graph">Graph</option>
                             <option value="src/graph/Vertex">Graph Vertex</option>
                             <option value="src/other/Table">Table</option>
                             <option value="src/other/Slider">Slider</option>
@@ -148,11 +152,13 @@
             ;
             main = new Grid()
                 .setContent(0, 2, propEditor, "", 2, 1)
+                .cellPadding(0)
             ;
 
             frame = new Surface()
                 .widget(main)
                 .target("main")
+                .surfacePadding(0)
             ;
 
             function displayProperties(sourceWidget) {
