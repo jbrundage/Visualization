@@ -28,6 +28,9 @@
     Grid.prototype.publish("cellPadding", null, "string", "Cell Padding (px)", null, { tags: ['Intermediate'] });
 
     Grid.prototype.publish("content", [], "widgetArray", "widgets",null,{tags:['Private']});
+    
+    Grid.prototype.publish("minRowCount", 1, "number", "Minimum number of rows",null,{tags:['Private']});
+    Grid.prototype.publish("minColCount", 1, "number", "Minimum number of columns",null,{tags:['Private']});
 
     Grid.prototype.testData = function () {
         this
@@ -51,6 +54,14 @@
                 size.height = cell.gridRow() + cell.gridRowSpan();
             }
         }, this);
+        console.log('size:');
+        console.log(size);
+        if(size.height < this.minRowCount()){
+            size.height = this.minRowCount();
+        }
+        if(size.width < this.minColCount()){
+            size.width = this.minColCount();
+        }
         return size;
     };
 

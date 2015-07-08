@@ -124,6 +124,8 @@
     <div id="main" style="width:100%; height:100vh;margin-top:40px;padding:8px;overflow:hidden">
     </div>
     <script>
+        var g_txt;
+        var g_test;
         var def = window.location.search.split("?")[1];
         if (def) {
             document.getElementById("widgetSelect").value = def;
@@ -200,6 +202,7 @@
             testWidget = function (widgetPath) {
                 require([widgetPath], function (Widget) {
                     currWidget = new Widget().testData();
+                    g_test = currWidget;
                     main
                         .setContent(0, 0, currWidget, "", 2, 2)
                     ;

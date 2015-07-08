@@ -30,6 +30,7 @@
 
     Text.prototype.update = function (domNode, element) {
         SVGWidget.prototype.update.apply(this, arguments);
+        g_txt = this._target;
         this._textElement
             .attr("font-family", this.fontFamily())
             .attr("font-size", this.fontSize())

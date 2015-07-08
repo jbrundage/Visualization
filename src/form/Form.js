@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/HTMLWidget", "./Input", "./Slider", "css!./Form"], factory);
+        define(["d3", "../common/HTMLWidget", "./Input", "./Slider", "../common/Text", "../layout/Border", "../layout/Grid", "css!./Form"], factory);
     } else {
-        root.form_Form = factory(root.d3, root.common_HTMLWidget, root.form_Input, root.form_Slider);
+        root.form_Form = factory(root.d3, root.common_HTMLWidget, root.form_Input, root.form_Slider, root.common_Text, root.layout_Border, root.layout_Grid);
     }
-}(this, function (d3,HTMLWidget,Input,Slider) {
+}(this, function (d3,HTMLWidget,Input,Slider,Text,Border,Grid) {
     function Form() {
         HTMLWidget.call(this);
 
@@ -14,6 +14,12 @@
     Form.prototype = Object.create(HTMLWidget.prototype);
     Form.prototype._class += " form_Form";
 
+    Form.prototype.publish("gridColumnCount", 4, "number", "Column count per row of inputs");
+    
+    Form.prototype.publish("minRowCount", 6, "number", "Minimum number of grid rows",null,{tags:['Private']});
+    Form.prototype.publish("minColCount", 4, "number", "Minimum number of grid columns",null,{tags:['Private']});
+    
+    Form.prototype.publish("grid", null, "widget", "Grid which holds all form inputs");
     Form.prototype.publish("validate", true, "boolean", "Enable/Disable input validation");
     Form.prototype.publish("inputs", [], "widgetArray", "Array of input widgets");
     Form.prototype.publish("showSubmit", true, "boolean", "Show Submit/Cancel Controls");
@@ -120,61 +126,35 @@
         });
 
         this._parentElement.style("overflow", "auto");
-        var table = element
-            .append("table")
+        this.grid(new Grid().gutter(0)
+                .minRowCount(this.minRowCount())
+                .minColCount(this.minColCount())
+                .target(this._parentElement.node())
+            )
         ;
-        this.tbody = table.append("tbody");
-        this.btntd = table.append("tfoot").append("tr").append("td")
-            .attr("colspan", "2")
-        ;
-
-        var context = this;
-        var controls = [
-                new Input()
-                    .type("button")
-                    .value("Submit")
-                    .on("click", function () {
-                        context.submit();
-                    }, true),
-                new Input()
-                    .type("button")
-                    .value("Clear")
-                    .on("click", function () {
-                        context.clear();
-                    }, true)
-        ];
-        controls.reverse().forEach(function (w) {
-            var controlNode = context.btntd
-                .append("div")
-                .style("float", "right")
-            ;
-            w.target(controlNode.node()).render();
-        });
     };
 
     Form.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
-        var rows = this.tbody.selectAll("tr").data(this.inputs());
-        rows.enter().append("tr")
-            .each(function (inputWidget, i) {
-                var element = d3.select(this);
-                element.append("td")
-                    .attr("class", "prompt")
-                    .text(inputWidget.label() + ":")
-                ;
-                var input = element.append("td")
-                    .attr("class", "input")
-                ;
-                inputWidget.target(input.node()).render();
-                if (inputWidget instanceof Slider) {
-                    var bbox = inputWidget.element().node().getBBox();
-                    input.style("height", bbox.height + "px");
-                    inputWidget.resize().render();
-                }
-            })
-        ;
-        rows.exit().remove();
-        this.btntd.style("visibility", this.showSubmit() ? null : "hidden");
+        var context = this;
+        
+        this.inputs().forEach(function(inp,idx){
+            var row = Math.floor(idx / context.gridColumnCount());
+            var col = idx % context.gridColumnCount();
+            context.grid().setContent(row,col,
+                    new Grid().gutter(0)
+                        .setContent(0,0,new Text().text(inp.label()))
+                        .setContent(1,0,inp)
+                )
+            ;
+//            for(var cellIdx in context.grid().content()[idx].widget().content()){
+//                context.grid().content()[idx].widget().content()[cellIdx].surfaceBorderWidth(0);
+//            }
+        });
+        for(var cellIdx in this.grid().content()){
+            this.grid().content()[cellIdx].surfaceBorderWidth(0);
+        }
+        context.grid().render();
     };
 
     Form.prototype.exit = function (domNode, element) {
