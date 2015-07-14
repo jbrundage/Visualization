@@ -18,6 +18,9 @@
 
     TabbedContent.prototype.publish("activeTabIdx", 0, "number", "Index of active tab",null,{});
     
+    TabbedContent.prototype.publish("padding", 15, "number", "Pixel padding within wrapper",null,{});
+    TabbedContent.prototype.publish("contentPadding", 8, "number", "Pixel padding within tab-content",null,{});
+    
     TabbedContent.prototype.publish("widgets", [], "widgetArray", "widgets",null,{tags:['Private']});
     TabbedContent.prototype.publish("labels", [], "array", "Array of tab labels sharing an index with 'widgets'",null,{tags:['Private']});
 
@@ -132,6 +135,7 @@
                 el
                     .style('width', wSize.width + "px")
                     .style('height', wSize.height + "px")
+//                    .style('padding',context.contentPadding()+'px')
                 ;
                 if(typeof(context.widgets()[idx]) !== 'undefined'){
                     context.widgets()[idx].resize(wSize).render();
@@ -143,11 +147,14 @@
     TabbedContent.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
         this._tabContainer = element.append("div").attr("class", "tabContainer");
-        this._contentContainer = element.append("div").attr("class", "contentContainer")
+        this._contentContainer = element.append("div").attr("class", "contentContainer");
     };
 
     TabbedContent.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
+        
+        element.style('padding',this.padding()+'px');
+        
         this.createContainers(element);
     };
 
