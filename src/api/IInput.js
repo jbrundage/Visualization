@@ -31,6 +31,8 @@
     IInput.prototype.blur = function (w) {
     };
     IInput.prototype.click = function (w) {
+        console.log('w:');
+        console.log(w);
     };
     IInput.prototype.change = function (w) {
     };

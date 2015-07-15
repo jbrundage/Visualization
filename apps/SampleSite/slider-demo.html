@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - Dermatology Test</title>
+    <link rel="stylesheet" href="graph/css/style.css">
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            font: 14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color:white;
+            font-weight: 300;
+            overflow:hidden;
+        }
+        fieldset{
+            margin:15px;
+        }
+        legend{
+            font-weight:bold;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.17/require.js"></script>
+    <script src="config.js"></script>
+    <script>
+        $(function(){
+            $('#main').css({height:window.innerHeight*0.9});
+        });
+    </script>
+</head>
+<body>
+    <div id="main" style="width:90%;padding:8px;overflow:hidden;"></div>
+    <script>
+        var g_grid;
+        var g_widgetPath = 'src/chart/MultiChart';
+        
+        var g_widget;
+        var g_slider;
+        var def = window.location.search.split("?")[1];
+        if (def) {
+            g_widgetPath = def;
+        }
+        
+        var mainDiv = document.getElementById("main");
+        
+        renderTestWidgets();
+        
+        function renderTestWidgets(){
+            require([
+                "src/layout/Grid",
+                "src/form/Slider",
+                "src/amchart/Bar",
+                "src/amchart/Area",
+                "src/amchart/Line",
+                "src/amchart/FloatingColumn"
+            ],function(Grid,Slider,W1,W2,W3,W4){
+                g_grid = new Grid()
+                    .target('main')
+                    .setContent(0, 0, 
+                        new W1().isStacked(true).columnWidth(1)
+                        .columns(["Subject", "A", "B", "C"])
+                        .data([
+                            ["2001", 45, 55, 52],
+                            ["2002", 46, 54, 51],
+                            ["2003", 43, 53, 50],
+                            ["2004", 42, 52, 47],
+                            ["2005", 41, 50, 46],
+                            ["2006", 40, 48, 43],
+                            ["2007", 38, 49, 42],
+                            ["2008", 39, 46, 38],
+                            ["2009", 36, 46, 37],
+                            ["2010", 35, 44, 39],
+                            ["2011", 38, 42, 41],
+                            ["2012", 39, 45, 43],
+                            ["2013", 43, 45, 44],
+                            ["2014", 47, 46, 46],
+                            ["2015", 49, 48, 48],
+                        ])
+                    )
+                    .setContent(0, 1, 
+                        new W2().isStacked(true)
+                        .columns(["Subject", "A", "B", "C"])
+                        .data([
+                            ["2001", 45, 55, 52],
+                            ["2002", 46, 54, 51],
+                            ["2003", 43, 53, 50],
+                            ["2004", 42, 52, 47],
+                            ["2005", 41, 50, 46],
+                            ["2006", 40, 48, 43],
+                            ["2007", 38, 49, 42],
+                            ["2008", 39, 46, 38],
+                            ["2009", 36, 46, 37],
+                            ["2010", 35, 44, 39],
+                            ["2011", 38, 42, 41],
+                            ["2012", 39, 45, 43],
+                            ["2013", 43, 45, 44],
+                            ["2014", 47, 46, 46],
+                            ["2015", 49, 48, 48],
+                        ])
+                    )
+                    .setContent(1, 0, 
+                        new W3()
+                        .columns(["Subject", "A", "B", "C"])
+                        .data([
+                            ["2001", 45, 55, 52],
+                            ["2002", 46, 54, 51],
+                            ["2003", 43, 53, 50],
+                            ["2004", 42, 52, 47],
+                            ["2005", 41, 50, 46],
+                            ["2006", 40, 48, 43],
+                            ["2007", 38, 49, 42],
+                            ["2008", 39, 46, 38],
+                            ["2009", 36, 46, 37],
+                            ["2010", 35, 44, 39],
+                            ["2011", 38, 42, 41],
+                            ["2012", 39, 45, 43],
+                            ["2013", 43, 45, 44],
+                            ["2014", 47, 46, 46],
+                            ["2015", 49, 48, 48],
+                        ])
+                    )
+                    .setContent(1, 1, 
+                        new W4()
+                        .columns(["Subject", "A", "B"])
+                        .data([
+                            ["2001", 45, 55],
+                            ["2002", 46, 54],
+                            ["2003", 43, 53],
+                            ["2004", 42, 52],
+                            ["2005", 41, 50],
+                            ["2006", 40, 48],
+                            ["2007", 38, 49],
+                            ["2008", 39, 46],
+                            ["2009", 36, 46],
+                            ["2010", 35, 44],
+                            ["2011", 38, 42],
+                            ["2012", 39, 45],
+                            ["2013", 43, 45],
+                            ["2014", 47, 46],
+                            ["2015", 49, 48],
+                        ])
+                    )
+                    .setContent(2, 0, 
+                        new Slider().allowRange(true).data([2005, 2009]).low(2001).high(2015).step(1)
+                        ,"Select Date Range",1,2)
+                    .cellPadding(0)
+                    .render()
+                ;
+                g_grid.content()[4].widget().newSelection = function(d1,d2){
+                    g_grid.content()[4].widget().data([d1,d2]);
+                    sliderChange();
+                }
+            });
+        }
+        function sliderChange(){
+            var idxArr = _sliderDataIndecies(g_grid.content()[4].widget());
+            g_grid.content()[0].widget()._chart.zoomToIndexes(idxArr[0], idxArr[1]);
+            g_grid.content()[1].widget()._chart.zoomToIndexes(idxArr[0], idxArr[1]);
+            g_grid.content()[2].widget()._chart.zoomToIndexes(idxArr[0], idxArr[1]);
+            g_grid.content()[3].widget()._chart.zoomToIndexes(idxArr[0], idxArr[1]);
+        }
+        function _sliderDataIndecies(sliderWidget){
+            var arr = [];
+            var num = sliderWidget.low();
+            var step = sliderWidget.step();
+            while(num <= sliderWidget.high()){
+                arr.push(num);
+                num += step;
+            }
+            var data = sliderWidget.data();
+            return [arr.indexOf(data[0]),arr.indexOf(data[1])];
+        }
+    </script>
+</body>
+</html>
