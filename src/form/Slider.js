@@ -253,7 +253,7 @@
             .render()
         ;
 
-        if ((this.high() - this.low()) / this.step() <= 10) {
+        if ((this.high() - this.low()) / this.step() <= 100) {
             this.axis.tickValues(d3.merge([d3.range(this.low(), this.high(), this.step()), [this.high()]]));
         } else {
             this.axis.tickValues(null);
