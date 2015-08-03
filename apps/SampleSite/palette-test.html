@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <title>HPCC Systems - Dermatology Test</title>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.18/require.min.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+
+    <script type="text/javascript" src="js/themeeditor.js"></script>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/bootstrap_theme.css" rel="stylesheet" type="text/css">
+    <link href="css/themeeditor.css" rel="stylesheet" type="text/css">
+
+    <link href="//fonts.googleapis.com/css?family=PT+Sans:400,700" rel="stylesheet" type="text/css"> <!-- look at using requirejs webfont loader -->
+    
+    <style>
+        #controls{
+            width:90%;
+            height:50px;
+            background-color:#fff;
+            padding:15px;
+            margin:auto;
+            margin-bottom:15px;
+        }
+        #main{
+            width:90%;
+            height:700px;
+            background-color:#fff;
+            padding:0;
+            margin:auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default" role="navigation">
+        <!-- Brand and Toggle -->
+        <div class="navbar-header">
+            <a id="logo" class="navbar-brand" href="#"><img alt="Brand" width="120" height="40" src="hpcc-logo.png"></a>
+        </div>
+        <!-- Links -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="palette-test.html">Playground</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="row" style="margin-bottom:0;">
+        <div id="controls">
+            Run <b>_setColor('category10')</b> in Chrome Console to set the color scheme to something else (it calls render on g_grid too)
+        </div>
+    </div>
+    <div class="row" style="margin-bottom:0;">
+        <div id="main"></div>
+    </div>
+    <script>
+        var g_grid;
+
+        require(["src/layout/Grid", 
+            "src/google/Pie", 
+            "src/google/Bar", 
+            "src/google/Area", 
+            "src/amchart/Pie",
+            "src/amchart/Bar",
+            "src/amchart/Area",
+        ],
+            function (Grid, GPie, GBar, GArea, APie, ABar, AArea) {
+                g_grid = new Grid()
+                        .setContent(0,0,new Grid()
+                            .setContent(0,0,new GPie().paletteID('Dark2').testData())
+                            .setContent(0,1,new GBar().paletteID('Dark2').testData())
+                            .setContent(0,2,new GArea().paletteID('Dark2').testData())
+                        ,'Google')
+                        .setContent(1,0,new Grid()
+                            .setContent(0,0,new APie().paletteID('Dark2').testData())
+                            .setContent(0,1,new ABar().paletteID('Dark2').testData())
+                            .setContent(0,2,new AArea().paletteID('Dark2').testData())
+                        ,'AM Charts')
+                    .target('main')
+                    .render()
+                ;
+            }
+        );
+        function _setColor(paletteName){
+            var googleWidgets = g_grid.content()[0].widget().content();
+            var amchartWidgets = g_grid.content()[1].widget().content();
+            for(var i in googleWidgets){
+                googleWidgets[i].widget().paletteID(paletteName);
+            }
+            for(var j in amchartWidgets){
+                amchartWidgets[j].widget().paletteID(paletteName);
+            }
+            g_grid.render();
+        }
+    </script>
+</body>
+</html>

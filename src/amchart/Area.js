@@ -38,7 +38,9 @@
         CommonSerial.prototype.updateChartOptions.apply(this, arguments);
 
         this._chart.colors = this._columns.filter(function (d, i) { return i > 0; }).map(function (row) {
-            return this._palette(row);
+            var color = this._palette(row);
+            console.log('this._id: '+this._id+'  -  this._palette('+row+') = '+color);
+            return color;
         }, this);
 
         // Stacked
