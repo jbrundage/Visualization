@@ -1,169 +1,518 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/HTMLWidget", "../form/Input", "./Cell", "../common/Text", "../common/Icon", "./Surface", "../form/Slider", "css!./Toolbar"], factory);
+        define(["d3", "../common/HTMLWidget", "./Cell", "../common/Text", "../form/Input", "../common/Icon", "../form/Slider", "css!./Toolbar"], factory);
     } else {
-        root.common_Toolbar = factory(root.d3, root.common_HTMLWidget, root.form_Input, root.layout_Cell, root.common_Text, root.common_Icon, root.layout_Surface, root.form_Slider);
+        root.layout_Toolbar = factory(root.d3, root.common_HTMLWidget, root.layout_Cell, root.common_Text, root.form_Input, root.common_Icon, root.form_Slider);
     }
-}(this, function (d3, HTMLWidget, FormInput, Cell, Text, Icon, Surface, Slider) {
+}(this, function (d3, HTMLWidget, Cell, Text, Input, Icon, Slider) {
     function Toolbar() {
         HTMLWidget.call(this);
+
         this._tag = "div";
-        this.maxWidgetHeight = 0;
+        
+        this._colCount = 0;
+        this._rowCount = 0;
+        this._colSize = 0;
+        this._rowSize = 0;
+        
+        this.content([]);
     }
     Toolbar.prototype = Object.create(HTMLWidget.prototype);
     Toolbar.prototype._class += " layout_Toolbar";
 
-    Toolbar.prototype.publish("title", "", "string", "Title",null,{tags:["basic"]});
-    Toolbar.prototype.publish("gutter", 4, "number", "Border Width",null,{tags:["basic"]});
-    Toolbar.prototype.publish("borderWidth", 2, "number", "Border Width",null,{tags:["basic"]});
-    Toolbar.prototype.publish("borderColor", "#000000", "html-color", "Borer Color",null,{tags:["basic"]});
-    Toolbar.prototype.publish("borderStyle", "solid", "string", "Toolbar Height",null,{tags:["basic"]});
-    Toolbar.prototype.publish("borderRadius", 0, "number", "Border Radius",null,{tags:["basic"]});
-    Toolbar.prototype.publish("backgroundColor", null, "html-color", "Background Color",null,{tags:["basic"]});
+    Toolbar.prototype.publish("designMode", false, "boolean", "Design Mode",null,{tags:['Private']});
+    Toolbar.prototype.publish("gutter", 0, "number", "Gap Between Widgets",null,{tags:['Private']});
+    Toolbar.prototype.publish("fitTo", "width", "set", "Sizing Strategy", ["all", "width"], { tags: ['Private'] });
+    
+    Toolbar.prototype.publish("customHeight", null, "number", "Height of toolbar (px)",null,{tags:['Private']});
 
-    Toolbar.prototype.publish("toolbarAnnotations", [], "array", "widgets config",null,{tags:["Private"]});
-    Toolbar.prototype.publish("widgetArr", [], "widgetArray", "widgets",null,{tags:["Private"]});
+    Toolbar.prototype.publish("cellPadding", 2, "number", "Cell Padding (px)", null, { tags: ['Intermediate'] });
+    
+    Toolbar.prototype.publish("cellBorder", 0, "number", "Cell Border (px)", null, { tags: ['Intermediate'] });
+    
+    Toolbar.prototype.publish("cellBorderRadius", 0, "number", "Cell Top Border (px)", null, { tags: ['Intermediate'] });
+    
+    Toolbar.prototype.publish("cellBorderTop", 0, "number", "Cell Top Border (px)", null, { tags: ['Intermediate'] });
+    Toolbar.prototype.publish("cellBorderRight", 0, "number", "Cell Right Border (px)", null, { tags: ['Intermediate'] });
+    Toolbar.prototype.publish("cellBorderBottom", 0, "number", "Cell Bottom Border (px)", null, { tags: ['Intermediate'] });
+    Toolbar.prototype.publish("cellBorderLeft", 1, "number", "Cell Left Border (px)", null, { tags: ['Intermediate'] });
+
+    Toolbar.prototype.publish("content", [], "widgetArray", "widgets",null,{tags:['Private']});
 
     Toolbar.prototype.testData = function () {
-        this.widgetArr([
-            new FormInput().name("textbox-test").label("Only Alpha").type("textbox").value("SomeString"),
-            new FormInput().name("checkbox-test").label("Checkbox Test").type("checkbox").value(true),
-            new Slider().name("slider-test").label("Slider Test").value(66),
-            new FormInput().type("button").value("button 2").label("button 2").name("button2"),
-            new Icon().testData()
-        ]);
-        this.toolbarAnnotations([
-            {
-                type: "button",
-                alignment: "left"
-            },
-            {
-                type: "button",
-                alignment: "left"
-            },
-            {
-                width:455,
-                height: 35,
-                type: "icon",
-                alignment: "right"
-            },
-            {
-                width:55,
-                //height: 25,
-                type: "button",
-                alignment: "right"
-            },
-            {
-                width:25,
-                height: 25,
-                type: "icon",
-                alignment: "right"
-            }
-        ]);
+        this
+            .customHeight(40)
+            .setContent(0, 1, new Input().name("textbox-test").label("Only Alpha").type("textbox").value("SomeString"))
+            .setContent(1, 1, new Input().name("checkbox-test").label("Checkbox Test").type("checkbox").value(true))
+            .setContent(3, 1, new Icon().testData())
+            .setContent(2, 1, new Input().type("button").value("button 2").label("button 2").name("button2"))
+            .setContent(4, 5, new Slider().name("slider-test").label("Slider Test").value(66))
+        ;
         return this;
     };
 
+    Toolbar.prototype.getDimensions = function () {
+        var size = { width: 0, height: 0 };
+        this.content().forEach(function (cell) {
+            if (size.width < cell.gridCol() + cell.gridColSpan()) {
+                size.width = cell.gridCol() + cell.gridColSpan();
+            }
+            if (size.height < cell.gridRow() + cell.gridRowSpan()) {
+                size.height = cell.gridRow() + cell.gridRowSpan();
+            }
+        }, this);
+        return size;
+    };
+
+    Toolbar.prototype.clearContent = function () {
+        this.content(this.content().filter(function (contentWidget) {
+            contentWidget.target(null);
+            return false;
+        }));
+    };
+
+    Toolbar.prototype.setContent = function (col, colSpan, widget) {
+        colSpan = colSpan || 1;
+        this.content(this.content().filter(function (contentWidget) {
+            if (contentWidget.gridCol() === col) {
+                contentWidget.target(null);
+                return false;
+            }
+            return true;
+        }));
+
+        if (widget) {
+            var cell = new Cell()
+                .gridRow(0)
+                .gridCol(col)
+                .widget(widget)
+                .title("")
+                .gridRowSpan(1)
+                .gridColSpan(colSpan)
+                .surfaceBorderWidth(this.cellBorder())
+                .surfaceBorderTopWidth(this.cellBorderTop())
+                .surfaceBorderRightWidth(this.cellBorderRight())
+                .surfaceBorderBottomWidth(this.cellBorderBottom())
+                .surfaceBorderLeftWidth(this.cellBorderLeft())
+                .surfaceBorderRadius(this.cellBorderRadius())
+            ;
+            this.content().push(cell);
+        }
+        return this;
+    };
+
+    Toolbar.prototype.getCell = function (row, col) {
+        var retVal = null;
+        this.content().some(function (cell) {
+            if (row >= cell.gridRow() && row < cell.gridRow() + cell.gridRowSpan() &&
+                col >= cell.gridCol() && col < cell.gridCol() + cell.gridColSpan()) {
+                retVal = cell;
+                return true;
+            }
+            return false;
+        });
+        return retVal;
+    };
+
+    Toolbar.prototype.getContent = function (id) {
+        var retVal = null;
+        this.content().some(function (cell) {
+            if (cell.widget()._id === id) {
+                retVal = cell.widget();
+                return true;
+            }
+            return false;
+        });
+        return retVal;
+    };
+    
+    Toolbar.prototype.childMoved = Toolbar.prototype.debounce(function (domNode, element) {
+        this.render();
+    }, 250);
+
     Toolbar.prototype.enter = function (domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
-        this._toolbarContainer = element
-                .append("div")
-                .attr("class", "toolbar-container")
-                //.style("position","relative")
+        element.style("position", "relative");
+        this.dropDiv = element.append("div");
+        this.contentDiv = element.append("div");
+        this._scrollBarWidth = this.getScrollbarWidth();
+    };
+
+    Toolbar.prototype.findCurrentLocation = function (e) {
+        this._currLoc = [
+            Math.floor((e.clientX - this._offsetX)/this._colSize),
+            Math.floor((e.clientY - this._offsetY)/this._rowSize)
+        ];
+    };
+    
+    Toolbar.prototype.overHandle = function (e) {
+        var handle = '';
+        var handleSize = this._dragCell.handleSize();
+        
+        //Determines which edge cell (if any) this._currLoc is hovering over
+        //An "edge" meaning a dropCell on the exterrior edge of a surface that covers many cells
+        var onSouthEdge = this._dragCell.gridRowSpan() === this._currLoc[1] - this._dragCell.gridRow() + 1;
+        var onNorthEdge = this._dragCell.gridRow() === this._currLoc[1];
+        var onEastEdge = this._dragCell.gridColSpan() === this._currLoc[0] - this._dragCell.gridCol() + 1;
+        var onWestEdge = this._dragCell.gridCol() === this._currLoc[0];
+        
+        var top = this._offsetY + ((this._currLoc[1]) * this._rowSize);
+        var left = this._offsetX + ((this._currLoc[0]) * this._colSize);
+        var width = this._colSize - this.gutter();
+        var height = this._rowSize - this.gutter();
+        
+        if(Math.ceil(top + height) >= e.clientY && Math.floor(top + height - handleSize) <= e.clientY && onSouthEdge){
+            handle = 's';//within SOUTH handle range
+        }
+        else if(Math.floor(top) <= e.clientY && Math.ceil(top + handleSize) >= e.clientY && onNorthEdge){
+            handle = 'n';//within NORTH handle range
+        }
+        if(Math.ceil(left + width) >= e.clientX && Math.floor(left + width - handleSize) <= e.clientX && onEastEdge){
+            handle += 'e';//within EAST handle range
+        }
+        else if(Math.floor(left) <= e.clientX && Math.ceil(left + handleSize) >= e.clientX && onWestEdge){
+            handle += 'w';//within WEST handle range
+        }
+        return handle;
+    };
+    
+    Toolbar.prototype.createDropTarget = function (loc) {
+        var col = loc[0] - this._dragCellOffsetX;
+        var row = loc[1] - this._dragCellOffsetY;
+        var colSpan = this._dragCell.gridColSpan();
+        var rowSpan = this._dragCell.gridRowSpan();
+        
+        var dropTarget = document.createElement('div');
+        dropTarget.id = 'grid-drop-target'+this.id();
+        dropTarget.className = 'grid-drop-target';
+        
+        this._target.appendChild(dropTarget);
+        this.updateDropTarget(col,row,colSpan,rowSpan);
+    };
+    
+    Toolbar.prototype.setGridOffsets = function () {
+        this._offsetX = this._element.node().getBoundingClientRect().left + (this.gutter()/2);
+        this._offsetY = this._element.node().getBoundingClientRect().top + (this.gutter()/2);
+    };
+    
+    Toolbar.prototype.updateDropTarget = function (col,row,colSpan,rowSpan) {
+        var top,left,width,height;
+        top = this._offsetY + (row * this._rowSize);
+        left = this._offsetX + (col * this._colSize);
+        width = colSpan * this._colSize - this.gutter();
+        height = rowSpan * this._rowSize - this.gutter();
+        
+        var dropTarget = document.getElementById('grid-drop-target'+this.id());
+        dropTarget.style.top = top + 'px';
+        dropTarget.style.left = left + 'px';
+        dropTarget.style.width = width + 'px';
+        dropTarget.style.height = height + 'px';
+    };
+    
+    Toolbar.prototype.moveDropTarget = function (loc) {
+        if(this._handle){
+            var pivotCell = [];
+            switch(this._handle){
+                case 'nw':
+                    pivotCell = [this._dragCell.gridCol()+this._dragCell.gridColSpan()-1,this._dragCell.gridRow()+this._dragCell.gridRowSpan()-1];
+                    break;
+                case 'n':
+                case 'ne':
+                    pivotCell = [this._dragCell.gridCol(),this._dragCell.gridRow()+this._dragCell.gridRowSpan()-1];
+                    break;
+                case 'e':
+                case 'se':
+                case 's':
+                    pivotCell = [this._dragCell.gridCol(),this._dragCell.gridRow()];
+                    break;
+                case 'sw':
+                case 'w':
+                    pivotCell = [this._dragCell.gridCol()+this._dragCell.gridColSpan()-1,this._dragCell.gridRow()];
+                    break;
+            }
+            switch(this._handle){
+                case 'e':
+                case 'w':
+                    this._locY = pivotCell[1];
+                    break;
+                default:
+                    this._locY = loc[1] <= pivotCell[1] ? loc[1] : pivotCell[1];
+                    break;
+            }
+            switch(this._handle){
+                case 'n':
+                case 's':
+                    this._locX = pivotCell[0];
+                    break;
+                default:
+                    this._locX = loc[0] <= pivotCell[0] ? loc[0] : pivotCell[0];
+                    break;
+            }
+            switch(this._handle){
+                case 'n':
+                case 's':
+                    this._sizeX = this._dragCell.gridColSpan();
+                    break;
+                default:
+                    this._sizeX = Math.abs(loc[0] - pivotCell[0]) + 1;
+                    break;
+            }
+            switch(this._handle){
+                case 'e':
+                case 'w':
+                    this._sizeY = this._dragCell.gridRowSpan();
+                    break;
+                default:
+                    this._sizeY = Math.abs(loc[1] - pivotCell[1]) + 1;
+                    break;
+            }
+        } else if (document.getElementById('grid-drop-target'+this.id()) !== null) {
+            var target = this.getCell(loc[1], loc[0]);
+            if(target !== null && this._dragCell._id !== target._id){
+                document.getElementById('grid-drop-target'+this.id()).className = 'grid-drop-target drop-target-over';
+                this._locX = target.gridCol();
+                this._locY = target.gridRow();
+                this._sizeX = target.gridColSpan();
+                this._sizeY = target.gridRowSpan();
+            } else {
+                document.getElementById('grid-drop-target'+this.id()).className = 'grid-drop-target';
+                this._locX = loc[0] - this._dragCellOffsetX;
+                this._locY = loc[1] - this._dragCellOffsetY;
+                this._sizeX = this._dragCell.gridColSpan();
+                this._sizeY = this._dragCell.gridRowSpan();
+            }
+        }
+        
+        this.updateDropTarget(this._locX,this._locY,this._sizeX,this._sizeY);
+    };
+    
+    Toolbar.prototype.updateCells = function (cellWidth, cellHeight) {
+        var context = this;
+        var rows = this.contentDiv.selectAll(".cell_" + this._id).data(this.content(), function (d) { return d._id; });
+        rows.enter().append("div")
+            .attr("class", "cell_" + this._id)
+            .style("position", "absolute")
+            .each(function (d) {
+                d
+                   .target(this)
+                ;
+                d.__grid_watch = d.watch(function (key, newVal, oldVal) {
+                    if (context._renderCount && key.indexOf("grid") === 0 && newVal !== oldVal) {
+                        context.childMoved();
+                    }
+                });
+            });
+        var drag = d3.behavior.drag()
+            .on("dragstart", function (d) {
+                d3.event.sourceEvent.stopPropagation();
+        
+                context._dragCell = d;
+                
+                context.setGridOffsets();
+                context.findCurrentLocation(d3.event.sourceEvent);
+                
+                context._element.selectAll(".dragHandle")
+                    .style("visibility", "hidden")
+                ;
+                
+                context._handle = context.overHandle(d3.event.sourceEvent);
+                if(context._dragCell._dragHandles.indexOf(context._handle) === -1){
+                    context._handle = undefined;
+                }
+                
+                context._dragCellOffsetX = context._currLoc[0] - d.gridCol();
+                context._dragCellOffsetY = context._currLoc[1] - d.gridRow();
+                context.createDropTarget(context._currLoc);
+                setTimeout(function () {
+                    context.contentDiv.selectAll(".cell_" + context._id)
+                        .classed("dragItem", function (d2) {
+                            return d._id === d2._id;
+                        }).classed("notDragItem", function (d2) {
+                            return d._id !== d2._id;
+                        })
+                    ;
+                }, 0);
+            })
+            .on("drag", function (d) {
+                context._dragCell = d;
+                context.findCurrentLocation(d3.event.sourceEvent);
+                if(typeof (context._currLocation) === 'undefined' || (context._currLocation[0] !== context._currLoc[0] || context._currLocation[1] !== context._currLoc[1])){
+                    context._currLocation = context._currLoc;
+                    context.moveDropTarget(context._currLoc);
+                }
+            })
+            .on("dragend", function () {
+                d3.event.sourceEvent.stopPropagation();
+        
+                context._element.selectAll(".dragHandle")
+                    .style("visibility", null)
+                ;
+        
+                if (context._handle) {
+                    context._dragCell.gridRow(context._locY);
+                    context._dragCell.gridRowSpan(context._sizeY);
+                    context._dragCell.gridCol(context._locX);
+                    context._dragCell.gridColSpan(context._sizeX);
+                } else {
+                    var targetRow = context._currLoc[1];
+                    var targetCol = context._currLoc[0];
+                    var targetRowSpan = context._dragCell.gridRowSpan();
+                    var targetColSpan = context._dragCell.gridColSpan();
+                    var targetCell = context.getCell(context._currLoc[1], context._currLoc[0]);
+                    if (targetCell === context._dragCell) {
+                        targetRowSpan = targetCell.gridRowSpan();
+                        targetColSpan = targetCell.gridColSpan();
+                        targetCell = null;
+                    }
+                    var newDragCellCol;
+                    var newDragCellRow;
+                    if (targetCell) {
+                        targetRow = targetCell.gridRow();
+                        targetCol = targetCell.gridCol();
+                        targetRowSpan = targetCell.gridRowSpan();
+                        targetColSpan = targetCell.gridColSpan();
+                        targetCell
+                            .gridCol(context._dragCell.gridCol())
+                            .gridColSpan(context._dragCell.gridColSpan())
+                            .gridRow(context._dragCell.gridRow())
+                            .gridRowSpan(context._dragCell.gridRowSpan())
+                        ;
+                        newDragCellCol = targetCol;
+                        newDragCellRow = targetRow;
+                    } else {
+                        newDragCellCol = targetCol - context._dragCellOffsetX;
+                        newDragCellRow = targetRow - context._dragCellOffsetY;
+                    }
+                    context._dragCell
+                        .gridCol(newDragCellCol)
+                        .gridRow(newDragCellRow)
+                        .gridColSpan(targetColSpan)
+                        .gridRowSpan(targetRowSpan)
+                    ;
+                }
+                var gridDropTarget = document.getElementById('grid-drop-target'+context.id());
+                gridDropTarget.parentNode.removeChild(gridDropTarget);
+                
+                setTimeout(function () {
+                    context.contentDiv.selectAll(".cell_" + context._id)
+                        .classed("dragItem", false)
+                        .classed("notDragItem", false)
+                    ;
+                }, 0);
+
+                context._dragCell = null;
+            });
+            
+        if(this.designMode()){ 
+            this.contentDiv.selectAll(".cell_" + this._id).call(drag);
+        } else {
+            this.contentDiv.selectAll(".cell_" + this._id).on(".drag", null);
+        }
+        
+        rows.style("left", function (d) { return d.gridCol() * cellWidth + context.gutter() / 2 + "px"; })
+            .style("top", function (d) { return d.gridRow() * cellHeight + context.gutter() / 2 + "px"; })
+            .style("width", function (d) { return d.gridColSpan() * cellWidth - context.gutter() + "px"; })
+            .style("height", function (d) { return d.gridRowSpan() * cellHeight - context.gutter() + "px"; })
+            .each(function (d) {
+                d._parentElement
+                    .attr("draggable", context.designMode())
+                    .selectAll(".dragHandle")
+                        .attr("draggable", context.designMode())
+                ;
+
+                d
+                    .surfacePadding(context.cellPadding())
+                    .resize()
+                ;
+            });
+        rows.exit().each(function (d) {
+            d
+               .target(null)
+            ;
+            if (d.__grid_watch) {
+                d.__grid_watch.remove();
+            }
+        }).remove();
+    };
+
+    Toolbar.prototype.updateDropCells = function (dimensions, cellWidth, cellHeight) {
+        var dropCells = [];
+        if (this.designMode()) {
+            for (var rowIdx = 0; rowIdx < dimensions.height; ++rowIdx) {
+                for (var colIdx = 0; colIdx < dimensions.width; ++colIdx) {
+                    dropCells.push({ x: colIdx, y: rowIdx });
+                }
+            }
+        }
+        var dropRows = this.dropDiv.selectAll(".dropCell_" + this._id).data(dropCells);
+        dropRows.enter().append("div")
+            .attr("class", "dropCell dropCell_" + this._id);
+    
+        var context = this;
+        dropRows
+            .style("position", "absolute")
+            .style("left", function (d) { return d.x * cellWidth + context.gutter() / 2 + "px"; })
+            .style("top", function (d) { return d.y * cellHeight + context.gutter() / 2 + "px"; })
+            .style("width", function (d) { return 1 * cellWidth - context.gutter() + "px"; })
+            .style("height", function (d) { return 1 * cellHeight - context.gutter() + "px"; })
         ;
+        dropRows.exit().remove();
     };
 
     Toolbar.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
-        var context = this;
+        
+        this._parentElement.style("overflow-x", this.fitTo() === "width" ? "hidden" : null);
+        this._parentElement.style("overflow-y", this.fitTo() === "width" ? "scroll" : null);
+        var dimensions = this.getDimensions();
+        if (this.designMode()) {
+            dimensions.width++;
+            dimensions.height++;
+        }
+        var cellWidth = (this.width() - (this.fitTo() === "width" ? this._scrollBarWidth : 0)) / dimensions.width;
+        var cellHeight = this.fitTo() === "all" ? this.height() / dimensions.height : cellWidth;
 
-        this._toolbarContainer
-            .style("border-width",this.borderWidth()+"px")
-            .style("border-color",this.borderColor())
-            .style("border-style",this.borderStyle())
-            .style("border-radius",this.borderRadius()+"px")
-            .style("background-color",this.backgroundColor())
-        ;
+        if(this.customHeight()){
+            cellHeight = this.customHeight();
+        }
 
-        var widgets = this._toolbarContainer.selectAll(".toolbar-widget").data(this.toolbarAnnotations());
+        this._colCount = dimensions.width;
+        this._rowCount = dimensions.height;
+        this._colSize = cellWidth;
+        this._rowSize = cellHeight;
 
-        widgets.enter().append("div")
-            .attr("class", "toolbar-widget")
-            .style("position", "absolute")
-            .each(function (obj, idx) {
-                if (context.widgetArr()[idx]._name !== "button") {
-                    if(typeof(obj.width) !== "undefined"){
-                        d3.select(this).style("width",obj.width+"px");
-                    }
-                    if(typeof(obj.height) !== "undefined"){
-                        d3.select(this).style("height",obj.height+"px");
-                    }
-                    d3.select(this).style("margin","0px");
-                    d3.select(this).style("text-align","center");
-                    context.widgetArr()[idx].target(this);
-                }
-                if (context.widgetArr()[idx]._name === "button") {
-                    context.widgetArr()[idx].target(this).render(function(widget) {
-                        widget._inputElement.style("display","inline-block");
-                        if(typeof(obj.width) !== "undefined"){
-                            widget._element.style("width",obj.width+"px");
-                        }
-                        if(typeof(obj.height) !== "undefined"){
-                            widget._element.style("height",obj.height+"px");
-                        }
-                        //widget._element.style("text-align","center");
-                        //widget._inputElement.style("margin","0px");
-                    });
-                }
-                context.maxWidgetHeight = context.maxWidgetHeight < obj.height + context.gutter() ? obj.height + context.gutter() : context.maxWidgetHeight;
-            })
-        ;
-
-
-        this._toolbarContainer
-            .style("height",this.maxWidgetHeight + "px");
-
-        var conBox = this._toolbarContainer.node().getBoundingClientRect();
-        var leftConsumption = 0;
-        var rightConsumption = 0;
-
-        widgets
-            .each(function (obj, idx) {
-                var that = this;
-                context.widgetArr()[idx].render(function(widget) { // render again before render below to get proper height
-                    d3.select(that)
-                        .style("padding",context.gutter()/2+"px");
-
-                    var twNode = d3.select(that).node();
-                    var twBox = twNode.getBoundingClientRect();
-                    var twTop = (context.maxWidgetHeight/2 - twBox.height/2);
-
-                    var twLeft;
-                    if (typeof(obj.alignment) === "undefined") {
-                        obj.alignment = "left";
-                    }
-                    if (obj.alignment === "left") {
-                        twLeft = leftConsumption;
-                        leftConsumption = twLeft + twBox.width + context.gutter();
-                    } else if (obj.alignment === "right") {
-                        twLeft = conBox.width - rightConsumption - twBox.width;
-                        rightConsumption = rightConsumption + twBox.width + context.gutter();
-                    }
-                    d3.select(that)
-                        .style("top",twTop+"px")
-                        .style("left",twLeft+"px");
-                    context.widgetArr()[idx].render();
-                });
-            })
-        ;
-
-        widgets.exit().each(function (d) {
-            d.target(null);
-        }).remove();
+        this.updateCells(cellWidth, cellHeight);
+        this.updateDropCells(dimensions, cellWidth, cellHeight);
     };
 
     Toolbar.prototype.exit = function (domNode, element) {
         HTMLWidget.prototype.exit.apply(this, arguments);
+    };
+
+    Toolbar.prototype.render = function (callback) {
+        var context = this;
+        HTMLWidget.prototype.render.call(this, function (widget) {
+            if (context.content().length) {
+                var renderCount = context.content().length;
+                context.content().forEach(function (contentWidget, idx) {
+                    setTimeout(function () {
+                        contentWidget.render(function () {
+                            if (--renderCount === 0) {
+                                if (callback) {
+                                    callback(widget);
+                                }
+                            }
+                        });
+                    }, 0);
+                });
+            } else {
+                if (callback) {
+                    callback(widget);
+                }
+            }
+        });
+        return this;
     };
 
     return Toolbar;

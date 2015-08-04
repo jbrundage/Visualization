@@ -26,6 +26,10 @@
     Surface.prototype.publish("surfacePadding", null, "string", "Surface Padding (px)", null, { tags: ['Intermediate'] });
     Surface.prototype.publish("surfaceBackgroundColor", null, "html-color", "Surface Background Color",null,{tags:['Basic']});
     Surface.prototype.publish("surfaceBorderWidth", null, "number", "Surface Border Width (px)",null,{tags:['Basic']});
+    Surface.prototype.publish("surfaceBorderTopWidth", null, "number", "Surface Top Border Width (px)",null,{tags:['Basic']});
+    Surface.prototype.publish("surfaceBorderRightWidth", null, "number", "Surface Right Border Width (px)",null,{tags:['Basic']});
+    Surface.prototype.publish("surfaceBorderBottomWidth", null, "number", "Surface Bottom Border Width (px)",null,{tags:['Basic']});
+    Surface.prototype.publish("surfaceBorderLeftWidth", null, "number", "Surface Left Border Width (px)",null,{tags:['Basic']});
     Surface.prototype.publish("surfaceBorderColor", null, "html-color", "Surface Border Color",null,{tags:['Basic']});
     Surface.prototype.publish("surfaceBorderRadius", null, "number", "Surface Border Radius (px)",null,{tags:['Basic']});
 
@@ -83,14 +87,21 @@
     Surface.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
         var context = this;
-
+        
+        var bwTop = this.surfaceBorderTopWidth() ? this.surfaceBorderTopWidth() : this.surfaceBorderWidth();
+        var bwRight = this.surfaceBorderRightWidth() ? this.surfaceBorderRightWidth() : this.surfaceBorderWidth();
+        var bwBottom = this.surfaceBorderBottomWidth() ? this.surfaceBorderBottomWidth() : this.surfaceBorderWidth();
+        var bwLeft = this.surfaceBorderLeftWidth() ? this.surfaceBorderLeftWidth() : this.surfaceBorderWidth();
+        
         element
-            .style("border-width",this.surfaceBorderWidth()+'px')
+            .style("border-top-width",bwTop+'px')
+            .style("border-right-width",bwRight+'px')
+            .style("border-bottom-width",bwBottom+'px')
+            .style("border-left-width",bwLeft+'px')
             .style("border-color",this.surfaceBorderColor())
             .style("border-radius",this.surfaceBorderRadius()+'px')
             .style("background-color",this.surfaceBackgroundColor())
         ;
-
         var titles = element.selectAll(".surfaceTitle").data(this.title() ? [this.title()] : []);
         titles.enter().insert("h3", "div")
             .attr("class", "surfaceTitle")
