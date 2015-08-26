@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../layout/Border", "../common/Text", "../api/INDChart", "require", "css!./MultiChart"], factory);
+        define(["d3", "../layout/Border", "../common/Text", "../api/INDChart", "require", "../other/Legend", "css!./MultiChart"], factory);
     } else {
-        root.chart_MultiChart = factory(root.d3, root.layout_Border, root.common_Text, root.api_INDChart, root.require);
+        root.chart_MultiChart = factory(root.d3, root.layout_Border, root.common_Text, root.api_INDChart, root.require, root.other_Legend);
     }
-}(this, function (d3, Border, Text, INDChart, require) {
+}(this, function (d3, Border, Text, INDChart, require, Legend) {
     var _1DChartTypes = [
         { id: "SUMMARY", display: "Summary", widgetClass: "chart_Summary" },
         { id: "C3_GAUGE", display: "Gauge (C3)", widgetClass: "c3chart_Gauge" }
@@ -75,6 +75,7 @@
     MultiChart.prototype.publish("axisTitleHeight", 18, "string", "Axis Title Height", null, { tags: ["Basic"] });
     MultiChart.prototype.publish("xAxisTitle", "X-Axis", "string", "X-Axis", null, { tags: ["Basic"] });
     MultiChart.prototype.publish("yAxisTitle", "Y-Axis", "string", "Y-Axis", null, { tags: ["Basic"] });
+    MultiChart.prototype.publish("showLegend", false, "boolean", "Show/Hide Legend", null, { tags: ["Basic"] });
 
     MultiChart.prototype.testData = function () {
         return INDChart.prototype.testData.apply(this, arguments);
@@ -138,6 +139,9 @@
     };
 
     MultiChart.prototype.render = function (callback) {
+        if(this.showLegend()){
+            this.setContent("rightSection",new Legend().targetWidget(this));
+        }
         if (this._prevXAxisTitle !== this.xAxisTitle()) {
             if (!this.hasContent("bottomSection")) {
                 this.setContent("bottomSection", this.xAxisTitle() ? new Text() : null);
