@@ -77,6 +77,29 @@
     Table.prototype.publish("pagination", false, "boolean", "Enable or disable pagination",null,{tags:["Private"]});
     Table.prototype.publish("fixedHeader", false, "boolean", "Enable or disable fixed table header and first column",null,{tags:["Private"]});
     Table.prototype.publish("fixedColumn", false, "boolean", "Enable or disable fixed first column",null,{tags:["Private"]});
+    
+    Table.prototype.publish("theadFontSize", null, "string", "Table head font size", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyFontSize", null, "string", "Table body font size", null, { tags: ["Basic"] });
+    Table.prototype.publish("theadFontColor", null, "html-color", "Table head font color", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyFontColor", null, "html-color", "Table body font color", null, { tags: ["Basic"] });
+    Table.prototype.publish("theadFontFamily", null, "string", "Table head font family", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyFontFamily", null, "string", "Table body font family", null, { tags: ["Basic"] });
+    
+    Table.prototype.publish("theadCellBorderColor", null, "html-color", "Table head cell border color", null, { tags: ["Basic"] });
+    Table.prototype.publish("theadRowBackgroundColor", null, "html-color", "Table head row color", null, { tags: ["Basic"] });
+    
+    Table.prototype.publish("tbodyCellBorderColor", null, "html-color", "Table body cell border color", null, { tags: ["Basic"] });
+    
+    Table.prototype.publish("tbodyRowBackgroundColor", null, "html-color", "Table body row color", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyFirstColFontColor", null, "html-color", "Table body first column font color", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyFirstColBackgroundColor", null, "html-color", "Table body first column background color", null, { tags: ["Basic"] });
+    
+    Table.prototype.publish("tbodyHoverRowFontColor", "#FFF", "html-color", "Table body hover row font color", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodyHoverRowBackgroundColor", null, "html-color", "Table body hover row background color", null, { tags: ["Basic"] });
+    
+    Table.prototype.publish("tbodySelectedRowFontColor", "#FFF", "html-color", "Table body selected row color", null, { tags: ["Basic"] });
+    Table.prototype.publish("tbodySelectedRowBackgroundColor", "#F48A00", "html-color", "Table body selected row color", null, { tags: ["Basic"] });
+    
     Table.prototype.publishProxy("itemsPerPage", "_paginator");
     Table.prototype.publishProxy("pageNumber", "_paginator", "pageNumber",1);
 
@@ -183,7 +206,14 @@
                 context.headerClick(column, idx);
             })
         ;
+        th
+            .style("background-color",this.theadRowBackgroundColor())
+            .style("border-color",this.theadCellBorderColor())
+            .style("color",this.theadFontColor())
+            .style("font-size",this.theadFontSize())
+        ;
         th.select(".thText")
+            .style("font-family",this.theadFontFamily())
             .text(function (column) {
                 return column;
             })
@@ -242,44 +272,64 @@
         rows
             .enter()
             .append("tr")
-            .on("click.selectionBag", function (d) {
+            .on("click.selectionBag", function (d, i) {
                 context.selectionBagClick(d);
-                context.render();
+                context.render(function(){
+                    context.applyStyleToRows(context.tbody.selectAll("tr"));
+                });
+                var fixedLeftRows = context.headerDiv.selectAll(".rows-wrapper tbody tr")
+                    .filter(function (d, idx) {
+                        return idx === i;
+                    })
+                ;
+                var tbodyRows = context.table.selectAll("tbody tr")
+                    .filter(function (d, idx) {
+                        return idx === i;
+                    })
+                ;
+                tbodyRows.classed("hover",true);
+                context.applyRowStyles(tbodyRows);
+                context.applyFirstColRowStyles(fixedLeftRows);
             })
             .on("click", function (d) {
                 context.click(context.rowToObj(d), null, context._selectionBag.isSelected(context._createSelectionObject(d)));
+                context.applyRowStyles(d3.select(this));
             })
             .on("mouseover", function (d, i) {
-                var el = context.headerDiv.selectAll(".rows-wrapper tbody tr")
+                var fixedLeftRows = context.headerDiv.selectAll(".rows-wrapper tbody tr")
                     .filter(function (d, idx) {
                         return idx === i;
                     })
                 ;
-                if (el.empty()) { return; }
-                el.classed("hover", true);
-                var that = context.table.selectAll("tbody tr")
+                if (fixedLeftRows.empty()) { return; }
+                fixedLeftRows.classed("hover", true);
+                var tbodyRows = context.table.selectAll("tbody tr")
                     .filter(function (d, idx) {
                         return idx === i;
                     })
                 ;
-                that.classed("hover", true);
-                if (that.classed("selected")) {
-                    el.classed("selected", true);
+                tbodyRows.classed("hover", true);
+                if (tbodyRows.classed("selected")) {
+                    fixedLeftRows.classed("selected", true);
                 }
+                context.applyStyleToRows(tbodyRows);
+                context.applyFirstColRowStyles(fixedLeftRows);
             })
             .on("mouseout", function (d, i) {
-                var el = context.headerDiv.selectAll(".rows-wrapper tbody tr")
+                var fixedLeftRows = context.headerDiv.selectAll(".rows-wrapper tbody tr")
                     .filter(function (d, idx) {
                         return idx === i;
                     })
                 ;
-                el.classed("hover", false);
-                context.table.selectAll("tbody tr")
+                fixedLeftRows.classed("hover", false);
+                var tbodyRows = context.table.selectAll("tbody tr")
                     .filter(function (d, idx) {
                         return idx === i;
                     })
                     .classed("hover", false)
                 ;
+                context.applyStyleToRows(tbodyRows);
+                context.applyFirstColRowStyles(fixedLeftRows);
             })
         ;
 
@@ -294,18 +344,26 @@
         rows.exit()
             .remove()
         ;
-
+        
+        rows.each(function(){
+            var d = d3.select(this);
+            context.applyStyleToRows(d);
+        });
+        
         var cells = rows.selectAll("td").data(function (row, i) {
             return row;
         });
         cells.enter()
             .append("td")
         ;
-        if(this.renderHtmlDataCells()){
-            cells.html(function (d) { return typeof(d) === "string" ? d.trim() : ""; });
-        } else {
-            cells.text(function (d) { return typeof(d) === "string" ? d.trim() : ""; });
-        }
+        cells[this.renderHtmlDataCells() ? "html" : "text"](function (d) { 
+            if(typeof(d) === "string"){
+                return d.trim();
+            } else if (typeof(d) === "number") {
+                return d;
+            }
+            return ""; 
+        });
         cells.exit()
             .remove()
         ;
@@ -313,10 +371,19 @@
         if (this.data().length) {
             this.fixedLabelsUpdate(domNode, element);
         }
+        
+        context.applyStyleToRows(this.tbody.selectAll("tr"));
     };
 
     Table.prototype.fixedLabelsUpdate = function (domNode, element) {
+        var context = this;
         var rows = this.tbody.selectAll("tr");
+        rows.selectAll("td")
+            .style("color",this.tbodyFontColor())
+            .style("font-size",this.tbodyFontSize())
+            .style("font-family",this.tbodyFontFamily())
+            .style("border-color",this.tbodyCellBorderColor())
+        ;
         var colsWrapper = this.headerDiv.selectAll(".cols-wrapper").data(this.fixedHeader() ? [0] : []);
         colsWrapper.enter()
             .append("div")
@@ -326,6 +393,7 @@
                 element
                     .append("table")
                     .classed("labels-wrapper", true)
+                    .append("thead")
                 ;
             })
         ;
@@ -333,6 +401,8 @@
             .remove()
         ;
         var colLabelsWrapper = colsWrapper.select(".labels-wrapper");
+        var colLabelsWrapperThead = colsWrapper.select(".labels-wrapper > thead");
+        
 
         var rowsWrapper = this.headerDiv.selectAll(".rows-wrapper").data(this.fixedColumn() ? [0] : []);
         rowsWrapper.enter()
@@ -357,11 +427,24 @@
         var context = this;
         _copyLabelContents(this._id);
         _setOnScrollEvents(this.tableDiv.node());
+        
+        var colTr = colsWrapper.selectAll(".labels-wrapper tr");
+        var rowTr = rowsWrapper.selectAll(".labels-wrapper tbody > tr");
+        var rowTheadTr = rowsWrapper.selectAll(".labels-wrapper thead > tr");
+        colTr.style("background-color",this.theadRowBackgroundColor());
+        rowTheadTr.style("background-color",this.theadRowBackgroundColor());
+        context.applyFirstColRowStyles(rowTr);
+        setTimeout(function(){
+            context.applyStyleToRows(context.tbody.selectAll("tr"));
+        },0);
 
         function _copyLabelContents() {
             var origThead = element.selectAll("th");
+            origThead
+                .style("border-color",context.theadCellBorderColor())
+            ;
             if (context.fixedHeader()) {
-                colLabelsWrapper.html(theadSelection.html());
+                colLabelsWrapperThead.html(theadSelection.html());
                 colLabelsWrapper
                     .style("width", context.table.style("width"))
                 ;
@@ -388,13 +471,33 @@
                 var rowSelection = context.table.selectAll("tbody > tr > td:first-child");
                 rowWrapperWidth = context.fixedColumn() ? rowSelection.node().offsetWidth : 0;
                 var theadWidth = parseInt(rowWrapperWidth) + parseInt(2 * borderWidth);
-                var rowContents = "<thead><tr>";
-                rowContents += "<th style='width:" + theadWidth + "px'>";
-                rowContents += origThead.filter(function (d, idx) { return idx === 0; }).html();
-                rowContents += "</th></tr></thead>";
-
+                var rowContents = "<thead>";
+                
+                var theadTr = document.createElement("tr");
+                theadTr.style.backgroundColor = context.theadRowBackgroundColor();
+                var th = document.createElement("th");
+                th.style.width = theadWidth + "px";
+                th.style.color = context.theadFontColor();
+                th.style.fontSize = context.theadFontSize();
+                th.style.fontFamily = context.theadFontFamily();
+                th.style.borderColor = context.theadCellBorderColor();
+                th.innerHTML = origThead.filter(function (d, idx) { return idx === 0; }).html();
+                theadTr.appendChild(th);
+                var tempTrWrapper = document.createElement("div");
+                tempTrWrapper.appendChild(theadTr);
+                rowContents += tempTrWrapper.innerHTML;
+                rowContents += "</thead>";
                 rowSelection.each(function () {
-                    rowContents += "<tr><td class='row-label'>" + (this.innerHTML ? this.innerHTML : "&nbsp;") + "</td></tr>";
+                    var td = document.createElement("td");
+                    td.className = "row-label";
+                    td.style.color = context.tbodyFontColor();
+                    td.style.fontSize = context.tbodyFontSize();
+                    td.style.fontFamily = context.tbodyFontFamily();
+                    td.style.borderColor = context.tbodyCellBorderColor();
+                    td.innerHTML = this.innerHTML ? this.innerHTML : "&nbsp;";
+                    var tempDiv = document.createElement("div");
+                    tempDiv.appendChild(td);
+                    rowContents += "<tr>" + tempDiv.innerHTML + "</tr>";
                 });
                 rowLabelsWrapper.html(rowContents)
                     .style("width", rowWrapperWidth)
@@ -402,15 +505,11 @@
                 
                 if (context.fixedHeader()){
                     rowLabelsWrapper.select("thead")
-//                        .style("margin-top", "-" + colWrapperHeight)
                         .style("position", "absolute")
                         .style("width", theadWidth + "px")
                     ;
                     rowLabelsWrapper
                         .style("margin-top", -domNode.scrollTop + colWrapperHeight + "px")
-                    ;
-                    context.table
-                        .style("margin-top", "-" + colWrapperHeight + "px")
                     ;
                     element
                         .style("top", colWrapperHeight + "px")
@@ -422,9 +521,6 @@
                     ;
                     rowLabelsWrapper
                         .style("margin-top", -domNode.scrollTop + "px")
-                    ;
-                    context.table
-                        .style("margin-top", "0px")
                     ;
                     element
                         .style("top", "0px")
@@ -452,7 +548,7 @@
                     })
                 ;
             } else {
-                rowWrapperWidth = 0;
+                rowWrapperWidth = 0; 
             }
             newTableHeight = parseInt(context.headerDiv.node().style.height) - parseInt(colWrapperHeight);
             var newTableWidth = parseInt(context.headerDiv.node().style.width) - parseInt(rowWrapperWidth);
@@ -468,6 +564,7 @@
             ;
             context.table
                 .style("margin-left", "-" + rowWrapperWidth + "px")
+                .style("margin-top", "-" + colWrapperHeight + "px")
             ;
             colsWrapper
                 .style("position", "absolute")
@@ -557,6 +654,46 @@
             this._selectionBag.click(this._createSelectionObject(d), d3.event);
             this._selectionPrevClick = d;
         }
+    };
+
+    Table.prototype.applyHoverRowStyles = function(row){
+        var context = this;
+        row
+            .style("color",context.tbodyHoverRowFontColor())
+            .style("background-color",context.tbodyHoverRowBackgroundColor())
+        ;
+    };
+    Table.prototype.applySelectedRowStyles = function(row){
+        var context = this;
+        row
+            .style("color",context.tbodySelectedRowFontColor())
+            .style("background-color",context.tbodySelectedRowBackgroundColor())
+        ;
+    };
+    Table.prototype.applyRowStyles = function(row,isFirstCol){
+        var context = this;
+        row
+            .style("color",isFirstCol ? context.tbodyFirstColFontColor() : context.tbodyFontColor())
+            .style("background-color",isFirstCol ? context.tbodyFirstColBackgroundColor() : context.tbodyRowBackgroundColor())
+        ;
+    };
+    Table.prototype.applyFirstColRowStyles = function(rows){
+        this.applyStyleToRows(rows,true);
+    };
+    Table.prototype.applyStyleToRows = function(rows,isFirstCol){
+        isFirstCol = typeof isFirstCol !== "undefined" ? isFirstCol : false;
+        var context = this;
+        rows.each(function () {
+                var tr = d3.select(this);
+                if (tr.classed("hover")) {
+                    context.applyHoverRowStyles(tr);
+                } else if (tr.classed("selected")) {
+                    context.applySelectedRowStyles(tr);
+                } else {
+                    context.applyRowStyles(tr,isFirstCol);
+                }
+            })
+        ;
     };
 
     Table.prototype.click = function (row, column) {
