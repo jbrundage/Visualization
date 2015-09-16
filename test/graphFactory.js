@@ -29,32 +29,50 @@
                     var palette = Palette.ordinal("dark2");
 
                     var rawData = DataFactory.Graph.simple;
-                    rawData.nodes.forEach(function (node) {
+                    rawData.nodes.forEach(function (node,i) {
                         var annotation = [];
-                        if (Math.random() < 0.10) {
+                        var chr = "\uf0c0";
+                        if ([0].indexOf(i) !== -1) {
+                            chr = "\uf007";
                             annotation.push({
-                                "faChar": "A",
-                                "tooltip": "Test A",
+                                "faChar": "\uf007",
+                                "tooltip": "Person",
                                 "shape_colorFill": "white",
-                                "image_colorFill": "red"
+                                "image_colorFill": "white",
+                                "diameter":18
                             });
                         }
-                        if (Math.random() < 0.10) {
+                        else if ([1,2,3].indexOf(i) !== -1) {
+                            chr = "\uf015";
                             annotation.push({
-                                "faChar": "B",
-                                "tooltip": "Test B",
+                                "faChar": "\uf015",
+                                "tooltip": "Property",
                                 "shape_colorFill": "green",
                                 "shape_colorStroke": "green",
-                                "image_colorFill": "white"
+                                "image_colorFill": "white",
+                                "diameter":18
                             });
                         }
-                        if (Math.random() < 0.10) {
+                        else if ([4].indexOf(i) !== -1) {
+                            chr = "\uf1b9";
                             annotation.push({
-                                "faChar": "C",
-                                "tooltip": "Test C",
+                                "faChar": "\uf1b9",
+                                "tooltip": "Vehicle",
                                 "shape_colorFill": "navy",
                                 "shape_colorStroke": "navy",
-                                "image_colorFill": "white"
+                                "image_colorFill": "white",
+                                "diameter":18
+                            });
+                        }
+                        else if ([5,6,7,8,9,10].indexOf(i) !== -1) {
+                            chr = "\uf0c0";
+                            annotation.push({
+                                "faChar": "\uf0c0",
+                                "tooltip": "Associate",
+                                "shape_colorFill": "navy",
+                                "shape_colorStroke": "navy",
+                                "image_colorFill": "white",
+                                "diameter":18
                             });
                         }
                         vertices.push(new Vertex()
@@ -63,8 +81,7 @@
                             .textbox_shape_colorFill("whitesmoke")
                             .icon_shape_colorStroke(palette(node.group))
                             .icon_shape_colorFill(palette(node.group))
-                            .annotationIcons(annotation)
-                            .faChar(node.name[0])
+                            .faChar(chr)
                         );
                     }, graph);
 

@@ -16,7 +16,7 @@
     Text.prototype.publish("text", "", "string", "Display Text",null,{tags:["Basic"]});
     Text.prototype.publish("fontFamily", "", "string", "Font Family",null,{tags:["Intermediate"]});
     Text.prototype.publish("fontSize", null, "number", "Font Size (px)", null, { tags: ["Intermediate"] });
-    Text.prototype.publish("anchor", "middle", "set", "Anchor Position", ["start", "middle", "end"], { tags: ["Intermediate"] });
+    Text.prototype.publish("anchor", "start", "set", "Anchor Position", ["start", "middle", "end"], { tags: ["Intermediate"] });
     Text.prototype.publish("colorFill", null, "html-color", "Fill Color", null, { tags: ["Basic"] });
 
     Text.prototype.enter = function (domNode, element) {

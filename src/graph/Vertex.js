@@ -41,6 +41,7 @@
         ;
         this._textBox
             .target(domNode)
+            .anchor("start")
             .render()
         ;
     };

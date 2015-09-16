@@ -365,6 +365,7 @@
 
     Graph.prototype._origScale = Graph.prototype.scale;
     Graph.prototype.scale = function (_, transitionDuration) {
+        transitionDuration = this.transitionDuration();
         var retVal = Graph.prototype._origScale.apply(this, arguments);
         if (arguments.length) {
             this.zoomTo(_, transitionDuration);
@@ -406,6 +407,9 @@
 
     Graph.prototype._origLayout = Graph.prototype.layout;
     Graph.prototype.layout = function (_, transitionDuration) {
+        transitionDuration = this.transitionDuration();
+        console.log('transitionDuration:');
+        console.log(transitionDuration);
         var retVal = Graph.prototype._origLayout.apply(this, arguments);
         if (arguments.length) {
             if (this._renderCount) {
