@@ -26,8 +26,8 @@
     XYAxis.prototype.publish("xAxisTypeTimePattern", "%Y-%m-%d", "string", "Time Series Pattern");
     XYAxis.prototype.publish("xAxisDomainLow", "", "string", "X-Axis Low");
     XYAxis.prototype.publish("xAxisDomainHigh", "", "string", "X-Axis High");
-    XYAxis.prototype.publish("xAxisOverlapMode", "stagger", "set", "X-Axis Label Overlap Mode", ["none", "stagger", "hide", "rotate"]);
-    XYAxis.prototype.publish("xAxisLabelRotation", null, "number", "X-Axis Label Rotation");
+    XYAxis.prototype.publish("xAxisOverlapMode", "rotate", "set", "X-Axis Label Overlap Mode", ["none", "stagger", "hide", "rotate"]);
+    XYAxis.prototype.publish("xAxisLabelRotation", 90, "number", "X-Axis Label Rotation");
 
     XYAxis.prototype.publish("yAxisTitle", "", "string", "Y-Axis Title");
     XYAxis.prototype.publish("yAxisTickCount", null, "number", "Y-Axis Tick Count", null, { optional: true });
@@ -426,7 +426,6 @@
         }
         var width = this.width() - margin.left - margin.right;
         this.setScaleRange(width, this.height());
-
         var svgXAxis = test.append("g")
             .attr("class", isHorizontal ? "x axis" : "y axis")
             .attr("transform", "translate(" + margin.left + "," + height / 2 + ")")
@@ -492,6 +491,9 @@
     };
 
     XYAxis.prototype.update = function (domNode, element) {
+        if(this.id() === "_w92"){
+            console.error("called update");
+        }
         var context = this;
 
         var isHorizontal = this.orientation() === "horizontal";
@@ -621,10 +623,10 @@
             .call(this.currAxis)
         ;
 
-        this.svgXAxisText
-            .attr("x", width - 2)
-            .text(isHorizontal ? this.columns()[0] : this.yAxisTitle())
-        ;
+//        this.svgXAxisText
+//            .attr("x", width - 2)
+//            .text(isHorizontal ? this.columns()[0] : this.yAxisTitle())
+//        ;
 
         this.svgYAxis.transition()
             .style("visibility", this.yAxisType() === "none" ? "hidden" : null)
@@ -634,7 +636,7 @@
                 context.adjustXAxisText(context.svgXAxis, context.margin);
             })
         ;
-        this.svgYAxisText.text(!isHorizontal ? this.columns()[0] : this.yAxisTitle());
+        //this.svgYAxisText.text(!isHorizontal ? this.columns()[0] : this.yAxisTitle());
 
         this.xBrush
             .x(this.dataScale)

@@ -16,6 +16,13 @@
                     );
                 });
             },
+            rsi: function (callback) {
+                require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
+                    callback(new HTML()
+                        .ddlUrl('http://10.241.100.159:8010/WsWorkunits/WUResult.json?Wuid=W20151111-102557&ResultName=prichajx_stocksrsiexplorer2_Comp_Ins182_DDL&SuppressXmlSchema=true')
+                    );
+                });
+            },
             rollups: function (callback) {
                 require(["test/DataFactory", "src/marshaller/HTML"], function (DataFactory, HTML) {
                     callback(new HTML()

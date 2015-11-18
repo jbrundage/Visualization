@@ -109,7 +109,7 @@
                     </li>
                     <li>
                         <label for="showProperties">&nbsp;&nbsp;Properties:</label>
-                        <input id="showProperties" type="checkbox" checked onchange="showProperties(this.checked);" />
+                        <input id="showProperties" type="checkbox" onchange="showProperties(this.checked);" />
                     </li>
                     <li>
                         <label for="showPropertyTree">&nbsp;&nbsp;Property Tree:</label>
@@ -250,7 +250,7 @@
                 .id("testJSON")
             ;
             main = new Grid()
-                .setContent(0, 2, propEditor, "", 2, 1)
+                .setContent(0, 2, document.getElementById("showProperties").checked ? propEditor : null, "", 2, 1)
                 .surfacePadding(0)
             ;
 
@@ -357,6 +357,7 @@
                 });
             };
             showProperties = function (show) {
+                console.log("show:");console.log(show);
                 main
                     .setContent(0, 2, show ? propEditor : null, "", 2, 1)
                     .render(function (widget) {
@@ -427,6 +428,40 @@
             var menu = d3.select("#widgetSelect");
             menu.classed("hide", !menu.classed("hide"));
         }
+        var new_layout = true;
+        setInterval(function(){
+            if(new_layout){
+                if(currWidget.content().length === 6){
+                    currWidget.content()[0].widget()._chart.chart().orientation("vertical");
+                    currWidget.content()[0]
+                            .gridRow(0).gridCol(0)
+                            .gridRowSpan(4).gridColSpan(1)
+                    ;
+                    currWidget.content()[1]
+                            .gridRow(0).gridCol(1)
+                            .gridRowSpan(1).gridColSpan(5)
+                    ;
+                    currWidget.content()[2]
+                            .gridRow(1).gridCol(1)
+                            .gridRowSpan(1).gridColSpan(5)
+                    ;
+                    currWidget.content()[5]
+                            .gridRow(2).gridCol(1)
+                            .gridRowSpan(1).gridColSpan(5)
+                    ;
+                    currWidget.content()[3]
+                            .gridRow(3).gridCol(1)
+                            .gridRowSpan(1).gridColSpan(5)
+                    ;
+                    currWidget.content()[4]
+                            .gridRow(4).gridCol(0)
+                            .gridRowSpan(1).gridColSpan(5)
+                    ;
+                    currWidget.render();
+                    new_layout = false;
+                }
+            }
+        },1000);
     </script>
 </body>
 </html>

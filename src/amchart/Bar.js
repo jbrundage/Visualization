@@ -35,6 +35,14 @@
 
     Bar.prototype.enter = function(domNode, element) {
         CommonSerial.prototype.enter.apply(this, arguments);
+        this.fontColor("#fff");
+        this.axisMinPeriod("DD");
+        this.startDuration(0);
+        this.stacked(true);
+        this.useClonedPalette(true);
+        if(this.id() === "_w50"){
+            this.stacked(false);
+        }
     };
 
     Bar.prototype.updateChartOptions = function() {

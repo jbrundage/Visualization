@@ -17,8 +17,8 @@
     PropertyEditor.prototype.constructor = PropertyEditor;
     PropertyEditor.prototype._class += " other_PropertyEditor";
 
-    PropertyEditor.prototype.publish("showColumns", true, "boolean", "If true, widget.columns() will display as if it was a publish parameter.",null,{tags:["Basic"]});
-    PropertyEditor.prototype.publish("showData", true, "boolean", "If true, widget.data() will display as if it was a publish parameter.",null,{tags:["Basic"]});
+    PropertyEditor.prototype.publish("showColumns", false, "boolean", "If true, widget.columns() will display as if it was a publish parameter.",null,{tags:["Basic"]});
+    PropertyEditor.prototype.publish("showData", false, "boolean", "If true, widget.data() will display as if it was a publish parameter.",null,{tags:["Basic"]});
     
     PropertyEditor.prototype.publish("sorting", "none", "set", "Specify the sorting type",["none","A-Z","Z-A","type"],{tags:["Basic"],icons:["fa-sort","fa-sort-alpha-asc","fa-sort-alpha-desc","fa-sort-amount-asc"]});
     PropertyEditor.prototype.publish("collapsed", false, "boolean", "If true, the table will default to collapased",null,{tags:["Basic"]});

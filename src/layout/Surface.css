@@ -11,6 +11,10 @@
     font-weight: bold;
     background-color: #e5e5e5;
 }
+.marshaller_HTML .layout_Surface > h3 {
+    background-color: #000;
+    color:#FFF;
+}
 .layout_Surface .html-button-container {
     position: absolute;
     right: 0px;

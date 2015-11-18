@@ -57,10 +57,10 @@
         { id: "C3_LINE", display: "Line (C3)", widgetClass: "c3chart_Line" },
         { id: "C3_SCATTER", display: "Scatter (C3)", widgetClass: "c3chart_Scatter" },
         { id: "C3_STEP", display: "Step (C3)", widgetClass: "c3chart_Step" },
-        { id: "AM_AREA", display: "Area (amCharts)", widgetClass: "amchart_Area" },
+        { id: "AM_AREA", display: "Area (amCharts)", widgetClass: "chart_Area" },
         { id: "AM_BAR", display: "Bar (amCharts)", widgetClass: "amchart_Bar" },
-        { id: "AM_LINE", display: "Line (amCharts)", widgetClass: "amchart_Line" },
-        { id: "AM_SCATTER", display: "Scatter (amCharts)", widgetClass: "amchart_Scatter" },
+        { id: "AM_LINE", display: "Line (amCharts)", widgetClass: "amchart_Bar" },
+        { id: "AM_SCATTER", display: "Scatter (amCharts)", widgetClass: "chart_Scatter" },
     ];
     MultiChart.prototype._anyChartTypes = [
         { id: "TABLE", display: "Table", widgetClass: "other_Table" }

@@ -15,5 +15,14 @@
     Line.prototype.constructor = Line;
     Line.prototype._class += " chart_Line";
 
+    Line.prototype.enter = function (domNode, element) {
+        Scatter.prototype.enter.apply(this, arguments);
+        this.sortDates(true);
+        this.xAxisTickCount(14);
+        this.xAxisTickFormat("%B");
+        this.xAxisTypeTimePattern("%Y%m%d");
+        this.xAxisType("time");
+    };
+
     return Line;
 }));

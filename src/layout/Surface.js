@@ -20,18 +20,18 @@
    Surface.prototype.publish("title", "", "string", "Title",null,{tags:["Intermediate"]});
    Surface.prototype.publish("widget", null, "widget", "Widget",null,{tags:["Basic"]});
    
-   Surface.prototype.publish("surfaceTitlePadding", null, "number", "Title Padding (px)", null, { tags: ["Advanced"] });
+   Surface.prototype.publish("surfaceTitlePadding", 0, "number", "Title Padding (px)", null, { tags: ["Advanced"] });
    Surface.prototype.publish("surfaceTitleFontSize", null, "number", "Title Font Size (px)", null, { tags: ["Advanced"] });
    Surface.prototype.publish("surfaceTitleFontColor", null, "html-color", "Title Font Color", null, { tags: ["Advanced"] });
    Surface.prototype.publish("surfaceTitleFontFamily", null, "string", "Title Font Family", null, { tags: ["Advanced"] });
    Surface.prototype.publish("surfaceTitleFontBold", true, "boolean", "Enable Bold Title Font", null, { tags: ["Advanced"] });
    Surface.prototype.publish("surfaceTitleBackgroundColor", null, "html-color", "Title Background Color", null, { tags: ["Advanced"] });
 
-   Surface.prototype.publish("surfacePadding", null, "string", "Surface Padding (px)", null, { tags: ["Intermediate"] });
-   Surface.prototype.publish("surfaceBackgroundColor", null, "html-color", "Surface Background Color", null, { tags: ["Advanced"] });
-   Surface.prototype.publish("surfaceBorderWidth", null, "number", "Surface Border Width (px)", null, { tags: ["Advanced"] });
-   Surface.prototype.publish("surfaceBorderColor", null, "html-color", "Surface Border Color", null, { tags: ["Advanced"] });
-   Surface.prototype.publish("surfaceBorderRadius", null, "number", "Surface Border Radius (px)", null, { tags: ["Advanced"] });
+   Surface.prototype.publish("surfacePadding", 0, "string", "Surface Padding (px)", null, { tags: ["Intermediate"] });
+   Surface.prototype.publish("surfaceBackgroundColor", "#000", "html-color", "Surface Background Color", null, { tags: ["Advanced"] });
+   Surface.prototype.publish("surfaceBorderWidth", 0, "number", "Surface Border Width (px)", null, { tags: ["Advanced"] });
+   Surface.prototype.publish("surfaceBorderColor", "#000", "html-color", "Surface Border Color", null, { tags: ["Advanced"] });
+   Surface.prototype.publish("surfaceBorderRadius", 0, "number", "Surface Border Radius (px)", null, { tags: ["Advanced"] });
 
    Surface.prototype.publish("surfaceTitleAlignment", "center", "set", "Title Alignment", ["left","right","center"],{tags:["Basic"]});
 

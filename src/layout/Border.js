@@ -29,7 +29,7 @@
     
     Border.prototype.publish("content", [], "widgetArray", "widgets", null, { tags: ["Intermediate"] });
     
-    Border.prototype.publish("gutter", 2, "number", "Gap Between Widgets",null,{tags:["Basic"]});
+    Border.prototype.publish("gutter", 0, "number", "Gap Between Widgets",null,{tags:["Basic"]});
 
     Border.prototype.publish("topShrinkWrap", false, "boolean", "'Top' Cell shrinks to fit content",null,{tags:["Intermediate"]});
     Border.prototype.publish("leftShrinkWrap", false, "boolean", "'Left' Cell shrinks to fit content",null,{tags:["Intermediate"]});

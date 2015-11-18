@@ -13,16 +13,16 @@
 }
 
 .other_Table th, .labels-wrapper th {
-    padding:5px 10px;
+    padding: 0 2px;
     border-width: 1px;
     border-style: solid;
-    border-color: #a9c6c9;
+    border-color: #000;
     color:white;
     white-space: nowrap;
     cursor : pointer;
 }
 .other_Table thead > tr, .cols-wrapper tr {
-    background-color:#1f77b4;
+    background-color: #003C65;
 }
 
 .other_Table .thIcon, .labels-wrapper .thIcon {
@@ -31,13 +31,13 @@
 }
 
 .other_Table .tableDiv tbody > tr:nth-child(odd) {
-    background-color: #f3faff;
-    color:black;
+    background-color: #222;
+    color: #FFF;
 }
 
 .other_Table .tableDiv tbody > tr:nth-child(even)  {
-    background-color: white;
-    color:black;
+    background-color: #111;
+    color: #fff;
 }
 
 .other_Table .tableDiv tbody > tr:hover  {
@@ -79,9 +79,9 @@
 
 .other_Table td, .rows-wrapper td{
     border-width: 1px;
-    padding:2px 5px;
+    padding: 0 2px;
     border-style: solid;
-    border-color: #a9c6c9;
+    border-color: #000;
     white-space: nowrap;
     box-sizing:border-box;
 }

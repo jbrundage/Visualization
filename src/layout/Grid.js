@@ -24,7 +24,7 @@
     Grid.prototype._class += " layout_Grid";
 
     Grid.prototype.publish("designMode", false, "boolean", "Design Mode",null,{tags:["Basic"]});
-    Grid.prototype.publish("gutter", 4, "number", "Gap Between Widgets",null,{tags:["Basic"]});
+    Grid.prototype.publish("gutter", 0, "number", "Gap Between Widgets",null,{tags:["Basic"]});
     Grid.prototype.publish("fitTo", "all", "set", "Sizing Strategy", ["all", "width"], { tags: ["Basic"] });
     
     Grid.prototype.publish("designGridColor", "#ddd", "html-color", "Color of grid lines in Design Mode",null,{tags:["Private"]});
