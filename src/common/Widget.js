@@ -13,6 +13,7 @@
         PropertyExt.call(this);
         this._class = Object.getPrototypeOf(this)._class;
         this._id = "_w" + widgetID++;
+        this._baseID = this._id;
 
         this._db = new Database.Grid();
         this._pos = { x: 0, y: 0 };
@@ -32,7 +33,17 @@
             if (window.g_all === undefined) {
                 window.g_all = {};
             }
-            window.g_all[this._id] = this;
+            window.g_all[this._id] = {
+                widget: this,
+                classID:this.classID(),
+                construct_time:new Date().getTime(),
+                enter:[],
+                preUpdate:[],
+                update:[],
+                postUpdate:[],
+                exit:[],
+                log:[]
+            };
         }
         if (window.__hpcc_theme) {
             this.applyTheme(window.__hpcc_theme);
@@ -107,9 +118,16 @@
         return this;
     };
 
-    //  Implementation  ---
     Widget.prototype.id = function (_) {
         if (!arguments.length) return this._id;
+        if (window.__hpcc_debug && _ !== this._id) {
+            console.log(_);
+            console.log(this._id);
+            if (window.g_all === undefined) {
+                window.g_all = {};
+            }
+            window.g_all[_] = window.g_all[this._id];
+        }
         this._id = _;
         return this;
     };
@@ -480,11 +498,52 @@
         return this;
     };
 
-    Widget.prototype.enter = function (domNode, element) { };
-    Widget.prototype.preUpdate = function (domeNode, element) { };
-    Widget.prototype.update = function (domeNode, element) { };
-    Widget.prototype.postUpdate = function (domeNode, element) { };
-    Widget.prototype.exit = function (domeNode, element) { };
+    Widget.prototype.enter = function (domNode, element) {
+        if (window.__hpcc_debug) {
+            if(window.g_all[this._id]){
+                window.g_all[this._id].enter.push(new Date().getTime());
+            } else {
+                window.g_all[this._baseID].enter.push(new Date().getTime());
+                //console.error("window.g_all[this._id] doesn't exist for this._id = "+this._id);
+            }
+        }
+    };
+    Widget.prototype.preUpdate = function (domeNode, element) { 
+        if (window.__hpcc_debug) {
+            if(window.g_all[this._id]){
+                window.g_all[this._id].preUpdate.push(new Date().getTime());
+            } else {
+                window.g_all[this._baseID].preUpdate.push(new Date().getTime());
+            }
+        }
+    };
+    Widget.prototype.update = function (domeNode, element) {
+        if (window.__hpcc_debug) {
+            if(window.g_all[this._id]){
+                window.g_all[this._id].update.push(new Date().getTime());
+            } else {
+                window.g_all[this._baseID].update.push(new Date().getTime());
+            }
+        }
+    };
+    Widget.prototype.postUpdate = function (domeNode, element) {
+        if (window.__hpcc_debug) {
+            if(window.g_all[this._id]){
+                window.g_all[this._id].postUpdate.push(new Date().getTime());
+            } else {
+                window.g_all[this._baseID].postUpdate.push(new Date().getTime());
+            }
+        }
+    };
+    Widget.prototype.exit = function (domeNode, element) {
+        if (window.__hpcc_debug) {
+            if(window.g_all[this._id]){
+                window.g_all[this._id].exit.push(new Date().getTime());
+            } else {
+                window.g_all[this._baseID].exit.push(new Date().getTime());
+            }
+        }
+    };
 
     return Widget;
 }));
