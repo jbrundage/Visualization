@@ -1,0 +1,167 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - Dermatology Test</title>
+    <link rel="stylesheet" href="graph/css/style.css">
+    <link rel="shortcut icon" href="">
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            font: 14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color:white;
+            font-weight: 300;
+            overflow:hidden;
+        }
+        #widgetSelect, .widgetMenu, .sampleMenu {
+            position: absolute;
+            border: 1px solid #A5A5A5;
+            box-shadow: 2px 3px 10px 0px rgba(0,0,0,.5);
+        }
+        #widgetSelect.hide {
+            display: none;
+        }
+        #widgetSelect{
+            top:32px;
+            margin-left: 20px;
+        }
+        .widgetMenu, .sampleMenu {
+            left:100%;
+            margin-top: -25px;
+            white-space: nowrap;
+            display: none;
+        }
+        #widgetSelect li {
+            float: none;
+            background: snow;
+            color: #000;
+            text-shadow: none;
+            padding: 0 10px;
+            line-height: 25px;
+        }
+        #widgetSelect li:hover {
+            cursor: pointer;
+            background-color: #E5E5E5;
+        }
+        #widgetSelect li:hover > ul {
+            display:  block;
+        }
+        #selectButton {
+            display: inline-block;
+            padding: 0 10px;
+            margin: 0 20px;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            background-color: snow;
+            color:#111;
+            line-height: 25px;
+            height: 25px;
+            text-shadow: none;
+            cursor: pointer;
+        }
+        #selectButton i {
+            padding-left: 5px
+        }
+        span.header-textarea-span{
+            float: left;
+            margin-top: 10px;
+            margin-right: 8px;
+            background-color: rgba(0, 0, 0, 0);
+            background-image:none;
+        }
+        #run-serial-test{
+            margin:8px;
+        }
+        header label > textarea{
+            width:400px;
+        }
+    </style>
+    <script src="http://rawgit.com/jrburke/requirejs/2.1.17/require.js"></script>
+    <script src="../src/config.js"></script>
+    <!--  Uncomment for github
+    <script src="http://rawgit.com/jrburke/requirejs/2.1.17/require.js"></script>
+    <script src="../src/config.js"></script>
+    -->
+    <!--  Uncomment to develop
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="../src/config.js"></script>
+    -->
+    <!--  Uncomment to test build
+    <script src="../dist-amd/hpcc-viz.js"></script>
+    <script src="../dist-amd/hpcc-bundles.js"></script>
+    <script>
+        require.config({
+            paths: {
+                "src": "../dist-amd",
+                "font-awesome": "../dist-amd/font-awesome/css/font-awesome.min"
+            }
+        });
+    </script>
+    -->
+
+    <script>
+        require.config({
+            paths: {
+                "test": "../test"
+            }
+        });
+    </script>
+</head>
+<body onresize="doResize();">
+    <header>
+        <div class="container">
+            <h1><a>Serial Test</a></h1>
+            <nav>
+                <ul>
+                    <li>
+                        <label>
+                            <span class="header-textarea-span">Serial String:</span>
+                            <textarea id="serial-string">{"__version":3,"__class":"marshaller_HTML","__properties":{"ddlUrl":"http://10.241.100.159:8010/WsWorkunits/WUResult.json?Wuid=W20160111-101853&ResultName=prichajx_bipgraph4_Comp_Ins005_DDL&SuppressXmlSchema=true","proxyMappings":{"http://10.241.100.159:8010/WsWorkunits/WUResult.json":"http://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WUResult.do","http://10.241.100.159:8010/WsWorkunits/WUInfo.json":"http://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WUInfo.do","http://10.241.100.159:8002/WsEcl/submit/query/":"http://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WsEcl.do"},"designMode":false,"surfacePadding":"0","content":[{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":0,"gridCol":0,"gridRowSpan":2,"gridColSpan":3,"indicateTheseIds":["_w14"],"title":"","widget":{"__version":3,"__class":"composite_MegaChart","__properties":{"legendPosition":"none","chartType":"AM_BAR","title":"Business Hierarchy Size Distribution","content":[{"__version":3,"__class":"layout_Cell","__properties":{"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"chart_MultiChart","__properties":{"chartType":"AM_BAR","chart":{"__version":3,"__class":"amchart_Bar","__properties":{"xAxes":[{"__version":3,"__class":"amchart_SerialAxis","__properties":{"type":"x","fields":[]}}],"yAxes":[{"__version":3,"__class":"amchart_SerialAxis","__properties":{"type":"y","fields":[]}}],"showScrollbar":true,"orientation":"horizontal","y2":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe306"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe307"}]}},"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe304"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe305"}]}},"surfacePadding":"0","surfaceBorderWidth":0,"buttonAnnotations":[],"fields":[]}}],"gutter":0,"topShrinkWrap":true,"leftShrinkWrap":true,"rightShrinkWrap":true,"bottomShrinkWrap":true,"sectionTypes":["center"],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe103"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe104"}],"buttonAnnotations":[]},"__id":"BusinessHierarchySizeDistribution"},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":0,"gridCol":3,"gridRowSpan":2,"gridColSpan":5,"indicateTheseIds":["_w16","_w18"],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"Connected Biz","widget":{"__version":3,"__class":"other_Table","__properties":{"renderHtmlDataCells":true,"pagination":true,"itemsPerPage":5,"totalledColumns":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"TreeID","type":""},"__id":"_pe119"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"BIP ID","type":""},"__id":"_pe120"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"In Input","type":""},"__id":"_pe121"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Label","type":""},"__id":"_pe122"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Address","type":""},"__id":"_pe123"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date First Seen","type":""},"__id":"_pe124"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date Last Seen","type":""},"__id":"_pe125"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Child Count","type":""},"__id":"_pe126"}]},"__id":"ConnectedBiz"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":2,"gridCol":0,"gridRowSpan":4,"gridColSpan":5,"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"Business Hierarchy","widget":{"__version":3,"__class":"other_Table","__properties":{"renderHtmlDataCells":true,"pagination":true,"itemsPerPage":17,"totalledColumns":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Treeid","type":""},"__id":"_pe128"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"BIP ID","type":""},"__id":"_pe129"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Hierarchy Level","type":""},"__id":"_pe130"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Is Input","type":""},"__id":"_pe131"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Label","type":""},"__id":"_pe132"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Address","type":""},"__id":"_pe133"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date First Seen","type":""},"__id":"_pe134"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date Last Seen","type":""},"__id":"_pe135"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Biplevel","type":""},"__id":"_pe136"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Latitude","type":""},"__id":"_pe137"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Longitude","type":""},"__id":"_pe138"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Childcount","type":""},"__id":"_pe139"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"vertexid","type":""},"__id":"_pe140"}]},"__id":"BusinessHierarchy"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":2,"gridCol":5,"gridRowSpan":4,"gridColSpan":3,"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"BusinessHierarchyNetwork","widget":{"__version":3,"__class":"graph_Graph","__properties":{"layout":"Hierarchy","applyScaleOnLayout":true,"hierarchyRankDirection":"LR","hierarchyNodeSeparation":0,"hierarchyRankSeparation":10,"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"uid","type":""},"__id":"_pe142"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe143"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"weight","type":""},"__id":"_pe144"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"flags","type":""},"__id":"_pe145"}]},"__id":"BusinessHierarchyNetwork"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}}]}}</textarea>
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <span class="header-textarea-span">ddlUrl:</span>
+                            <textarea id="ddlUrl-string"></textarea>
+                        </label>
+                    </li>
+                    <li>
+                        <button id="run-serial-test" onclick="run_serial_test()">Run</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div id="main" style="width:100%; height:100vh;margin-top:40px;padding:8px;overflow:hidden">
+    </div>
+    <script>
+        //var serData = {"__version":3,"__class":"marshaller_HTML","__properties":{"ddlUrl":"[{\"visualizations\":[{\"id\":\"BusinessHierarchySizeDistribution\",\"source\":{\"output\":\"View_BusinessHierarchySizeDistribution\",\"mappings\":{\"x\":[\"childcount\"],\"y\":[\"Base_COUNT\"]},\"id\":\"Ins004_BipGraph\",\"sort\":[\"childcount\"]},\"type\":\"LINE\",\"fields\":[{\"id\":\"Base_COUNT\",\"properties\":{\"type\":\"integer\"}},{\"id\":\"childcount\",\"properties\":{\"type\":\"unsigned8\"}}],\"title\":\"Business Hierarchy Size Distribution\",\"events\":{\"click\":{\"mappings\":{\"childcount\":\"childcount\"},\"updates\":[{\"visualization\":\"ConnectedBiz\",\"instance\":\"Ins004\",\"datasource\":\"Ins004_BipGraph\",\"merge\":true}]}},\"properties\":{\"charttype\":\"AM_BAR\"}},{\"id\":\"ConnectedBiz\",\"source\":{\"output\":\"View_ConnectedBiz\",\"mappings\":{\"value\":[\"treeid\",\"bipid\",\"isinput\",\"label\",\"address\",\"datefirstseen\",\"datelastseen\",\"childcount\"]},\"id\":\"Ins004_BipGraph\",\"sort\":[\"-datelastseen\"],\"first\":\"50\"},\"label\":[\"TreeID\",\"BIP ID\",\"In Input\",\"Label\",\"Address\",\"Date First Seen\",\"Date Last Seen\",\"Child Count\"],\"type\":\"TABLE\",\"fields\":[{\"properties\":{\"label\":\"TreeID\"}},{\"properties\":{\"label\":\"BIP ID\"}},{\"properties\":{\"label\":\"In Input\"}},{\"properties\":{\"label\":\"Label\"}},{\"properties\":{\"label\":\"Address\"}},{\"properties\":{\"label\":\"Date First Seen\"}},{\"properties\":{\"label\":\"Date Last Seen\"}},{\"properties\":{\"label\":\"Child Count\"}},{\"id\":\"treeid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"bipid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"isinput\",\"properties\":{\"type\":\"integer1\"}},{\"id\":\"label\",\"properties\":{\"type\":\"string\"}},{\"id\":\"address\",\"properties\":{\"type\":\"string\"}},{\"id\":\"datefirstseen\",\"properties\":{\"type\":\"integer\"}},{\"id\":\"datelastseen\",\"properties\":{\"type\":\"integer\"}},{\"id\":\"childcount\",\"properties\":{\"type\":\"unsigned8\"}},{\"id\":\"-datelastseen\",\"properties\":{\"type\":\"integer\"}}],\"title\":\"Connected Biz\",\"events\":{\"click\":{\"mappings\":{\"treeid\":\"treeid\"},\"updates\":[{\"visualization\":\"BusinessHierarchy\",\"instance\":\"Ins004\",\"datasource\":\"Ins004_BipGraph\",\"merge\":true},{\"visualization\":\"BusinessHierarchyNetwork\",\"instance\":\"Ins004\",\"datasource\":\"Ins004_BipGraph\",\"merge\":true}]}},\"properties\":{\"renderHtmlDataCells\":\"1\",\"charttype\":\"TABLE\"}},{\"id\":\"BusinessHierarchy\",\"source\":{\"output\":\"View_BusinessHierarchy\",\"mappings\":{\"value\":[\"treeid\",\"bipid\",\"hierarchylevel\",\"isinput\",\"label\",\"address\",\"datefirstseen\",\"datelastseen\",\"biplevel\",\"latitude\",\"longitude\",\"childcount\",\"vertexid\"]},\"id\":\"Ins004_BipGraph\",\"sort\":[\"hierarchylevel\",\"-isinput\"]},\"label\":[\"Treeid\",\"BIP ID\",\"Hierarchy Level\",\"Is Input\",\"Label\",\"Address\",\"Date First Seen\",\"Date Last Seen\",\"Biplevel\",\"Latitude\",\"Longitude\",\"Childcount\",\"vertexid\"],\"type\":\"TABLE\",\"fields\":[{\"properties\":{\"label\":\"Treeid\"}},{\"properties\":{\"label\":\"BIP ID\"}},{\"properties\":{\"label\":\"Hierarchy Level\"}},{\"properties\":{\"label\":\"Is Input\"}},{\"properties\":{\"label\":\"Label\"}},{\"properties\":{\"label\":\"Address\"}},{\"properties\":{\"label\":\"Date First Seen\"}},{\"properties\":{\"label\":\"Date Last Seen\"}},{\"properties\":{\"label\":\"Biplevel\"}},{\"properties\":{\"label\":\"Latitude\"}},{\"properties\":{\"label\":\"Longitude\"}},{\"properties\":{\"label\":\"Childcount\"}},{\"properties\":{\"label\":\"vertexid\"}},{\"id\":\"treeid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"bipid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"hierarchylevel\",\"properties\":{\"type\":\"integer1\"}},{\"id\":\"isinput\",\"properties\":{\"type\":\"integer1\"}},{\"id\":\"label\",\"properties\":{\"type\":\"string\"}},{\"id\":\"address\",\"properties\":{\"type\":\"string\"}},{\"id\":\"datefirstseen\",\"properties\":{\"type\":\"integer\"}},{\"id\":\"datelastseen\",\"properties\":{\"type\":\"integer\"}},{\"id\":\"biplevel\",\"properties\":{\"type\":\"string1\"}},{\"id\":\"latitude\",\"properties\":{\"type\":\"real8\"}},{\"id\":\"longitude\",\"properties\":{\"type\":\"real8\"}},{\"id\":\"childcount\",\"properties\":{\"type\":\"unsigned8\"}},{\"id\":\"vertexid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"-isinput\",\"properties\":{\"type\":\"integer1\"}}],\"title\":\"Business Hierarchy\",\"properties\":{\"renderHtmlDataCells\":\"1\",\"charttype\":\"TABLE\"}},{\"icon\":{\"faChar\":\"0xf19c\",\"icon_shape_colorFill\":\"grey\",\"icon_shape_colorStroke\":\"grey\",\"font\":\"FontAwesome\"},\"id\":\"BusinessHierarchyNetwork\",\"source\":{\"output\":\"View_BusinessHierarchyNetwork\",\"mappings\":{\"uid\":\"vertexid\",\"weight\":[\"childcount\"],\"label\":\"label\"},\"link\":{\"mappings\":{\"uid\":\"vertexid\"},\"childfile\":\"links\",\"fields\":[{\"id\":\"vertexid\",\"properties\":{\"type\":\"integer8\"}}]},\"id\":\"Ins004_BipGraph\"},\"type\":\"GRAPH\",\"fields\":[{\"id\":\"label\",\"properties\":{\"type\":\"string\"}},{\"id\":\"vertexid\",\"properties\":{\"type\":\"integer8\"}},{\"id\":\"childcount\",\"properties\":{\"type\":\"unsigned8\"}},{\"valuemappings\":{\"1\":{\"faChar\":\"0xf076\",\"icon_shape_colorFill\":\"white\",\"charttype\":\"common_Icon\",\"font\":\"FontAwesome\"},\"2\":{\"faChar\":\"0xf0e3\",\"icon_shape_colorFill\":\"navy\",\"charttype\":\"common_Icon\",\"font\":\"FontAwesome\"},\"3\":{\"faChar\":\"0xf1ad\",\"icon_shape_colorFill\":\"orange\",\"charttype\":\"common_Icon\",\"font\":\"FontAwesome\"}},\"id\":\"hierarchylevel\"},{\"valuemappings\":[{\"faChar\":\"0xf007\",\"charttype\":\"common_Icon\",\"font\":\"FontAwesome\"},{\"faChar\":\"0xf00c\",\"icon_shape_colorFill\":\"green\",\"charttype\":\"common_Icon\",\"font\":\"FontAwesome\"}],\"id\":\"isinput\"},{\"id\":\"links\",\"properties\":{\"type\":\"dataset\"}}],\"properties\":{\"layout\":\"Hierarchy\",\"hierarchyNodeSeparation\":\"0\",\"hierarchyRankDirection\":\"LR\",\"TREE\":\"\",\"source\":{\"mappings\":{\"applyScaleOnLayout\":\"true\"}},\"fields\":[{\"id\":\"true\",\"properties\":{\"type\":\"string\"}}],\"hierarchyRankSeparation\":\"10\"}}],\"datasources\":[{\"filter\":[\"isinput\",\"childcount\",\"treeid\"],\"outputs\":[{\"from\":\"View_BusinessHierarchySizeDistribution\",\"id\":\"View_BusinessHierarchySizeDistribution\",\"notify\":[\"BusinessHierarchySizeDistribution\"]},{\"from\":\"View_ConnectedBiz\",\"id\":\"View_ConnectedBiz\",\"notify\":[\"ConnectedBiz\"]},{\"from\":\"View_BusinessHierarchy\",\"id\":\"View_BusinessHierarchy\",\"notify\":[\"BusinessHierarchy\"]},{\"from\":\"View_BusinessHierarchyNetwork\",\"id\":\"View_BusinessHierarchyNetwork\",\"notify\":[\"BusinessHierarchyNetwork\"]}],\"id\":\"Ins004_BipGraph\",\"URL\":\"/brundajx/dash2/avp/reports/get-data/report_id/income/wsurl1/aHR0cDovLzEwLjI0MS4xMDAuMTU3OjgwMDIvV3NFY2wvc3VibWl0L3F1ZXJ5L3JveGllL0hJUElFX2JpcGdyYXBoNi5JbnMwMDRfU2VydmljZS9qc29u\"}],\"id\":\"Ins004_bipgraphdashboard\",\"label\":\"bipgraphdashboard\",\"title\":\"bipgraphdashboard\"}]","proxyMappings":{"https://10.241.100.159:8010/WsWorkunits/WUResult.json":"https://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WUResult.do","https://10.241.100.159:8010/WsWorkunits/WUInfo.json":"https://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WUInfo.do","https://10.241.100.159:8002/WsEcl/submit/query/":"https://172.23.40.63:9190/DSP/ramps_dev_detached/proxy-WsEcl.do"},"designMode":false,"surfacePadding":"0","content":[{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":0,"gridCol":0,"gridRowSpan":2,"gridColSpan":3,"indicateTheseIds":["_w14"],"title":"","widget":{"__version":3,"__class":"composite_MegaChart","__properties":{"legendPosition":"none","chartType":"AM_BAR","title":"Business Hierarchy Size Distribution","content":[{"__version":3,"__class":"layout_Cell","__properties":{"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"chart_MultiChart","__properties":{"chartType":"AM_BAR","chart":{"__version":3,"__class":"amchart_Bar","__properties":{"showScrollbar":true,"orientation":"horizontal","y2":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe306"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe307"}]}},"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe304"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe305"}]}},"surfacePadding":"0","surfaceBorderWidth":0,"buttonAnnotations":[],"fields":[]}}],"gutter":0,"topShrinkWrap":true,"leftShrinkWrap":true,"rightShrinkWrap":true,"bottomShrinkWrap":true,"sectionTypes":["center"],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe103"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Base_COUNT","type":""},"__id":"_pe104"}],"buttonAnnotations":[]},"__id":"BusinessHierarchySizeDistribution"},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":0,"gridCol":3,"gridRowSpan":2,"gridColSpan":5,"indicateTheseIds":["_w16","_w18"],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"Connected Biz","widget":{"__version":3,"__class":"other_Table","__properties":{"renderHtmlDataCells":true,"pagination":true,"itemsPerPage":5,"totalledColumns":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"TreeID","type":""},"__id":"_pe119"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"BIP ID","type":""},"__id":"_pe120"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"In Input","type":""},"__id":"_pe121"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Label","type":""},"__id":"_pe122"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Address","type":""},"__id":"_pe123"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date First Seen","type":""},"__id":"_pe124"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date Last Seen","type":""},"__id":"_pe125"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Child Count","type":""},"__id":"_pe126"}]},"__id":"ConnectedBiz"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":2,"gridCol":0,"gridRowSpan":4,"gridColSpan":5,"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"Business Hierarchy","widget":{"__version":3,"__class":"other_Table","__properties":{"renderHtmlDataCells":true,"pagination":true,"itemsPerPage":17,"totalledColumns":[],"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Treeid","type":""},"__id":"_pe128"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"BIP ID","type":""},"__id":"_pe129"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Hierarchy Level","type":""},"__id":"_pe130"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Is Input","type":""},"__id":"_pe131"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Label","type":""},"__id":"_pe132"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Address","type":""},"__id":"_pe133"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date First Seen","type":""},"__id":"_pe134"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Date Last Seen","type":""},"__id":"_pe135"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Biplevel","type":""},"__id":"_pe136"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Latitude","type":""},"__id":"_pe137"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Longitude","type":""},"__id":"_pe138"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"Childcount","type":""},"__id":"_pe139"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"vertexid","type":""},"__id":"_pe140"}]},"__id":"BusinessHierarchy"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}},{"__version":3,"__class":"layout_Cell","__properties":{"gridRow":2,"gridCol":5,"gridRowSpan":4,"gridColSpan":3,"indicateTheseIds":[],"title":"","widget":{"__version":3,"__class":"layout_Surface","__properties":{"title":"BusinessHierarchyNetwork","widget":{"__version":3,"__class":"graph_Graph","__properties":{"layout":"Hierarchy","applyScaleOnLayout":true,"hierarchyRankDirection":"LR","hierarchyNodeSeparation":0,"hierarchyRankSeparation":10,"fields":[{"__version":3,"__class":"common_Database.Field","__properties":{"label":"uid","type":""},"__id":"_pe142"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"label","type":""},"__id":"_pe143"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"weight","type":""},"__id":"_pe144"},{"__version":3,"__class":"common_Database.Field","__properties":{"label":"flags","type":""},"__id":"_pe145"}]},"__id":"BusinessHierarchyNetwork"},"buttonAnnotations":[]}},"surfacePadding":"0","surfaceBorderWidth":1,"buttonAnnotations":[]}}]}};
+        //var jsonStr = JSON.stringify([{"visualizations":[{"id":"BusinessHierarchySizeDistribution","source":{"output":"View_BusinessHierarchySizeDistribution","mappings":{"x":["childcount"],"y":["Base_COUNT"]},"id":"Ins004_BipGraph","sort":["childcount"]},"type":"LINE","fields":[{"id":"Base_COUNT","properties":{"type":"integer"}},{"id":"childcount","properties":{"type":"unsigned8"}}],"title":"Business Hierarchy Size Distribution","events":{"click":{"mappings":{"childcount":"childcount"},"updates":[{"visualization":"ConnectedBiz","instance":"Ins004","datasource":"Ins004_BipGraph","merge":true}]}},"properties":{"charttype":"AM_BAR"}},{"id":"ConnectedBiz","source":{"output":"View_ConnectedBiz","mappings":{"value":["treeid","bipid","isinput","label","address","datefirstseen","datelastseen","childcount"]},"id":"Ins004_BipGraph","sort":["-datelastseen"],"first":"50"},"label":["TreeID","BIP ID","In Input","Label","Address","Date First Seen","Date Last Seen","Child Count"],"type":"TABLE","fields":[{"properties":{"label":"TreeID"}},{"properties":{"label":"BIP ID"}},{"properties":{"label":"In Input"}},{"properties":{"label":"Label"}},{"properties":{"label":"Address"}},{"properties":{"label":"Date First Seen"}},{"properties":{"label":"Date Last Seen"}},{"properties":{"label":"Child Count"}},{"id":"treeid","properties":{"type":"integer8"}},{"id":"bipid","properties":{"type":"integer8"}},{"id":"isinput","properties":{"type":"integer1"}},{"id":"label","properties":{"type":"string"}},{"id":"address","properties":{"type":"string"}},{"id":"datefirstseen","properties":{"type":"integer"}},{"id":"datelastseen","properties":{"type":"integer"}},{"id":"childcount","properties":{"type":"unsigned8"}},{"id":"-datelastseen","properties":{"type":"integer"}}],"title":"Connected Biz","events":{"click":{"mappings":{"treeid":"treeid"},"updates":[{"visualization":"BusinessHierarchy","instance":"Ins004","datasource":"Ins004_BipGraph","merge":true},{"visualization":"BusinessHierarchyNetwork","instance":"Ins004","datasource":"Ins004_BipGraph","merge":true}]}},"properties":{"renderHtmlDataCells":"1","charttype":"TABLE"}},{"id":"BusinessHierarchy","source":{"output":"View_BusinessHierarchy","mappings":{"value":["treeid","bipid","hierarchylevel","isinput","label","address","datefirstseen","datelastseen","biplevel","latitude","longitude","childcount","vertexid"]},"id":"Ins004_BipGraph","sort":["hierarchylevel","-isinput"]},"label":["Treeid","BIP ID","Hierarchy Level","Is Input","Label","Address","Date First Seen","Date Last Seen","Biplevel","Latitude","Longitude","Childcount","vertexid"],"type":"TABLE","fields":[{"properties":{"label":"Treeid"}},{"properties":{"label":"BIP ID"}},{"properties":{"label":"Hierarchy Level"}},{"properties":{"label":"Is Input"}},{"properties":{"label":"Label"}},{"properties":{"label":"Address"}},{"properties":{"label":"Date First Seen"}},{"properties":{"label":"Date Last Seen"}},{"properties":{"label":"Biplevel"}},{"properties":{"label":"Latitude"}},{"properties":{"label":"Longitude"}},{"properties":{"label":"Childcount"}},{"properties":{"label":"vertexid"}},{"id":"treeid","properties":{"type":"integer8"}},{"id":"bipid","properties":{"type":"integer8"}},{"id":"hierarchylevel","properties":{"type":"integer1"}},{"id":"isinput","properties":{"type":"integer1"}},{"id":"label","properties":{"type":"string"}},{"id":"address","properties":{"type":"string"}},{"id":"datefirstseen","properties":{"type":"integer"}},{"id":"datelastseen","properties":{"type":"integer"}},{"id":"biplevel","properties":{"type":"string1"}},{"id":"latitude","properties":{"type":"real8"}},{"id":"longitude","properties":{"type":"real8"}},{"id":"childcount","properties":{"type":"unsigned8"}},{"id":"vertexid","properties":{"type":"integer8"}},{"id":"-isinput","properties":{"type":"integer1"}}],"title":"Business Hierarchy","properties":{"renderHtmlDataCells":"1","charttype":"TABLE"}},{"icon":{"faChar":"0xf19c","icon_shape_colorFill":"grey","icon_shape_colorStroke":"grey","font":"FontAwesome"},"id":"BusinessHierarchyNetwork","source":{"output":"View_BusinessHierarchyNetwork","mappings":{"uid":"vertexid","weight":["childcount"],"label":"label"},"link":{"mappings":{"uid":"vertexid"},"childfile":"links","fields":[{"id":"vertexid","properties":{"type":"integer8"}}]},"id":"Ins004_BipGraph"},"type":"GRAPH","fields":[{"id":"label","properties":{"type":"string"}},{"id":"vertexid","properties":{"type":"integer8"}},{"id":"childcount","properties":{"type":"unsigned8"}},{"valuemappings":{"1":{"faChar":"0xf076","icon_shape_colorFill":"white","charttype":"common_Icon","font":"FontAwesome"},"2":{"faChar":"0xf0e3","icon_shape_colorFill":"navy","charttype":"common_Icon","font":"FontAwesome"},"3":{"faChar":"0xf1ad","icon_shape_colorFill":"orange","charttype":"common_Icon","font":"FontAwesome"}},"id":"hierarchylevel"},{"valuemappings":[{"faChar":"0xf007","charttype":"common_Icon","font":"FontAwesome"},{"faChar":"0xf00c","icon_shape_colorFill":"green","charttype":"common_Icon","font":"FontAwesome"}],"id":"isinput"},{"id":"links","properties":{"type":"dataset"}}],"properties":{"layout":"Hierarchy","hierarchyNodeSeparation":"0","hierarchyRankDirection":"LR","TREE":"","source":{"mappings":{"applyScaleOnLayout":"true"}},"fields":[{"id":"true","properties":{"type":"string"}}],"hierarchyRankSeparation":"10"}}],"datasources":[{"filter":["isinput","childcount","treeid"],"outputs":[{"from":"View_BusinessHierarchySizeDistribution","id":"View_BusinessHierarchySizeDistribution","notify":["BusinessHierarchySizeDistribution"]},{"from":"View_ConnectedBiz","id":"View_ConnectedBiz","notify":["ConnectedBiz"]},{"from":"View_BusinessHierarchy","id":"View_BusinessHierarchy","notify":["BusinessHierarchy"]},{"from":"View_BusinessHierarchyNetwork","id":"View_BusinessHierarchyNetwork","notify":["BusinessHierarchyNetwork"]}],"id":"Ins004_BipGraph","URL":"\/brundajx\/dash2\/avp\/reports\/get-data\/report_id\/income\/wsurl1\/aHR0cDovLzEwLjI0MS4xMDAuMTU3OjgwMDIvV3NFY2wvc3VibWl0L3F1ZXJ5L3JveGllL0hJUElFX2JpcGdyYXBoNi5JbnMwMDRfU2VydmljZS9qc29u"}],"id":"Ins004_bipgraphdashboard","label":"bipgraphdashboard","title":"bipgraphdashboard"}]);
+        var d3;
+        require(["d3"],function(req_d3){
+            d3 = req_d3;
+            run_serial_test();
+        });
+        function run_serial_test(){
+            var targetNode = d3.select("#main").node();
+            
+            var layoutTxt = d3.select("#serial-string").node().value;
+            var jsonStr = d3.select("#ddlUrl-string").node().value;
+            
+            var serData = JSON.parse(layoutTxt);
+        
+            serData.__properties.proxyMappings = {};
+            if(jsonStr.length > 0){
+                serData.__properties.ddlUrl = jsonStr;
+            }
+
+            require(['src/other/Persist'], function(Persist) {
+                Persist.create(serData, function(w) {
+                    w.target(targetNode).render();
+                });
+            });
+        }
+    </script>
+</body>
+</html>
