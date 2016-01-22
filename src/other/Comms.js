@@ -34,6 +34,7 @@
         this._url = _;
         var parser = document.createElement("a");
         parser.href = this._url;
+        parser.href = parser.href;
 
         var params = {};
         if (parser.search.length) {
