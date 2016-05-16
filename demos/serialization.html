@@ -1,0 +1,132 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - Dermatology Test</title>
+    <link rel="stylesheet" href="graph/css/style.css">
+    <link rel="shortcut icon" href="">
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            font: 14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color:white;
+            font-weight: 300;
+            overflow:hidden;
+        }
+        #widgetSelect, .widgetMenu, .sampleMenu {
+            position: absolute;
+            border: 1px solid #A5A5A5;
+            box-shadow: 2px 3px 10px 0px rgba(0,0,0,.5);
+        }
+        #widgetSelect.hide {
+            display: none;
+        }
+        #widgetSelect{
+            top:32px;
+            margin-left: 20px;
+        }
+        .widgetMenu, .sampleMenu {
+            left:100%;
+            margin-top: -25px;
+            white-space: nowrap;
+            display: none;
+        }
+        #widgetSelect li {
+            float: none;
+            background: snow;
+            color: #000;
+            text-shadow: none;
+            padding: 0 10px;
+            line-height: 25px;
+        }
+        #widgetSelect li:hover {
+            cursor: pointer;
+            background-color: #E5E5E5;
+        }
+        #widgetSelect li:hover > ul {
+            display:  block;
+        }
+        #selectButton {
+            display: inline-block;
+            padding: 0 10px;
+            margin: 0 20px;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            background-color: snow;
+            color:#111;
+            line-height: 25px;
+            height: 25px;
+            text-shadow: none;
+            cursor: pointer;
+        }
+        #selectButton i {
+            padding-left: 5px
+        }
+    </style>
+    <script src="http://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+    <script src="../src/loader.js"></script>
+    
+    <script   src="https://code.jquery.com/jquery-1.12.3.min.js"   integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ="   crossorigin="anonymous"></script>
+    <!--  Uncomment for github
+    <script src="http://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+    <script src="../src/loader.js"></script>
+    -->
+    <!--  Uncomment to develop
+    <script src="../node_modules/requirejs/require.js"></script>
+    <script src="../src/loader.js"></script>
+    -->
+    <!--  Uncomment to test build
+    <script src="../dist-amd/hpcc-viz.js"></script>
+    -->
+    <script>
+        require.config({
+            paths: {
+                "test": "../test"
+            }
+        });
+
+        
+        $(function(){
+            apply_serial_string($("#serial_string").val());
+            
+            $("#serial_string").change(function(){
+                $("#main").html("");
+                apply_serial_string($(this).val())
+            });
+        });
+        
+        function apply_serial_string(str){
+            require(["d3", "src/other/Persist"], function (d3, Persist) {
+                var serial = document.getElementById("serial_string").value;
+                console.log("serial:");console.log(serial);
+                Persist.create(serial,function(w){
+                    window.g_widget = w.target("main").render();
+                });
+            });
+        }
+    </script>
+    <style>
+        #main{
+            width:70%;
+            height:100vh;
+            margin-top:40px;
+            padding:8px;
+            overflow:hidden;
+        }
+        #serial_string{
+            height:800px;
+            width:20%;
+            top:0;
+            right:0;
+            position:fixed;
+        }
+    </style>
+</head>
+    <body>
+        <div id="main"></div>
+        <textarea id="serial_string">
+            { "__class": "chart_Bar", "__version": "1.10.2-dev", "__properties": { "orientation": "vertical", "fields": [ { "__class": "common_Database.Field", "__id": "_pe133", "__properties": { "label": "Subject", "type": "" } }, { "__class": "common_Database.Field", "__id": "_pe134", "__properties": { "label": "Year 1", "type": "" } }, { "__class": "common_Database.Field", "__id": "_pe135", "__properties": { "label": "Year 2", "type": "" } }, { "__class": "common_Database.Field", "__id": "_pe136", "__properties": { "label": "Year 3", "type": "" } } ] } }
+        </textarea>
+    </body>
+</html>
