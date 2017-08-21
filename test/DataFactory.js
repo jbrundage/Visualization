@@ -834,8 +834,8 @@
                   { "name": "123 Main Street", "icon":"" },
                 ],
                 "links": [
-                  { "source": 1, "target": 0 },
-                  { "source": 2, "target": 0 },
+                  { "source": 0, "target": 1 },
+                  { "source": 0, "target": 2 },
                 ]
             },
             les_miz: {

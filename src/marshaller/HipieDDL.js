@@ -1820,7 +1820,35 @@
         this.marshaller.appendVisualization(retVal);
         return retVal;
     };
-
+    //marshaller_filter_param_string()
+    function marshaller_filter_param_string(){
+        var marsh = d3.select('.marshaller_HTML').datum();
+        var req = marsh.serializeRequests();
+        var ret = '';
+        var array_elements = [];
+        if(typeof(req) === "object"){
+            for(var i in req){
+                var n = req[i];
+                if(typeof(n) === "object"){
+                    for(var j in n){
+                        if(n[j] instanceof Array){
+                            var arr = n[j].filter(function(_n){
+                                return _n.length > 0;
+                            });
+                            array_elements = array_elements.concat(arr);
+                        } 
+                        else if (typeof(n[j]) === "string" && n[j].length > 0) {
+                            array_elements.push(n[j]);
+                        }
+                        else if (typeof(n[j]) === "number") {
+                            array_elements.push(n[j]);
+                        }
+                    }
+                }
+            }
+        }
+        return '('+array_elements.join(", ")+')';
+    }
     Dashboard.prototype.loadedPromise = function () {
         return Promise.all(this._visualizationArray.map(function (visualization) { return visualization.loadedPromise(); }));
     };

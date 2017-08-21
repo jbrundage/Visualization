@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
         define([], factory);
@@ -266,6 +266,62 @@
                     callback(widget);
                 });
             }
+        },
+        CanvasGraph: {
+            squareroot: function (callback) {
+                require(["test/DataFactory", "src/graph/CanvasGraph", "src/graph/CanvasGraphLayouts"], function (DataFactory, CanvasGraph, CanvasGraphLayouts) {
+                    var layouts = Object.keys(CanvasGraphLayouts.layouts);
+                    window.g_w = new CanvasGraph();
+//                    window.g_w.layout("Circle");
+                    window.g_w.data(DataFactory.Graph.simple);
+                    callback(g_w);
+                    setInterval(function(){
+                        var layout_idx = layouts.indexOf(g_w.layout());
+                        layout_idx++;
+                        if(layout_idx === layouts.length){
+                            layout_idx = 0;
+                        }
+                        g_w.layout(layouts[layout_idx]).render();
+                    },3000);
+                });
+            },
+            simple: function (callback) {
+                require(["test/DataFactory", "src/graph/CanvasGraph", "src/graph/CanvasGraphLayouts"], function (DataFactory, CanvasGraph, CanvasGraphLayouts) {
+                    var layouts = Object.keys(CanvasGraphLayouts.layouts);
+                    window.g_w = new CanvasGraph();
+//                    window.g_w.layout("Circle");
+                    window.g_w.data(DataFactory.Graph.simple);
+                    callback(g_w);
+                    setInterval(function(){
+                        var layout_idx = layouts.indexOf(g_w.layout());
+                        layout_idx++;
+                        if(layout_idx === layouts.length){
+                            layout_idx = 0;
+                        }
+                        g_w.layout(layouts[layout_idx]).render();
+                    },3000);
+                });
+            },
+            les_miz: function (callback) {
+                require(["test/DataFactory", "src/graph/CanvasGraph", "src/graph/CanvasGraphLayouts"], function (DataFactory, CanvasGraph, CanvasGraphLayouts) {
+                    var layouts = Object.keys(CanvasGraphLayouts.layouts);
+                    var _les_miz = DataFactory.Graph.les_miz;
+                    _les_miz.nodes = _les_miz.nodes.map((a)=>{a.icon=a.name[0];return a;});
+                    window.g_w = new CanvasGraph();
+//                    window.g_w.layout("Circle");
+                    console.info("_les_miz:", _les_miz);
+                    window.g_w.data(_les_miz);
+                    callback(g_w);
+                    setInterval(function(){
+                        var layout_idx = layouts.indexOf(g_w.layout());
+                        layout_idx++;
+                        if(layout_idx === layouts.length){
+                            layout_idx = 0;
+                        }
+                        g_w.layout(layouts[layout_idx]).render();
+                    },3000);
+                });
+            },
         }
     };
 }));

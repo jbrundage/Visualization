@@ -6,7 +6,7 @@
     <title>HPCC Systems - Dermatology Test</title>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
+<link rel="shortcut icon" href="">
     <!-- -->
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
@@ -306,6 +306,7 @@
                         .style("display", "none")
                         ;
                 }
+                this.doResize();
                 return retVal;
             };
 
@@ -336,8 +337,10 @@
                 var showClone = d3.select("#switch-clone").property("checked");
                 var cloneHeight = showClone ? window.innerHeight / 3 : 0;
                 var cloneMargin = showClone ? 16 : 0;
-                d3.selectAll("#surface")
+                var cellSurfaceRect = d3.select('#cellSurface').node().getBoundingClientRect();
+                d3.select("#surface")
                     .style("height", window.innerHeight - 48 - 64 - cloneHeight - cloneMargin + "px")
+                    .style("width", cellSurfaceRect.width - cloneMargin + "px")
                     ;
                 d3.select("#properties")
                     .style("height", window.innerHeight - 48 - 64 - cloneHeight + "px")
