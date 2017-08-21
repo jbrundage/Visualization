@@ -79,10 +79,11 @@
     };
     
     HeatMap.prototype.resize = function(size) {
-        CanvasWidget.prototype.resize.apply(this, arguments);
+        var retVal = CanvasWidget.prototype.resize.apply(this, arguments);
         if(this._heat !== undefined){
             this._heat.resize();
         }
+        return retVal;
     };
     
     HeatMap.prototype.skewedData = function() {

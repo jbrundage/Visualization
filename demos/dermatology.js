@@ -212,7 +212,7 @@
             params = testFactory.serializeToURL(this._currTest, this._currWidget);
         }
         try {
-            window.history.pushState("", "", this.urlParts[0] + (params ? "?" + params : ""));
+            //window.history.pushState("", "", this.urlParts[0] + (params ? "?" + params : ""));
         } catch (e) {
             //  Local files do not have history...
         }
