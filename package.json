@@ -32,7 +32,9 @@
     "require-css": "~0.1.8",
     "requirejs-text": "~2.0.12",
     "material-design-lite": "~1.2.1",
-    "pure-css": "~1.0.4"
+    "material-design-lite": "~1.2.1",
+    "pure-css": "~1.0.4",
+    "chart.js": "~2.7.0"
   },
   "repository": {
     "type": "git",

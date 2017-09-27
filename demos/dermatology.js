@@ -18,7 +18,7 @@
                 context._currTest = currTest;
                 context.showWidget(widget);
             } else {
-                context.loadWidget("src/chart/Column");
+                context.loadWidget("src/chartjs/Bar");
             }
         });
     }

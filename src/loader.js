@@ -16,7 +16,7 @@
                 "propertyParser": "../node_modules/requirejs-plugins/src/propertyParser",
                 "goog": "../node_modules/requirejs-plugins/src/goog",
                 "text": "../node_modules/requirejs-text/text",
-                "json": "../node_modules/requirejs-plugins/src/json",
+                "chartjs": "../node_modules/chart.js/dist/Chart.bundle",
 
                 "d3": "../bower_components/d3/d3",
                 "c3": "../bower_components/c3/c3",
@@ -138,6 +138,7 @@
             "grid-list": rawgitBaseUrl + "/hootsuite/grid/v0.3.4/src/gridList",
             "orb-react": rawgitBaseUrl + "/nnajm/orb/v1.0.9/deps/react-0.12.2.min",
             "orb": rawgitBaseUrl + "/nnajm/orb/v1.0.9/dist/orb.min",
+            "chartjs": "//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min",
 
             "amcharts": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/amcharts",
             "amcharts-funnel": rawgitBaseUrl + "/amcharts/amcharts3/3.18.0/amcharts/funnel",

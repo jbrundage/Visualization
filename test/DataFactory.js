@@ -123,6 +123,15 @@
             }
         },
         ND: {
+            xy: {
+                columns: ["Subject", "Year 1", "Year 2", "Year 3"],
+                data: [
+                    ["Geography", 75, 68, 65],
+                    ["English", 45, 55, 52],
+                    ["Math", 98, 92, 90],
+                    ["Science", 66, 60, 72]
+                ]
+            },
             subjects: {
                 columns: ["Subject", "Year 1", "Year 2", "Year 3"],
                 data: [
@@ -1358,13 +1367,22 @@
             }
         },
         scatterLinear: {
-            default: {
+            "default": {
                 columns: ["Data X", "Data Y", "Size"],
                 data: [
                     [10, 75, 10],
                     [20, 45, 12],
                     [30, 98, 14],
                     [40, 66, 16]
+                ]
+            },
+            "categorized": {
+                columns: ["Data X", "Data Y", "Size", "Category"],
+                data: [
+                    [10, 75, 10, "A"],
+                    [20, 45, 12, "B"],
+                    [30, 98, 14, "C"],
+                    [40, 66, 16, "D"]
                 ]
             }
         },
