@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/bundle",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "hpcc-js - bundle",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -8,6 +8,7 @@
   "files": [
     "lib/*",
     "lib-es6/*",
+    "src/*.css",
     "dist/*"
   ],
   "directories": {

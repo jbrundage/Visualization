@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "description": "hpcc-js - Communications",
   "browser": "lib/index-browser.js",
   "main": "lib/index-node.js",
@@ -9,6 +9,7 @@
   "files": [
     "lib/*",
     "lib-es6/*",
+    "src/*.css",
     "dist/*"
   ],
   "scripts": {
@@ -19,7 +20,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.34",
+    "@hpcc-js/util": "^0.0.35",
     "d3-request": "^1.0.5",
     "d3-time-format": "^2.0.5",
     "es6-promise": "^4.1.1",
@@ -30,7 +31,7 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.10",
+    "@hpcc-js/bundle": "^0.0.11",
     "@types/d3-request": "^1.0.2",
     "@types/request": "^0.0.41",
     "@types/xmldom": "^0.1.29",

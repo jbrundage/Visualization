@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/common",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "hpcc-js - Viz Common",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -8,6 +8,7 @@
   "files": [
     "lib/*",
     "lib-es6/*",
+    "src/*.css",
     "dist/*",
     "font-awesome/**/*"
   ],
@@ -37,7 +38,7 @@
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.10",
+    "@hpcc-js/bundle": "^0.0.11",
     "cpx": "^1.5.0",
     "rimraf": "^2.6.1",
     "typedoc": "^0.7.1",
