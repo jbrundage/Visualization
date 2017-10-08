@@ -12,6 +12,7 @@
         "strictNullChecks": false,
         "importHelpers": true,
         "experimentalDecorators": true,
+        "allowJs": true,
         "lib": [
             "dom",
             "es5",

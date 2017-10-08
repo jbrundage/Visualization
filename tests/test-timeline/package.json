@@ -3,9 +3,9 @@
   "name": "@hpcc-js/test-timeline",
   "version": "0.0.27",
   "dependencies": {
-    "@hpcc-js/common": "^0.0.27",
-    "@hpcc-js/sample-data": "^0.0.25",
-    "@hpcc-js/timeline": "^0.0.27",
+    "@hpcc-js/common": "*",
+    "@hpcc-js/sample-data": "*",
+    "@hpcc-js/timeline": "*",
     "chai": "^4.0.0",
     "es6-promise": "^4.1.1",
     "mocha": "^3.4.2",
@@ -28,8 +28,8 @@
     "webpack": "^2.6.1"
   },
   "scripts": {
-    "build": "tsc && webpack",
     "clean": "rimraf build && rimraf 0../",
+    "build": "tsc && webpack",
     "test": "npm run test:firefox",
     "test:chrome": "karma start --browsers=Chrome",
     "test:firefox": "karma start --browsers=Firefox",

@@ -475,7 +475,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         return this.fetchDetails({
             Filter: {
                 AttributeFilters: {
-                    WUAttributeFilter: [{ Name: "TimeElapsed" }]
+                    AttributeFilter: [{ Name: "TimeElapsed" }]
                 }
             }
         }).then((scopes) => {
@@ -704,15 +704,18 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
     protected WUDetails(request: Partial<WsWorkunits.WUDetails.Request>): Promise<WsWorkunits.WUDetails.Response> {
         return this.connection.WUDetails(deepMixinT<WsWorkunits.WUDetails.Request>({
             ScopeOptions: {
-                IncludeId: true,
+                IncludeMatchedScopesInResults: true,
                 IncludeScope: true,
+                IncludeId: true,
                 IncludeScopeType: true
             },
             AttributeOptions: {
-                IncludeFormatted: true,
                 IncludeName: true,
+                IncludeRawValue: true,
+                IncludeFormatted: true,
                 IncludeMeasure: true,
-                IncludeRawValue: true
+                IncludeCreator: true,
+                IncludeCreatorType: true
             }
         }, request, { WUID: this.Wuid })).then((response) => {
             return deepMixinT<WsWorkunits.WUDetails.Response>({

@@ -56,7 +56,7 @@ describe("test/esp/ecl/Workunit", function () {
         });
     });
 
-    describe.only("Syntax Error", function () {
+    describe("Syntax Error", function () {
         it("eclSubmit", function () {
             return Workunit.submit({ baseUrl: ESP_URL, userID: "userID", password: "pw" }, "hthor", "'Hello and Welcome!';\nSome Error;\n123;").then((wu) => {
                 return wu.watchUntilComplete();

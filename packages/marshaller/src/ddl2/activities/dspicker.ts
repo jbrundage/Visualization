@@ -55,7 +55,7 @@ export class DSPicker extends ActivitySelection {
             ,
             new LogicalFile(this._view)
                 .url("http://192.168.3.22:8010")
-                .logicalFile("progguide::exampledata::keys::accounts.personid.payload")
+                .logicalFile("progguide::exampledata::peopleaccts")
             ,
             new RoxieRequest(this._view)
                 .url("http://192.168.3.22:8010")
@@ -70,7 +70,7 @@ export class DSPicker extends ActivitySelection {
             ,
             new HipieRequest(this._view)
         ]);
-        this.type("wuresult");
+        this.type("form");
     }
 }
 DSPicker.prototype._class += " DSPicker";
