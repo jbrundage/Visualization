@@ -12,7 +12,7 @@
     "lib": "dist/"
   },
   "scripts": {
-    "build": "tsc && tsc --module es6 --outDir ./lib-es6 && rollup -c && rollup -c -f es -o dist/preact-shim.es6.js",
+    "build": "tsc && tsc --module esnext --outDir ./lib-es6 && rollup -c && rollup -c -f es -o dist/preact-shim.es6.js",
     "clean": "rimraf lib* && rimraf dist*"
   },
   "dependencies": {

@@ -15,7 +15,7 @@
   "scripts": {
     "clean": "rimraf lib* && rimraf dist*",
     "build": "tsc -p .",
-    "build-es6": "tsc --module es6 --outDir ./lib-es6 -p .",
+    "build-es6": "tsc --module esnext --outDir ./lib-es6 -p .",
     "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
     "docs": "typedoc --options tdoptions.json ."
   },
