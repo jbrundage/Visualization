@@ -4,83 +4,27 @@ export const ddl2Schema =
     "$schema": "http://json-schema.org/draft-04/schema#",
     "additionalProperties": false,
     "definitions": {
-        "IAggregate": {
+        "IActivity": {
             "additionalProperties": false,
             "properties": {
-                "fieldID": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                },
                 "type": {
-                    "enum": [
-                        "deviation",
-                        "max",
-                        "mean",
-                        "min",
-                        "sum",
-                        "variance"
-                    ],
-                    "type": "string"
+                    "$ref": "#/definitions/IActivityType"
                 }
             },
             "required": [
-                "fieldID",
-                "label",
                 "type"
             ],
             "type": "object"
         },
-        "ICalculated": {
-            "additionalProperties": false,
-            "properties": {
-                "fieldID": {
-                    "type": "string"
-                },
-                "param1": {
-                    "type": "string"
-                },
-                "param2": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "*",
-                        "+",
-                        "-",
-                        "/",
-                        "="
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fieldID",
-                "param1",
-                "param2",
-                "type"
+        "IActivityType": {
+            "enum": [
+                "filter",
+                "groupby",
+                "limit",
+                "project",
+                "sort"
             ],
-            "type": "object"
-        },
-        "ICount": {
-            "additionalProperties": false,
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "count"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "label",
-                "type"
-            ],
-            "type": "object"
+            "type": "string"
         },
         "IDatabomb": {
             "additionalProperties": false,
@@ -152,51 +96,6 @@ export const ddl2Schema =
             ],
             "type": "object"
         },
-        "IFilter": {
-            "additionalProperties": false,
-            "properties": {
-                "conditions": {
-                    "items": {
-                        "$ref": "#/definitions/IFilterCondition"
-                    },
-                    "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "filter"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "conditions",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IFilterCondition": {
-            "additionalProperties": false,
-            "properties": {
-                "mappings": {
-                    "items": {
-                        "$ref": "#/definitions/IMapping"
-                    },
-                    "type": "array"
-                },
-                "nullable": {
-                    "type": "boolean"
-                },
-                "viewID": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "mappings",
-                "nullable",
-                "viewID"
-            ],
-            "type": "object"
-        },
         "IForm": {
             "additionalProperties": false,
             "properties": {
@@ -223,42 +122,6 @@ export const ddl2Schema =
             ],
             "type": "object"
         },
-        "IGroupBy": {
-            "additionalProperties": false,
-            "properties": {
-                "aggregates": {
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IAggregate"
-                            },
-                            {
-                                "$ref": "#/definitions/ICount"
-                            }
-                        ]
-                    },
-                    "type": "array"
-                },
-                "groupByIDs": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "groupby"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "aggregates",
-                "groupByIDs",
-                "type"
-            ],
-            "type": "object"
-        },
         "IHipieService": {
             "additionalProperties": false,
             "properties": {
@@ -281,25 +144,6 @@ export const ddl2Schema =
             "required": [
                 "fields",
                 "id",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ILimit": {
-            "additionalProperties": false,
-            "properties": {
-                "limit": {
-                    "type": "number"
-                },
-                "type": {
-                    "enum": [
-                        "limit"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "limit",
                 "type"
             ],
             "type": "object"
@@ -335,67 +179,6 @@ export const ddl2Schema =
                 "logicalFile",
                 "type",
                 "url"
-            ],
-            "type": "object"
-        },
-        "IMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "condition": {
-                    "$ref": "#/definitions/IMappingConditionType"
-                },
-                "localFieldID": {
-                    "type": "string"
-                },
-                "remoteFieldID": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "condition",
-                "localFieldID",
-                "remoteFieldID"
-            ],
-            "type": "object"
-        },
-        "IMappingConditionType": {
-            "enum": [
-                "!=",
-                "<",
-                "<=",
-                "==",
-                ">",
-                ">=",
-                "contains"
-            ],
-            "type": "string"
-        },
-        "IProject": {
-            "additionalProperties": false,
-            "properties": {
-                "transformations": {
-                    "items": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/definitions/IScale"
-                            },
-                            {
-                                "$ref": "#/definitions/ICalculated"
-                            }
-                        ]
-                    },
-                    "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "project"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "transformations",
-                "type"
             ],
             "type": "object"
         },
@@ -487,76 +270,14 @@ export const ddl2Schema =
             ],
             "type": "object"
         },
-        "IScale": {
-            "additionalProperties": false,
-            "properties": {
-                "factor": {
-                    "type": "number"
-                },
-                "fieldID": {
-                    "type": "string"
-                },
-                "param1": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "scale"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "factor",
-                "fieldID",
-                "param1",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ISort": {
-            "additionalProperties": false,
-            "properties": {
-                "conditions": {
-                    "items": {
-                        "$ref": "#/definitions/ISortCondition"
-                    },
-                    "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "sort"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "conditions",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ISortCondition": {
-            "additionalProperties": false,
-            "properties": {
-                "descending": {
-                    "type": "boolean"
-                },
-                "fieldID": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "descending",
-                "fieldID"
-            ],
-            "type": "object"
-        },
         "IView": {
             "additionalProperties": false,
             "properties": {
-                "computed": {
-                    "$ref": "#/definitions/IProject"
+                "activities": {
+                    "items": {
+                        "$ref": "#/definitions/IActivity"
+                    },
+                    "type": "array"
                 },
                 "datasource": {
                     "anyOf": [
@@ -568,26 +289,12 @@ export const ddl2Schema =
                         }
                     ]
                 },
-                "filter": {
-                    "$ref": "#/definitions/IFilter"
-                },
-                "groupBy": {
-                    "$ref": "#/definitions/IGroupBy"
-                },
                 "id": {
                     "type": "string"
-                },
-                "limit": {
-                    "$ref": "#/definitions/ILimit"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/IProject"
-                },
-                "sort": {
-                    "$ref": "#/definitions/ISort"
                 }
             },
             "required": [
+                "activities",
                 "datasource",
                 "id"
             ],

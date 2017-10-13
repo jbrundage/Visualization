@@ -10,6 +10,7 @@ import { LogicalFile } from "./activities/logicalfile";
 import { ComputedField, Project } from "./activities/project";
 import { Param, RoxieRequest } from "./activities/roxie";
 import { Sort, SortColumn } from "./activities/sort";
+import { View } from "./activities/view";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
 import { Viz } from "./viz";
@@ -176,25 +177,23 @@ export class DDLAdapter {
         };
     }
 
-    readFilters(ddlFilter: DDL2.IFilter, filters: Filters): this {
-        if (ddlFilter) {
-            filters.filter(ddlFilter.conditions.map(condition => {
-                const filter = new Filter(filters);
-                filter
-                    .source(condition.viewID)
-                    .nullable(condition.nullable)
-                    .mappings(condition.mappings.map(mapping => {
-                        return new ColumnMapping(filter)
-                            .remoteField(mapping.remoteFieldID)
-                            .localField(mapping.localFieldID)
-                            .condition(mapping.condition)
-                            ;
-                    }))
-                    ;
-                return filter;
-            }));
+    readFilters(ddlFilter: DDL2.IFilter, view: View): Filters {
+        const filters = new Filters(view);
+        for (const condition of ddlFilter.conditions) {
+            const filter = new Filter(filters);
+            filter
+                .source(condition.viewID)
+                .nullable(condition.nullable)
+                .mappings(condition.mappings.map(mapping => {
+                    return new ColumnMapping(filter)
+                        .remoteField(mapping.remoteFieldID)
+                        .localField(mapping.localFieldID)
+                        .condition(mapping.condition)
+                        ;
+                }))
+                ;
         }
-        return this;
+        return filters;
     }
 
     writeProject(project: Project): DDL2.IProject {
@@ -221,27 +220,25 @@ export class DDLAdapter {
         };
     }
 
-    readProject(ddlProject: DDL2.IProject, project: Project): this {
-        if (ddlProject) {
-            project.computedFields(ddlProject.transformations.map(transformation => {
-                if (transformation.type === "scale") {
-                    return new ComputedField(project)
-                        .label(transformation.fieldID)
-                        .type(transformation.type)
-                        .column1(transformation.param1)
-                        .constValue(transformation.factor)
-                        ;
-                } else {
-                    return new ComputedField(project)
-                        .label(transformation.fieldID)
-                        .type(transformation.type)
-                        .column1(transformation.param1)
-                        .column2(transformation.param2)
-                        ;
-                }
-            }));
-        }
-        return this;
+    readProject(ddlProject: DDL2.IProject, view: View): Project {
+        const project = new Project(view);
+        return project.computedFields(ddlProject.transformations.map(transformation => {
+            if (transformation.type === "scale") {
+                return new ComputedField(project)
+                    .label(transformation.fieldID)
+                    .type(transformation.type)
+                    .column1(transformation.param1)
+                    .constValue(transformation.factor)
+                    ;
+            } else {
+                return new ComputedField(project)
+                    .label(transformation.fieldID)
+                    .type(transformation.type)
+                    .column1(transformation.param1)
+                    .column2(transformation.param2)
+                    ;
+            }
+        }));
     }
 
     writeGroupBy(gb: GroupBy): DDL2.IGroupBy {
@@ -265,25 +262,23 @@ export class DDLAdapter {
         };
     }
 
-    readGroupBy(ddlGB: DDL2.IGroupBy, gb: GroupBy): this {
-        if (ddlGB) {
-            gb
-                .column(ddlGB.groupByIDs.map(field => {
-                    return new GroupByColumn(gb).label(field);
-                }))
-                .computedFields(ddlGB.aggregates.map(aggregate => {
-                    const af = new AggregateField(gb)
-                        .aggrType(aggregate.type)
-                        .label(aggregate.label)
-                        ;
-                    if (aggregate.type !== "count") {
-                        af.aggrColumn(aggregate.fieldID);
-                    }
-                    return af;
-                }))
-                ;
-        }
-        return this;
+    readGroupBy(ddlGB: DDL2.IGroupBy, view: View): GroupBy {
+        const gb: GroupBy = new GroupBy(view);
+        return gb
+            .column(ddlGB.groupByIDs.map(field => {
+                return new GroupByColumn(gb).label(field);
+            }))
+            .computedFields(ddlGB.aggregates.map(aggregate => {
+                const af = new AggregateField(gb)
+                    .aggrType(aggregate.type)
+                    .label(aggregate.label)
+                    ;
+                if (aggregate.type !== "count") {
+                    af.aggrColumn(aggregate.fieldID);
+                }
+                return af;
+            }))
+            ;
     }
 
     writeSort(sort: Sort): DDL2.ISort {
@@ -299,16 +294,15 @@ export class DDLAdapter {
         };
     }
 
-    readSort(ddlSort: DDL2.ISort, sort: Sort): this {
-        if (ddlSort) {
-            sort.column(ddlSort.conditions.map(condition => {
-                return new SortColumn(sort)
-                    .fieldID(condition.fieldID)
-                    .descending(condition.descending)
-                    ;
-            }));
-        }
-        return this;
+    readSort(ddlSort: DDL2.ISort, view: View): Sort {
+        const sort = new Sort(view);
+        sort.column(ddlSort.conditions.map(condition => {
+            return new SortColumn(sort)
+                .fieldID(condition.fieldID)
+                .descending(condition.descending)
+                ;
+        }));
+        return sort;
     }
 
     writeLimit(limit: Limit): DDL2.ILimit {
@@ -319,11 +313,10 @@ export class DDLAdapter {
         };
     }
 
-    readLimit(ddlLimit: DDL2.ILimit, limit: Limit): this {
-        if (ddlLimit) {
-            limit.rows(ddlLimit.limit);
-        }
-        return this;
+    readLimit(ddlLimit: DDL2.ILimit, view: View): Limit {
+        return new Limit(view)
+            .rows(ddlLimit.limit)
+            ;
     }
 
     writeDatasourceRef(ds: DSPicker, refs: ReferencedFields): DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
@@ -364,6 +357,22 @@ export class DDLAdapter {
         return this;
     }
 
+    writeActivities(view: View): DDL2.IActivity[] {
+        return view.activities().map(activity => {
+            if (activity instanceof Filters) {
+                return this.writeFilters(activity);
+            } else if (activity instanceof Project) {
+                return this.writeProject(activity);
+            } else if (activity instanceof GroupBy) {
+                return this.writeGroupBy(activity);
+            } else if (activity instanceof Sort) {
+                return this.writeSort(activity);
+            } else if (activity instanceof Limit) {
+                return this.writeLimit(activity);
+            }
+        });
+    }
+
     writeDDLViews(refs: ReferencedFields): DDL2.IView[] {
         for (const viz of this._dashboard.visualizations()) {
             viz.view().referencedFields(refs);
@@ -374,12 +383,7 @@ export class DDLAdapter {
             const retVal = {
                 id: viz.id(),
                 datasource: this.writeDatasourceRef(ds, refs),
-                filter: this.writeFilters(view.filters()),
-                computed: this.writeProject(view.project()),
-                groupBy: this.writeGroupBy(view.groupBy()),
-                sort: this.writeSort(view.sort()),
-                limit: this.writeLimit(view.limit()),
-                mappings: this.writeProject(view.mappings())
+                activities: this.writeActivities(view)
             };
             const ddlDatasource = this._dsDedup[ds.hash()];
             for (const field of retVal.datasource.fields) {
@@ -396,14 +400,20 @@ export class DDLAdapter {
             const viz = new Viz(this._dashboard).id(ddlView.id).title(ddlView.id);
             this._dashboard.addVisualization(viz);
             const view = viz.view();
-            this.readDatasourceRef(ddlView.datasource, view.dataSource())
-                .readFilters(ddlView.filter, view.filters())
-                .readProject(ddlView.computed, view.project())
-                .readGroupBy(ddlView.groupBy, view.groupBy())
-                .readSort(ddlView.sort, view.sort())
-                .readLimit(ddlView.limit, view.limit())
-                .readProject(ddlView.mappings, view.mappings())
-                ;
+            this.readDatasourceRef(ddlView.datasource, view.dataSource());
+            view.activities(ddlView.activities.map(activity => {
+                if (DDL2.isFilterActivity(activity)) {
+                    return this.readFilters(activity, view);
+                } else if (DDL2.isProjectActivity(activity)) {
+                    return this.readProject(activity, view);
+                } else if (DDL2.isGroupByActivity(activity)) {
+                    return this.readGroupBy(activity, view);
+                } else if (DDL2.isSortActivity(activity)) {
+                    return this.readSort(activity, view);
+                } else if (DDL2.isLimitActivity(activity)) {
+                    return this.readLimit(activity, view);
+                }
+            }));
         }
         this._dashboard.syncWidgets();
     }
