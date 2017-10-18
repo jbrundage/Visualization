@@ -1,13 +1,13 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-wecare",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "scripts": {},
   "dependencies": {
     "@hpcc-js/chart": "^0.0.43",
     "@hpcc-js/common": "^0.0.41",
-    "@hpcc-js/comms": "^0.0.41",
-    "@hpcc-js/dgrid": "^0.0.44",
+    "@hpcc-js/comms": "^0.0.42",
+    "@hpcc-js/dgrid": "^0.0.45",
     "@hpcc-js/form": "^0.0.43",
     "@hpcc-js/map": "^0.0.45",
     "d3-selection": "^1.1.0",
