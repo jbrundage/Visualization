@@ -62,10 +62,10 @@ export class DSPicker extends ActivitySelection {
                 .querySet("roxie")
                 .queryID("peopleaccounts.3")
                 .resultName("Accounts"),
-            new Databomb(this._view)
+            new Databomb()
                 .payload(sampleData)
             ,
-            new Form(this._view)
+            new Form()
                 .payload({})
             ,
             new HipieRequest(this._view)

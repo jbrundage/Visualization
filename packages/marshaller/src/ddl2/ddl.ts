@@ -1,6 +1,6 @@
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
-import { ReferencedFields } from "./activities/activity";
+import { Activity, ReferencedFields } from "./activities/activity";
 import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { ColumnMapping, Filter, Filters } from "./activities/filter";
@@ -220,8 +220,8 @@ export class DDLAdapter {
         };
     }
 
-    readProject(ddlProject: DDL2.IProject, view: View): Project {
-        const project = new Project(view);
+    readProject(ddlProject: DDL2.IProject): Project {
+        const project = new Project();
         return project.computedFields(ddlProject.transformations.map(transformation => {
             if (transformation.type === "scale") {
                 return new ComputedField(project)
@@ -294,8 +294,8 @@ export class DDLAdapter {
         };
     }
 
-    readSort(ddlSort: DDL2.ISort, view: View): Sort {
-        const sort = new Sort(view);
+    readSort(ddlSort: DDL2.ISort): Sort {
+        const sort = new Sort();
         sort.column(ddlSort.conditions.map(condition => {
             return new SortColumn(sort)
                 .fieldID(condition.fieldID)
@@ -313,8 +313,8 @@ export class DDLAdapter {
         };
     }
 
-    readLimit(ddlLimit: DDL2.ILimit, view: View): Limit {
-        return new Limit(view)
+    readLimit(ddlLimit: DDL2.ILimit): Limit {
+        return new Limit()
             .rows(ddlLimit.limit)
             ;
     }
@@ -370,7 +370,7 @@ export class DDLAdapter {
             } else if (activity instanceof Limit) {
                 return this.writeLimit(activity);
             }
-        });
+        }).filter(activity => !!activity);
     }
 
     writeDDLViews(refs: ReferencedFields): DDL2.IView[] {
@@ -401,19 +401,23 @@ export class DDLAdapter {
             this._dashboard.addVisualization(viz);
             const view = viz.view();
             this.readDatasourceRef(ddlView.datasource, view.dataSource());
-            view.activities(ddlView.activities.map(activity => {
-                if (DDL2.isFilterActivity(activity)) {
-                    return this.readFilters(activity, view);
-                } else if (DDL2.isProjectActivity(activity)) {
-                    return this.readProject(activity, view);
-                } else if (DDL2.isGroupByActivity(activity)) {
-                    return this.readGroupBy(activity, view);
-                } else if (DDL2.isSortActivity(activity)) {
-                    return this.readSort(activity, view);
-                } else if (DDL2.isLimitActivity(activity)) {
-                    return this.readLimit(activity, view);
-                }
-            }));
+            const activities: Activity[] = [
+                view.dataSource(),
+                ...ddlView.activities.map(activity => {
+                    if (DDL2.isFilterActivity(activity)) {
+                        return this.readFilters(activity, view);
+                    } else if (DDL2.isProjectActivity(activity)) {
+                        return this.readProject(activity);
+                    } else if (DDL2.isGroupByActivity(activity)) {
+                        return this.readGroupBy(activity, view);
+                    } else if (DDL2.isSortActivity(activity)) {
+                        return this.readSort(activity);
+                    } else if (DDL2.isLimitActivity(activity)) {
+                        return this.readLimit(activity);
+                    }
+                })
+            ];
+            view.activities(activities);
         }
         this._dashboard.syncWidgets();
     }

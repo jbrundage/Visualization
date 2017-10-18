@@ -22,7 +22,6 @@ export class Param extends PropertyExt {
 
     constructor(owner: RoxieRequest) {
         super();
-        this._view = owner._owner;
         this._owner = owner;
     }
 
@@ -140,7 +139,7 @@ export class RoxieService extends PropertyExt {
 RoxieService.prototype._class += " RoxieService";
 
 export class RoxieRequest extends Activity {
-    _owner: View;
+    private _owner: View;
     protected _roxieService = new RoxieService(this);
     private _data: any[] = [];
 

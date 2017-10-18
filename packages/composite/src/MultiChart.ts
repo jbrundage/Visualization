@@ -2,8 +2,6 @@ import { IGraph, INDChart } from "@hpcc-js/api";
 import { Database, HTMLWidget, Utility, Widget } from "@hpcc-js/common";
 import { map as d3Map } from "d3-collection";
 
-declare const require: any;
-
 export class MultiChart extends HTMLWidget {
     _allCharts = {};
     _chartTypeDefaults;
@@ -96,10 +94,6 @@ export class MultiChart extends HTMLWidget {
     }
 
     requireContent(chartType, callback) {
-        if (require) {
-            //  Dummy require so that webpack can do its thing ---
-            require("@hpcc-js/")
-        }
         Utility.requireWidget(this._allCharts[chartType].widgetClass).then(function (WidgetClass: any) {
             callback(new WidgetClass());
         });
