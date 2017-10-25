@@ -19,7 +19,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "tslib": "1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.13",

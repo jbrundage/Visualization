@@ -90,16 +90,16 @@ export default function bundle(min: boolean = false) {
         plugins.push(uglify({}));
     }
     return rollup.rollup({
-        entry: "lib-es6/index.js",
+        input: "lib-es6/index.js",
         external: externals,
         plugins
     }).then(function (bundle) {
         return bundle.write({
-            dest: `dist/${leafID}${min ? ".min" : ""}.js`,
+            file: `dist/${leafID}${min ? ".min" : ""}.js`,
             format: "umd",
-            moduleName: myPackage.name,
+            name: myPackage.name,
             globals,
-            sourceMap: true
+            sourcemap: true
         });
     });
 }

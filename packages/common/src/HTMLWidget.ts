@@ -85,10 +85,10 @@ export class HTMLWidget extends Widget {
             };
         }
         return {
-            x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._scale,
-            y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._scale,
-            width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
-            height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
+            x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._widgetScale,
+            y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._widgetScale,
+            width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._widgetScale,
+            height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._widgetScale
         };
     }
 

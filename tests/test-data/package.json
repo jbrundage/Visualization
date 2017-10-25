@@ -17,11 +17,11 @@
     "clean": "rimraf lib"
   },
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1",
-    "typescript": "^2.5.2"
+    "rimraf": "2.6.1",
+    "typescript": "2.5.2"
   },
   "repository": {
     "type": "git",

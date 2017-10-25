@@ -213,9 +213,9 @@ export class SVGWidget extends Widget {
     postUpdate(domNode, element) {
         super.postUpdate(domNode, element);
         if (this._drawStartPos === "origin" && this._target instanceof SVGElement) {
-            this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._scale + ")");
+            this._element.attr("transform", "translate(" + (this._pos.x - this._size.width / 2) + "," + (this._pos.y - this._size.height / 2) + ")scale(" + this._widgetScale + ")");
         } else {
-            this._element.attr("transform", "translate(" + this._pos.x + "," + this._pos.y + ")scale(" + this._scale + ")");
+            this._element.attr("transform", "translate(" + this._pos.x + "," + this._pos.y + ")scale(" + this._widgetScale + ")");
         }
     }
 
@@ -255,10 +255,10 @@ export class SVGWidget extends Widget {
             };
         }
         return {
-            x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._scale,
-            y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._scale,
-            width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._scale,
-            height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._scale
+            x: (round ? Math.round(this._boundingBox.x) : this._boundingBox.x) * this._widgetScale,
+            y: (round ? Math.round(this._boundingBox.y) : this._boundingBox.y) * this._widgetScale,
+            width: (round ? Math.round(this._boundingBox.width) : this._boundingBox.width) * this._widgetScale,
+            height: (round ? Math.round(this._boundingBox.height) : this._boundingBox.height) * this._widgetScale
         };
     }
 

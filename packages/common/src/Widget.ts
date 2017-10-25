@@ -36,7 +36,7 @@ export abstract class Widget extends PropertyExt {
     protected _pos;
     protected _prevPos;
     protected _size;
-    protected _scale;
+    protected _widgetScale;
     protected _visible;
     protected _display;
 
@@ -58,7 +58,7 @@ export abstract class Widget extends PropertyExt {
         this._db = new Grid();
         this._pos = { x: 0, y: 0 };
         this._size = { width: 0, height: 0 };
-        this._scale = 1;
+        this._widgetScale = 1;
         this._visible = true;
 
         this._target = null;
@@ -197,7 +197,7 @@ export abstract class Widget extends PropertyExt {
         this._pos = _;
         if (this._overlayElement) {
             this._overlayElement
-                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")")
+                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._widgetScale + ")")
                 ;
         }
         return this;
@@ -270,11 +270,11 @@ export abstract class Widget extends PropertyExt {
     scale(): number;
     scale(_): Widget;
     scale(_?): number | Widget {
-        if (!arguments.length) return this._scale;
-        this._scale = _;
+        if (!arguments.length) return this._widgetScale;
+        this._widgetScale = _;
         if (this._overlayElement) {
             this._overlayElement
-                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._scale + ")")
+                .attr("transform", "translate(" + _.x + "," + _.y + ")scale(" + this._widgetScale + ")")
                 ;
         }
         return this;

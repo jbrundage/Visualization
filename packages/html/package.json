@@ -22,7 +22,7 @@
     "@hpcc-js/common": "^0.0.42",
     "@hpcc-js/preact-shim": "^0.0.36",
     "d3-selection": "1.1.0",
-    "tslib": "1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.13",

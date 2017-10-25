@@ -26,7 +26,7 @@
     "@hpcc-js/html": "^0.0.42",
     "@hpcc-js/phosphor": "^0.0.44",
     "@hpcc-js/util": "^0.0.40",
-    "tslib": "1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.13",

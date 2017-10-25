@@ -18,7 +18,7 @@
   "dependencies": {
     "ajv": "4.11.3",
     "reflect-metadata": "0.1.10",
-    "tslib": "1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
     "extract-text-webpack-plugin": "2.1.0",

@@ -27,7 +27,7 @@
     "request": "2.81.0",
     "safe-buffer": "5.0.1",
     "tmp": "0.0.33",
-    "tslib": "1.7.1",
+    "tslib": "1.8.0",
     "xmldom": "0.1.27"
   },
   "devDependencies": {

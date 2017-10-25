@@ -34,7 +34,7 @@
     "@hpcc-js/timeline": "^0.0.44",
     "@hpcc-js/tree": "^0.0.42",
     "d3-random": "1.1.0",
-    "es6-promise": "4.1.0"
+    "es6-promise": "4.1.1"
   },
   "devDependencies": {
     "material-design-lite": "1.2.1",

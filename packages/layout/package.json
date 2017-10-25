@@ -23,7 +23,7 @@
     "d3-drag": "1.1.0",
     "d3-selection": "1.1.0",
     "grid-list": "0.4.0",
-    "tslib": "1.7.1"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.13",
