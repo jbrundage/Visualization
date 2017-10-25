@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/graph",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "hpcc-js - Viz Graph",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -19,20 +19,20 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.41",
-    "@hpcc-js/common": "^0.0.41",
-    "d3-drag": "^1.1.0",
-    "d3-force": "^1.0.6",
-    "d3-sankey": "^0.5.0",
-    "d3-selection": "^1.1.0",
-    "dagre": "^0.7.4",
-    "tslib": "^1.7.1"
+    "@hpcc-js/api": "^0.0.42",
+    "@hpcc-js/common": "^0.0.42",
+    "d3-drag": "1.1.0",
+    "d3-force": "1.0.6",
+    "d3-sankey": "0.5.0",
+    "d3-selection": "1.1.0",
+    "dagre": "0.7.4",
+    "tslib": "1.7.1"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.12",
-    "rimraf": "^2.6.1",
-    "typedoc": "^0.7.1",
-    "typescript": "^2.5.2"
+    "@hpcc-js/bundle": "^0.0.13",
+    "rimraf": "2.6.1",
+    "typedoc": "0.7.1",
+    "typescript": "2.5.2"
   },
   "repository": {
     "type": "git",

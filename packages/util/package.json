@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/util",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "hpcc-js - Utilities",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -19,13 +19,13 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "tslib": "^1.7.1"
+    "tslib": "1.7.1"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.12",
-    "rimraf": "^2.6.1",
-    "typedoc": "^0.7.1",
-    "typescript": "^2.5.2"
+    "@hpcc-js/bundle": "^0.0.13",
+    "rimraf": "2.6.1",
+    "typedoc": "0.7.1",
+    "typescript": "2.5.2"
   },
   "repository": {
     "type": "git",
