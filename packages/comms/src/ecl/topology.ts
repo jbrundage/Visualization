@@ -1,6 +1,7 @@
 import { exists } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
 import { TopologyService } from "../services/wsTopology";
+import { TargetCluster } from "./targetCluster";
 
 export class Topology {
     protected connection: TopologyService;
@@ -30,6 +31,12 @@ export class Topology {
                 }
             }
             return `${rootProtocol}//${ip}:${port}/`;
+        });
+    }
+
+    fetchTargetClusters(): Promise<TargetCluster[]> {
+        return this.connection.TpTargetClusterQuery({ Type: "ROOT" }).then(response => {
+            return response.TpTargetClusters.TpTargetCluster.map(tc => new TargetCluster(this.connection, tc));
         });
     }
 }
