@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/handson",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "hpcc-js - Viz Handson Grid",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
@@ -19,13 +19,13 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/common": "^0.0.42",
+    "@hpcc-js/common": "^0.0.43",
     "d3-selection": "1.1.0",
     "handsontable": "0.34.5",
     "tslib": "1.8.0"
   },
   "devDependencies": {
-    "@hpcc-js/bundle": "^0.0.13",
+    "@hpcc-js/bundle": "^0.0.14",
     "@types/handsontable": "0.31.1",
     "rimraf": "2.6.1",
     "typedoc": "0.7.1",
