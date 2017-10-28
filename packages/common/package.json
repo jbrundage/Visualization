@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "clean": "rimraf lib* && rimraf dist* && rimraf fonts",
-    "copy-resources": "cpx ../../node_modules/font-awesome/fonts/* ./font-awesome/fonts && cpx ../../node_modules/font-awesome/css/* ./font-awesome/css",
+    "copy-resources": "cpx \"../../node_modules/font-awesome/fonts/*\" \"./font-awesome/fonts\" && cpx \"../../node_modules/font-awesome/css/*\" \"./font-awesome/css\"",
     "build": "tsc",
     "build-es6": "tsc --module esnext --outDir ./lib-es6",
     "bundle": "npm run copy-resources && node ./node_modules/@hpcc-js/bundle/lib/rollup",

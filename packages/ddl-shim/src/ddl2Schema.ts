@@ -1,346 +1,10 @@
-/* tslint:disable */  
+/* tslint:disable */
 export const ddl2Schema =  
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "additionalProperties": false,
-    "definitions": {
-        "IActivity": {
-            "additionalProperties": false,
-            "properties": {
-                "type": {
-                    "$ref": "#/definitions/IActivityType"
-                }
-            },
-            "required": [
-                "type"
-            ],
-            "type": "object"
-        },
-        "IActivityType": {
-            "enum": [
-                "filter",
-                "groupby",
-                "limit",
-                "project",
-                "sort"
-            ],
-            "type": "string"
-        },
-        "IDatabomb": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "databomb"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IDatasourceRef": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id"
-            ],
-            "type": "object"
-        },
-        "IField": {
-            "additionalProperties": false,
-            "properties": {
-                "children": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "default": {
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "default",
-                "id",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IForm": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "form"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IHipieService": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "hipieservice"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ILogicalFile": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "logicalFile": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "logicalfile"
-                    ],
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "logicalFile",
-                "type",
-                "url"
-            ],
-            "type": "object"
-        },
-        "IRequestField": {
-            "additionalProperties": false,
-            "properties": {
-                "localFieldID": {
-                    "type": "string"
-                },
-                "remoteFieldID": {
-                    "type": "string"
-                },
-                "source": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "localFieldID",
-                "remoteFieldID",
-                "source"
-            ],
-            "type": "object"
-        },
-        "IRoxieService": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "queryID": {
-                    "type": "string"
-                },
-                "querySet": {
-                    "type": "string"
-                },
-                "resultName": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "roxieservice"
-                    ],
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "queryID",
-                "querySet",
-                "resultName",
-                "type",
-                "url"
-            ],
-            "type": "object"
-        },
-        "IRoxieServiceRef": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "request": {
-                    "items": {
-                        "$ref": "#/definitions/IRequestField"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "request"
-            ],
-            "type": "object"
-        },
-        "IView": {
-            "additionalProperties": false,
-            "properties": {
-                "activities": {
-                    "items": {
-                        "$ref": "#/definitions/IActivity"
-                    },
-                    "type": "array"
-                },
-                "datasource": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IDatasourceRef"
-                        },
-                        {
-                            "$ref": "#/definitions/IRoxieServiceRef"
-                        }
-                    ]
-                },
-                "id": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "activities",
-                "datasource",
-                "id"
-            ],
-            "type": "object"
-        },
-        "IWUResult": {
-            "additionalProperties": false,
-            "properties": {
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "resultName": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "wuresult"
-                    ],
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "wuid": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "fields",
-                "id",
-                "resultName",
-                "type",
-                "url",
-                "wuid"
-            ],
-            "type": "object"
-        }
-    },
+    "type": "object",
     "properties": {
         "datasources": {
+            "type": "array",
             "items": {
                 "anyOf": [
                     {
@@ -362,21 +26,354 @@ export const ddl2Schema =
                         "$ref": "#/definitions/IHipieService"
                     }
                 ]
-            },
-            "type": "array"
+            }
         },
         "dataviews": {
+            "type": "array",
             "items": {
                 "$ref": "#/definitions/IView"
-            },
-            "type": "array"
+            }
         }
     },
+    "additionalProperties": false,
     "required": [
         "datasources",
         "dataviews"
     ],
-    "type": "object"
-}
-
-; 
+    "definitions": {
+        "IWUResult": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "wuresult"
+                    ]
+                },
+                "wuid": {
+                    "type": "string"
+                },
+                "resultName": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "resultName",
+                "type",
+                "url",
+                "wuid"
+            ]
+        },
+        "IField": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "default": {},
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "default",
+                "id",
+                "type"
+            ]
+        },
+        "ILogicalFile": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "logicalfile"
+                    ]
+                },
+                "logicalFile": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "logicalFile",
+                "type",
+                "url"
+            ]
+        },
+        "IForm": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "form"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "type"
+            ]
+        },
+        "IDatabomb": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "databomb"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "type"
+            ]
+        },
+        "IRoxieService": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "roxieservice"
+                    ]
+                },
+                "querySet": {
+                    "type": "string"
+                },
+                "queryID": {
+                    "type": "string"
+                },
+                "resultName": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "queryID",
+                "querySet",
+                "resultName",
+                "type",
+                "url"
+            ]
+        },
+        "IHipieService": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "hipieservice"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "type"
+            ]
+        },
+        "IView": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "datasource": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/IDatasourceRef"
+                        },
+                        {
+                            "$ref": "#/definitions/IRoxieServiceRef"
+                        }
+                    ]
+                },
+                "activities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IActivity"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "activities",
+                "datasource",
+                "id"
+            ]
+        },
+        "IDatasourceRef": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id"
+            ]
+        },
+        "IRoxieServiceRef": {
+            "type": "object",
+            "properties": {
+                "request": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IRequestField"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IField"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fields",
+                "id",
+                "request"
+            ]
+        },
+        "IRequestField": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "type": "string"
+                },
+                "remoteFieldID": {
+                    "type": "string"
+                },
+                "localFieldID": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "localFieldID",
+                "remoteFieldID",
+                "source"
+            ]
+        },
+        "IActivity": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/IActivityType"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type"
+            ]
+        },
+        "IActivityType": {
+            "enum": [
+                "filter",
+                "groupby",
+                "limit",
+                "project",
+                "sort"
+            ],
+            "type": "string"
+        }
+    },
+    "$schema": "http://json-schema.org/draft-04/schema#"
+};

@@ -2,10 +2,10 @@ import { StateObject } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
 import { GetTargetClusterInfo, MachineService } from "../services/wsMachine";
 
-export interface TpTargetClusterEx extends GetTargetClusterInfo.MachineInfoEx {
+export interface MachineInfoEx extends GetTargetClusterInfo.MachineInfoEx {
 }
 
-export class Machine extends StateObject<TpTargetClusterEx, TpTargetClusterEx> implements TpTargetClusterEx {
+export class Machine extends StateObject<MachineInfoEx, MachineInfoEx> implements MachineInfoEx {
     protected connection: MachineService;
 
     get Address(): string { return this.get("Address"); }

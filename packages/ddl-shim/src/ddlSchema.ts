@@ -1,237 +1,37 @@
-/* tslint:disable */  
+/* tslint:disable */
 export const ddlSchema =  
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "dashboards": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/IDashboard"
+            }
+        },
+        "datasources": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/IDatasource"
+            }
+        }
+    },
     "additionalProperties": false,
+    "required": [
+        "dashboards",
+        "datasources"
+    ],
     "definitions": {
-        "ChoroColor": {
-            "enum": [
-                "Blues",
-                "BrBG",
-                "BuGn",
-                "BuPu",
-                "GnBu",
-                "Greens",
-                "Greys",
-                "OrRd",
-                "Oranges",
-                "PRGn",
-                "PiYG",
-                "PuBu",
-                "PuBuGn",
-                "PuOr",
-                "PuRd",
-                "Purples",
-                "RdBu",
-                "RdGy",
-                "RdPu",
-                "RdWhGr",
-                "RdYlBu",
-                "RdYlGn",
-                "Reds",
-                "Spectral",
-                "YlGn",
-                "YlGnBu",
-                "YlOrBr",
-                "YlOrRd",
-                "default"
-            ],
-            "type": "string"
-        },
-        "IChoroGeohashMapping": {
-            "additionalProperties": false,
+        "IDashboard": {
+            "type": "object",
             "properties": {
-                "geohash": {
-                    "type": "string"
-                },
-                "weight": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                }
-            },
-            "required": [
-                "geohash",
-                "weight"
-            ],
-            "type": "object"
-        },
-        "IChoroSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
                 "id": {
                     "type": "string"
-                },
-                "mappings": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IChoroUSStateMapping"
-                        },
-                        {
-                            "$ref": "#/definitions/IChoroUSCountyMapping"
-                        },
-                        {
-                            "$ref": "#/definitions/IChoroGeohashMapping"
-                        }
-                    ]
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "IChoroUSCountyMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "county": {
-                    "type": "string"
-                },
-                "weight": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                }
-            },
-            "required": [
-                "county",
-                "weight"
-            ],
-            "type": "object"
-        },
-        "IChoroUSStateMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "state": {
-                    "type": "string"
-                },
-                "weight": {
-                    "anyOf": [
-                        {
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        {
-                            "type": "string"
-                        }
-                    ]
-                }
-            },
-            "required": [
-                "state",
-                "weight"
-            ],
-            "type": "object"
-        },
-        "IChoroVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                    "$ref": "#/definitions/ChoroColor"
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/IChoroSource"
                 },
                 "title": {
                     "type": "string"
                 },
-                "type": {
-                    "$ref": "#/definitions/VisualizationType"
-                },
-                "visualizations": {
-                    "items": {
-                        "$ref": "#/definitions/IChoroVisualization"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IDashboard": {
-            "additionalProperties": false,
-            "properties": {
                 "enable": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "label": {
@@ -240,10 +40,8 @@ export const ddlSchema =
                 "primary": {
                     "type": "boolean"
                 },
-                "title": {
-                    "type": "string"
-                },
                 "visualizations": {
+                    "type": "array",
                     "items": {
                         "anyOf": [
                             {
@@ -265,810 +63,198 @@ export const ddlSchema =
                                 "$ref": "#/definitions/IHeatMapVisualization"
                             }
                         ]
-                    },
-                    "type": "array"
+                    }
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "visualizations"
-            ],
-            "type": "object"
+            ]
         },
-        "IDatasource": {
-            "additionalProperties": false,
+        "IPieVisualization": {
+            "type": "object",
             "properties": {
-                "URL": {
-                    "type": "string"
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "PIE"
+                    ]
                 },
-                "WUID": {
-                    "type": "boolean"
-                },
-                "databomb": {
-                    "type": "boolean"
-                },
-                "filter": {
-                    "items": {
-                        "$ref": "#/definitions/IFilter"
-                    },
-                    "type": "array"
+                "source": {
+                    "$ref": "#/definitions/IPieSource"
                 },
                 "id": {
                     "type": "string"
                 },
-                "outputs": {
-                    "items": {
-                        "$ref": "#/definitions/IOutput"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "outputs"
-            ],
-            "type": "object"
-        },
-        "IEvent": {
-            "additionalProperties": false,
-            "properties": {
-                "mappings": {
+                "title": {
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "type": "object"
-                },
-                "updates": {
-                    "items": {
-                        "$ref": "#/definitions/IEventUpdate"
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
                     },
-                    "type": "array"
-                }
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                },
+                "color": {}
             },
-            "required": [
-                "updates"
-            ],
-            "type": "object"
-        },
-        "IEventUpdate": {
             "additionalProperties": false,
+            "required": [
+                "id",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "IPieSource": {
+            "type": "object",
             "properties": {
-                "col": {
+                "mappings": {
+                    "$ref": "#/definitions/IPieMapping"
+                },
+                "id": {
                     "type": "string"
                 },
-                "datasource": {
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "mappings",
+                "output"
+            ]
+        },
+        "IPieMapping": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "label",
+                "weight"
+            ]
+        },
+        "IEvent": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "updates": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IEventUpdate"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "updates"
+            ]
+        },
+        "IEventUpdate": {
+            "type": "object",
+            "properties": {
+                "visualization": {
                     "type": "string"
                 },
                 "instance": {
                     "type": "string"
                 },
-                "mappings": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
+                "datasource": {
+                    "type": "string"
+                },
+                "col": {
+                    "type": "string"
                 },
                 "merge": {
                     "type": "boolean"
                 },
-                "visualization": {
-                    "type": "string"
+                "mappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "datasource",
                 "merge",
                 "visualization"
-            ],
-            "type": "object"
-        },
-        "IFilter": {
-            "additionalProperties": false,
-            "properties": {
-                "fieldid": {
-                    "type": "string"
-                },
-                "maxid": {
-                    "type": "string"
-                },
-                "minid": {
-                    "type": "string"
-                },
-                "nullable": {
-                    "type": "boolean"
-                },
-                "rule": {
-                    "$ref": "#/definitions/IFilterRule"
-                }
-            },
-            "required": [
-                "fieldid",
-                "nullable",
-                "rule"
-            ],
-            "type": "object"
-        },
-        "IFilterRule": {
-            "enum": [
-                "!=",
-                "<",
-                "<=",
-                "==",
-                ">",
-                ">=",
-                "notequals",
-                "set"
-            ],
-            "type": "string"
-        },
-        "IGraphLink": {
-            "additionalProperties": false,
-            "properties": {
-                "childfile": {
-                    "type": "string"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/IGraphLinkMapping"
-                }
-            },
-            "required": [
-                "childfile",
-                "mappings"
-            ],
-            "type": "object"
-        },
-        "IGraphLinkMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "uid": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "uid"
-            ],
-            "type": "object"
-        },
-        "IGraphMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "flags": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "uid": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "flags",
-                "label",
-                "uid",
-                "weight"
-            ],
-            "type": "object"
-        },
-        "IGraphSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "link": {
-                    "$ref": "#/definitions/IGraphLink"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/IGraphMapping"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "link",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "IGraphVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "flag": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationIcon"
-                    },
-                    "type": "array"
-                },
-                "icon": {
-                    "$ref": "#/definitions/IVisualizationIcon"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "label": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/IGraphSource"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/VisualizationType"
-                }
-            },
-            "required": [
-                "flag",
-                "icon",
-                "id",
-                "label",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IHeatMapMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "weight": {
-                    "type": "string"
-                },
-                "x": {
-                    "type": "string"
-                },
-                "y": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "weight",
-                "x",
-                "y"
-            ],
-            "type": "object"
-        },
-        "IHeatMapSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/IHeatMapMapping"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "IHeatMapVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/IHeatMapSource"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/VisualizationType"
-                }
-            },
-            "required": [
-                "id",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ILineMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "x": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "y": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "x",
-                "y"
-            ],
-            "type": "object"
-        },
-        "ILineSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/ILineMapping"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "ILineVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/ILineSource"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/VisualizationType"
-                }
-            },
-            "required": [
-                "id",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
-        },
-        "IOutput": {
-            "additionalProperties": false,
-            "properties": {
-                "filter": {
-                    "items": {
-                        "$ref": "#/definitions/IFilter"
-                    },
-                    "type": "array"
-                },
-                "from": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "notify": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "from",
-                "id"
-            ],
-            "type": "object"
-        },
-        "IPieMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "label",
-                "weight"
-            ],
-            "type": "object"
-        },
-        "IPieSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/IPieMapping"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "IPieVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/IPieSource"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "enum": [
-                        "PIE"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "id",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
-        },
-        "ITableMapping": {
-            "additionalProperties": false,
-            "properties": {
-                "value": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "value"
-            ],
-            "type": "object"
-        },
-        "ITableSource": {
-            "additionalProperties": false,
-            "properties": {
-                "first": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "mappings": {
-                    "$ref": "#/definitions/ITableMapping"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                },
-                "reverse": {
-                    "type": "boolean"
-                },
-                "sort": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                }
-            },
-            "required": [
-                "id",
-                "mappings",
-                "output"
-            ],
-            "type": "object"
-        },
-        "ITableVisualization": {
-            "additionalProperties": false,
-            "properties": {
-                "color": {
-                },
-                "events": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/IEvent"
-                    },
-                    "type": "object"
-                },
-                "fields": {
-                    "items": {
-                        "$ref": "#/definitions/IVisualizationField"
-                    },
-                    "type": "array"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "label": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "onSelect": {
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "properties": {
-                        "charttype": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "charttype"
-                    ],
-                    "type": "object"
-                },
-                "source": {
-                    "$ref": "#/definitions/ITableSource"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/VisualizationType"
-                }
-            },
-            "required": [
-                "id",
-                "label",
-                "source",
-                "title",
-                "type"
-            ],
-            "type": "object"
+            ]
         },
         "IVisualizationField": {
-            "additionalProperties": false,
+            "type": "object",
             "properties": {
-                "id": {
-                },
+                "id": {},
                 "properties": {
-                    "additionalProperties": false,
+                    "type": "object",
                     "properties": {
+                        "label": {
+                            "type": "string"
+                        },
                         "datatype": {
                             "$ref": "#/definitions/VisualizationFieldDataType"
                         },
                         "default": {
-                            "items": {
-                            },
-                            "type": "array"
+                            "type": "array",
+                            "items": {}
                         },
                         "function": {
                             "$ref": "#/definitions/VisualizationFieldFuncitonType"
                         },
-                        "label": {
-                            "type": "string"
-                        },
                         "params": {
-                            "additionalProperties": false,
+                            "type": "object",
                             "properties": {
                                 "param1": {
                                     "type": "string"
@@ -1077,51 +263,30 @@ export const ddlSchema =
                                     "type": "string"
                                 }
                             },
+                            "additionalProperties": false,
                             "required": [
                                 "param1",
                                 "param2"
-                            ],
-                            "type": "object"
+                            ]
                         },
                         "type": {
                             "$ref": "#/definitions/VisualizationFieldType"
                         }
                     },
+                    "additionalProperties": false,
                     "required": [
                         "datatype",
                         "default",
                         "label",
                         "type"
-                    ],
-                    "type": "object"
+                    ]
                 }
             },
+            "additionalProperties": false,
             "required": [
                 "id",
                 "properties"
-            ],
-            "type": "object"
-        },
-        "IVisualizationIcon": {
-            "additionalProperties": false,
-            "properties": {
-                "faChar": {
-                    "type": "string"
-                },
-                "fieldid": {
-                    "type": "string"
-                },
-                "valuemappings": {
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "type": "object"
-                }
-            },
-            "required": [
-                "faChar"
-            ],
-            "type": "object"
+            ]
         },
         "VisualizationFieldDataType": {
             "enum": [
@@ -1166,6 +331,118 @@ export const ddlSchema =
             ],
             "type": "string"
         },
+        "ILineVisualization": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/ILineSource"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/VisualizationType"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                },
+                "color": {}
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "ILineSource": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "$ref": "#/definitions/ILineMapping"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "mappings",
+                "output"
+            ]
+        },
+        "ILineMapping": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "y": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "x",
+                "y"
+            ]
+        },
         "VisualizationType": {
             "enum": [
                 "2DCHART",
@@ -1182,27 +459,735 @@ export const ddlSchema =
                 "WORD_CLOUD"
             ],
             "type": "string"
-        }
-    },
-    "properties": {
-        "dashboards": {
-            "items": {
-                "$ref": "#/definitions/IDashboard"
-            },
-            "type": "array"
         },
-        "datasources": {
-            "items": {
-                "$ref": "#/definitions/IDatasource"
+        "IChoroVisualization": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/IChoroSource"
+                },
+                "visualizations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IChoroVisualization"
+                    }
+                },
+                "color": {
+                    "$ref": "#/definitions/ChoroColor"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/VisualizationType"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                }
             },
-            "type": "array"
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "IChoroSource": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/IChoroUSStateMapping"
+                        },
+                        {
+                            "$ref": "#/definitions/IChoroUSCountyMapping"
+                        },
+                        {
+                            "$ref": "#/definitions/IChoroGeohashMapping"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "mappings",
+                "output"
+            ]
+        },
+        "IChoroUSStateMapping": {
+            "type": "object",
+            "properties": {
+                "state": {
+                    "type": "string"
+                },
+                "weight": {
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "state",
+                "weight"
+            ]
+        },
+        "IChoroUSCountyMapping": {
+            "type": "object",
+            "properties": {
+                "county": {
+                    "type": "string"
+                },
+                "weight": {
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "county",
+                "weight"
+            ]
+        },
+        "IChoroGeohashMapping": {
+            "type": "object",
+            "properties": {
+                "geohash": {
+                    "type": "string"
+                },
+                "weight": {
+                    "anyOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "geohash",
+                "weight"
+            ]
+        },
+        "ChoroColor": {
+            "enum": [
+                "Blues",
+                "BrBG",
+                "BuGn",
+                "BuPu",
+                "GnBu",
+                "Greens",
+                "Greys",
+                "OrRd",
+                "Oranges",
+                "PRGn",
+                "PiYG",
+                "PuBu",
+                "PuBuGn",
+                "PuOr",
+                "PuRd",
+                "Purples",
+                "RdBu",
+                "RdGy",
+                "RdPu",
+                "RdWhGr",
+                "RdYlBu",
+                "RdYlGn",
+                "Reds",
+                "Spectral",
+                "YlGn",
+                "YlGnBu",
+                "YlOrBr",
+                "YlOrRd",
+                "default"
+            ],
+            "type": "string"
+        },
+        "ITableVisualization": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "source": {
+                    "$ref": "#/definitions/ITableSource"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/VisualizationType"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                },
+                "color": {}
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "label",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "ITableSource": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "$ref": "#/definitions/ITableMapping"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "mappings",
+                "output"
+            ]
+        },
+        "ITableMapping": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "value"
+            ]
+        },
+        "IGraphVisualization": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/IGraphSource"
+                },
+                "label": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "icon": {
+                    "$ref": "#/definitions/IVisualizationIcon"
+                },
+                "flag": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationIcon"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/VisualizationType"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                },
+                "color": {}
+            },
+            "additionalProperties": false,
+            "required": [
+                "flag",
+                "icon",
+                "id",
+                "label",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "IGraphSource": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "$ref": "#/definitions/IGraphMapping"
+                },
+                "link": {
+                    "$ref": "#/definitions/IGraphLink"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "link",
+                "mappings",
+                "output"
+            ]
+        },
+        "IGraphMapping": {
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "string"
+                },
+                "flags": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "flags",
+                "label",
+                "uid",
+                "weight"
+            ]
+        },
+        "IGraphLink": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "$ref": "#/definitions/IGraphLinkMapping"
+                },
+                "childfile": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "childfile",
+                "mappings"
+            ]
+        },
+        "IGraphLinkMapping": {
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "uid"
+            ]
+        },
+        "IVisualizationIcon": {
+            "type": "object",
+            "properties": {
+                "faChar": {
+                    "type": "string"
+                },
+                "fieldid": {
+                    "type": "string"
+                },
+                "valuemappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "faChar"
+            ]
+        },
+        "IHeatMapVisualization": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/IHeatMapSource"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/VisualizationType"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "properties": {
+                        "charttype": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "charttype"
+                    ]
+                },
+                "events": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/IEvent"
+                    }
+                },
+                "onSelect": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IVisualizationField"
+                    }
+                },
+                "color": {}
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "source",
+                "title",
+                "type"
+            ]
+        },
+        "IHeatMapSource": {
+            "type": "object",
+            "properties": {
+                "mappings": {
+                    "$ref": "#/definitions/IHeatMapMapping"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "first": {
+                    "type": "number"
+                },
+                "reverse": {
+                    "type": "boolean"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "mappings",
+                "output"
+            ]
+        },
+        "IHeatMapMapping": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "string"
+                },
+                "y": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "weight",
+                "x",
+                "y"
+            ]
+        },
+        "IDatasource": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "databomb": {
+                    "type": "boolean"
+                },
+                "WUID": {
+                    "type": "boolean"
+                },
+                "URL": {
+                    "type": "string"
+                },
+                "filter": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IFilter"
+                    }
+                },
+                "outputs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IOutput"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "id",
+                "outputs"
+            ]
+        },
+        "IFilter": {
+            "type": "object",
+            "properties": {
+                "fieldid": {
+                    "type": "string"
+                },
+                "nullable": {
+                    "type": "boolean"
+                },
+                "rule": {
+                    "$ref": "#/definitions/IFilterRule"
+                },
+                "minid": {
+                    "type": "string"
+                },
+                "maxid": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fieldid",
+                "nullable",
+                "rule"
+            ]
+        },
+        "IFilterRule": {
+            "enum": [
+                "!=",
+                "<",
+                "<=",
+                "==",
+                ">",
+                ">=",
+                "notequals",
+                "set"
+            ],
+            "type": "string"
+        },
+        "IOutput": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "filter": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/IFilter"
+                    }
+                },
+                "notify": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "from",
+                "id"
+            ]
         }
     },
-    "required": [
-        "dashboards",
-        "datasources"
-    ],
-    "type": "object"
-}
-
-; 
+    "$schema": "http://json-schema.org/draft-04/schema#"
+};

@@ -6,11 +6,9 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "clean": "rimraf ./src/ddl*Schema*.ts && rimraf ./lib* && rimraf ./dist*",
-    "create-schema": "echo /* tslint:disable */ > ./src/ddlSchema.ts && echo export const ddlSchema = >> ./src/ddlSchema.ts && typescript-json-schema --noExtraProps --required ./src/ddl.ts DDLSchema >> ./src/ddlSchema.ts && echo ; >> ./src/ddlSchema.ts",
-    "create-schema2": "echo /* tslint:disable */ > ./src/ddl2Schema.ts && echo export const ddl2Schema = >> ./src/ddl2Schema.ts && typescript-json-schema --noExtraProps --required ./src/ddl2.ts Schema >> ./src/ddl2Schema.ts && echo ; >> ./src/ddl2Schema.ts",
-    "create-schema-test": "typescript-json-schema --noExtraProps --required ./src/ddl2.ts DDL2Schema",
-    "generate": "npm run create-schema && npm run create-schema2",
-    "build": "npm run generate && tsc -p . && webpack"
+    "build-util": "tsc -p ./tsconfig-util.json",
+    "generate": "node ./lib-util/createSchema.js",
+    "build": "npm run build-util && npm run generate && tsc -p . && webpack"
   },
   "files": [
     "dist/**/*"
@@ -21,10 +19,10 @@
     "tslib": "1.8.0"
   },
   "devDependencies": {
+    "@types/node": "6.0.90",
     "extract-text-webpack-plugin": "2.1.0",
     "rimraf": "2.6.1",
-    "typescript": "2.5.2",
-    "typescript-json-schema": "0.14.0",
+    "typescript-json-schema": "0.18.0",
     "webpack": "2.6.1"
   },
   "repository": {
