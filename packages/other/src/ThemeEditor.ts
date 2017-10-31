@@ -177,7 +177,7 @@ export class ThemeEditor extends HTMLWidget {
 
     enter(domNode, element) {
         HTMLWidget.prototype.enter.apply(this, arguments);
-        this._parentElement.style("overflow", "auto");
+        this._placeholderElement.style("overflow", "auto");
     }
 
     widgetProperty(widget, propID, _?) {

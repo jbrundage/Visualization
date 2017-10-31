@@ -1,6 +1,15 @@
-import { StateObject } from "@hpcc-js/util";
+import { Cache, StateObject } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
 import { GetTargetClusterInfo, MachineService } from "../services/wsMachine";
+
+export class MachineCache extends Cache<{ Address: string }, Machine> {
+    constructor() {
+        super((obj) => {
+            return obj.Address;
+        });
+    }
+}
+const _machines = new MachineCache();
 
 export interface MachineInfoEx extends GetTargetClusterInfo.MachineInfoEx {
 }
@@ -31,16 +40,22 @@ export class Machine extends StateObject<MachineInfoEx, MachineInfoEx> implement
     get VirtualMemory(): GetTargetClusterInfo.VirtualMemory { return this.get("VirtualMemory"); }
     get ComponentInfo(): GetTargetClusterInfo.ComponentInfo { return this.get("ComponentInfo"); }
 
-    constructor(optsConnection: IOptions | IConnection | MachineService, machineInfo: GetTargetClusterInfo.MachineInfoEx) {
+    static attach(optsConnection: IOptions | IConnection | MachineService, address: string, state?: GetTargetClusterInfo.MachineInfoEx): Machine {
+        const retVal: Machine = _machines.get({ Address: address }, () => {
+            return new Machine(optsConnection);
+        });
+        if (state) {
+            retVal.set(state);
+        }
+        return retVal;
+    }
+
+    private constructor(optsConnection: IOptions | IConnection | MachineService) {
         super();
         if (optsConnection instanceof MachineService) {
             this.connection = optsConnection;
         } else {
             this.connection = new MachineService(optsConnection);
         }
-
-        this.set({
-            ...machineInfo
-        });
     }
 }

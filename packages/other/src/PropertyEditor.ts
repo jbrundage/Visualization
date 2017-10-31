@@ -482,7 +482,7 @@ export class PropertyEditor extends HTMLWidget {
                 const peDiv = peInputElement.append("div")
                     // .attr("class", `property- input - cell propEditor-${context.depth() }`)
                     ;
-                context._childPE.set(this, new PropertyEditor().label(param.id).target(peDiv.node()));
+                context._childPE.set(this, new PropertyEditor().label(param.id).target(peDiv.node() as HTMLElement));
             })
             .merge(peInput)
             .each(function (w) {

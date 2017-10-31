@@ -40,8 +40,8 @@ export abstract class Widget extends PropertyExt {
     protected _visible;
     protected _display;
 
-    protected _target;
-    protected _parentElement;
+    protected _target: null | HTMLElement | SVGElement;
+    protected _placeholderElement;
     protected _parentWidget;
 
     protected _element;
@@ -62,7 +62,7 @@ export abstract class Widget extends PropertyExt {
         this._visible = true;
 
         this._target = null;
-        this._parentElement = null;
+        this._placeholderElement = null;
         this._parentWidget = null;
 
         this._element = d3Select(null);
@@ -285,8 +285,8 @@ export abstract class Widget extends PropertyExt {
     visible(_?): boolean | this {
         if (!arguments.length) return this._visible;
         this._visible = _;
-        if (this._parentElement) {
-            this._parentElement
+        if (this._placeholderElement) {
+            this._placeholderElement
                 .style("visibility", this._visible ? null : "hidden")
                 .style("opacity", this._visible ? null : 0)
                 ;
@@ -302,6 +302,15 @@ export abstract class Widget extends PropertyExt {
         if (this._element) {
             this._element.style("display", this._display ? null : "none");
         }
+        return this;
+    }
+
+    private _appData = new Object({});
+    appData(key: string): any;
+    appData(key: string, value: any): this;
+    appData(key: string, value?: any): any | this {
+        if (arguments.length < 2) return this._appData[key];
+        this._appData[key] = value;
         return this;
     }
 
@@ -418,14 +427,14 @@ export abstract class Widget extends PropertyExt {
             if (newPos && (!this._prevPos || newPos.x !== this._prevPos.x || newPos.y !== this._prevPos.y || newPos.width !== this._prevPos.width || newPos.height !== this._prevPos.height)) {
                 const xScale = newPos.width / this._size.width;
                 const yScale = newPos.height / this._size.height;
-                this._parentElement
+                this._placeholderElement
                     .style("left", newPos.x - (newPos.width / xScale) / 2 + "px")
                     .style("top", newPos.y - (newPos.height / yScale) / 2 + "px")
                     .style("width", newPos.width / xScale + "px")
                     .style("height", newPos.height / yScale + "px")
                     ;
                 const transform = "scale(" + xScale + "," + yScale + ")";
-                this._parentElement
+                this._placeholderElement
                     .style("transform", transform)
                     .style("-moz-transform", transform)
                     .style("-ms-transform", transform)
@@ -454,8 +463,23 @@ export abstract class Widget extends PropertyExt {
         return this._element.node();
     }
 
-    abstract target(): any;
-    abstract target(_): this;
+    target(): null | HTMLElement | SVGElement;
+    target(_: null | string | HTMLElement | SVGElement): this;
+    target(_?: null | string | HTMLElement | SVGElement): null | HTMLElement | SVGElement | this {
+        if (!arguments.length) return this._target;
+        if (this._target && _) {
+            throw new Error("Target can only be assigned once.");
+        }
+        if (_ === null) {
+            this._target = null;
+            this.exit();
+        } else if (typeof _ === "string") {
+            this._target = document.getElementById(_);
+        } else if (_ instanceof HTMLElement || _ instanceof SVGElement) {
+            this._target = _;
+        }
+        return this;
+    }
 
     //  Render  ---
     private _prevNow = 0;
@@ -469,15 +493,15 @@ export abstract class Widget extends PropertyExt {
         }
 
         callback = callback || function () { };
-        if (!this._parentElement || !this.visible()) {
+        if (!this._placeholderElement || !this.visible()) {
             callback(this);
             return this;
         }
-        if (this._parentElement) {
+        if (this._placeholderElement) {
             if (!this._tag)
                 throw new Error("No DOM tag specified");
 
-            const elements = this._parentElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
+            const elements = this._placeholderElement.selectAll("#" + this._id).data([this], function (d) { return d._id; });
             elements.enter().append(this._tag)
                 .classed(this._class, true)
                 .attr("id", this._id)
@@ -571,7 +595,7 @@ export abstract class Widget extends PropertyExt {
     preUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
     update(_domNode: HTMLElement, _element: d3SelectionType) { }
     postUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
-    exit(_domNode: HTMLElement, _element: d3SelectionType) { }
+    exit(_domNode?: HTMLElement, _element?: d3SelectionType) { }
 
     fields(): Field[];
     fields(_: Field[]): this;

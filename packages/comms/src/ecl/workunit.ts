@@ -74,7 +74,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
     get Description(): string { return this.get("Description", ""); }
     get ActionEx(): string { return this.get("ActionEx", ""); }
     get StateID(): WsWorkunits.WUStateID { return this.get("StateID", WsWorkunits.WUStateID.Unknown); }
-    get State(): string { return WsWorkunits.WUStateID[this.StateID]; }
+    get State(): string { return this.get("State") || WsWorkunits.WUStateID[this.StateID]; }
     get Protected(): boolean { return this.get("Protected", false); }
     get Exceptions(): WsWorkunits.WUInfo.Exceptions2 { return this.get("Exceptions", { ECLException: [] }); }
     get ResultViews(): any[] { return this.get("ResultViews", []); }
@@ -146,9 +146,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
     get SourceFileCount(): number { return this.get("SourceFileCount", 0); }
     get SourceFiles(): WsWorkunits.WUInfo.SourceFiles { return this.get("SourceFiles", { ECLSourceFile: [] }); }
     get CSourceFiles(): SourceFile[] {
-        return this.SourceFiles.ECLSourceFile.map((eclSourceFile) => {
-            return new SourceFile(this.connection, this.Wuid, eclSourceFile);
-        });
+        return this.SourceFiles.ECLSourceFile.map(eclSourceFile => new SourceFile(this.connection, this.Wuid, eclSourceFile));
     }
     get VariableCount(): number { return this.get("VariableCount", 0); }
     get Variables(): WsWorkunits.WUInfo.Variables { return this.get("Variables", { ECLResult: [] }); }
@@ -192,7 +190,7 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         });
     }
 
-    static attach(optsConnection: IOptions | IConnection, wuid: string, state?: WsWorkunits.WUQuery.ECLWorkunit | WsWorkunits.WUInfo.Workunit): Workunit {
+    static attach(optsConnection: IOptions | IConnection, wuid: string, state?: IWorkunitState): Workunit {
         const retVal: Workunit = _workunits.get({ Wuid: wuid }, () => {
             return new Workunit(optsConnection, wuid);
         });

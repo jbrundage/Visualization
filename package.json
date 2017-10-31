@@ -19,8 +19,7 @@
     "legacy-test": "gulp lint && gulp jscs && gulp unitTest && gulp build-all && gulp unitTestBuild && gulp unitTestBuildNonAMD"
   },
   "devDependencies": {
-    "lerna": "2.4.0",
-    "yarn": "1.2.1"
+    "lerna": "2.5.1"
   },
   "repository": {
     "type": "git",

@@ -14,9 +14,12 @@
   ],
   "scripts": {
     "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc -p .",
-    "build-es6": "tsc --module esnext --outDir ./lib-es6 -p .",
+    "build": "tsc",
+    "build-es6": "tsc --module esnext --outDir ./lib-es6",
+    "watch-es6": "tsc -w --module esnext --outDir ./lib-es6",
     "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
+    "watch-bundle": "node ./node_modules/@hpcc-js/bundle/lib/watch",
+    "watch": "concurrently --kill-others \"npm run watch-es6\" \"npm run watch-bundle\"",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
@@ -35,6 +38,7 @@
     "@types/d3-request": "1.0.2",
     "@types/request": "0.0.41",
     "@types/xmldom": "0.1.29",
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
     "typedoc": "0.7.1",
     "typescript": "2.5.2"

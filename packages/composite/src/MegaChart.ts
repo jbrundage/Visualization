@@ -124,7 +124,7 @@ export class MegaChart extends Border {
             .value("\uf2d0")
             ;
         this._maximizeButton.click = function (buttonWidget) {
-            const target = context.target();
+            const target = context.target() as any;
             let node = target;
             const isMaximized = d3Select(target).classed("__hpccisMaximized");
 

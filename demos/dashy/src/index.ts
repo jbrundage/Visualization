@@ -56,7 +56,7 @@ export class App {
                 }
             }
         })
-    ;
+        ;
     private _graphAdapter = new GraphAdapter(this._dashboard);
     private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
     private _graph: Graph = new Graph()
@@ -68,19 +68,19 @@ export class App {
         })
         .on("vertex_contextmenu", (row: any, col: string, sel: boolean, ext: any) => {
         })
-    ;
+        ;
     private _dataProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
-    ;
+        ;
     private _vizProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
-    ;
+        ;
     private _stateProperties: PropertyEditor = new PropertyEditor()
         .show_settings(false)
         .showFields(false)
-    ;
+        ;
     private _ddlEditor = new DDLEditor();
     private _layoutEditor = new JSONEditor();
     private _jsEditor = new JSEditor();
@@ -172,7 +172,7 @@ export class App {
             this.loadDataProps(viz.view());
             this.loadWidgetProps(viz.widget());
             this.loadStateProps(viz.state());
-            this.loadPreview(viz.view().last());
+            this.loadPreview(viz.view()!.last()!);
         }
         this._currViz = viz;
         this._currActivity = activity;

@@ -161,6 +161,13 @@ export class SMCService {
     }
 
     Activity(request: Activity.Request): Promise<Activity.Response> {
-        return this._connection.send("Activity", request);
+        return this._connection.send("Activity", request).then(response => {
+            return {
+                Running: {
+                    ActiveWorkunit: []
+                },
+                ...response
+            };
+        });
     }
 }

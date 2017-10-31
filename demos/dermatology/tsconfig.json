@@ -5,7 +5,6 @@
         "module": "umd",
         "moduleResolution": "node",
         "sourceMap": true,
-        "declaration": true,
         "noImplicitAny": false,
         "noEmitOnError": false,
         "noUnusedLocals": true,
