@@ -1,9 +1,5 @@
-import {
-    exists, IEvent, inner, IObserverHandle,
-    StateCallback, StateEvents, StateObject, StatePropCallback
-} from "@hpcc-js/util";
+import { exists, StateCallback, StateEvents, StateObject, StatePropCallback } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
-import { Activity, SMCService } from "../services/wsSMC";
 import { TopologyService, TpTargetClusterQuery } from "../services/wsTopology";
 import { TargetCluster } from "./targetCluster";
 
@@ -12,7 +8,6 @@ export interface TopologyStateEx {
 }
 export class Topology extends StateObject<TopologyStateEx, TopologyStateEx> implements TopologyStateEx {
     protected connection: TopologyService;
-    protected smcConnection: SMCService;
 
     //  Accessors  ---
     get properties(): TopologyStateEx { return this.get(); }
@@ -25,10 +20,8 @@ export class Topology extends StateObject<TopologyStateEx, TopologyStateEx> impl
         super();
         if (optsConnection instanceof TopologyService) {
             this.connection = optsConnection;
-            this.smcConnection = new SMCService(optsConnection.connectionOptions());
         } else {
             this.connection = new TopologyService(optsConnection);
-            this.smcConnection = new SMCService(optsConnection);
         }
     }
 
@@ -61,60 +54,12 @@ export class Topology extends StateObject<TopologyStateEx, TopologyStateEx> impl
         });
     }
 
-    fetchActivity(): Promise<TargetCluster[]> {
-        return this.smcConnection.Activity({}).then(response => {
-            const retVal: TargetCluster[] = [];
-            const context = this;
-            function extractTargetCluster(propPath: string) {
-                const tcs = inner(propPath, response) as Activity.TargetCluster3[];
-                if (tcs) {
-                    for (const tc of tcs) {
-                        const state: any = {
-                            ActiveWorkunit: response.Running.ActiveWorkunit.filter(aw => aw.ClusterName === tc.ClusterName),
-                            ...tc
-                        };
-                        retVal.push(TargetCluster.attach(context.connection, tc.ClusterName, state));
-                    }
-                }
-            }
-            extractTargetCluster("ThorClusterList.TargetCluster");
-            extractTargetCluster("RoxieClusterList.TargetCluster");
-            extractTargetCluster("HThorClusterList.TargetCluster");
-            return retVal;
-        });
-    }
-
-    refresh(): Promise<TargetCluster[]> {
-        return Promise.all([
-            this.fetchTargetClusters(),
-            this.fetchActivity()
-        ]).then(async responses => {
-            return responses[0];
-        });
+    async refresh(): Promise<this> {
+        await this.fetchTargetClusters();
+        return this;
     }
 
     //  Monitoring  ---
-    private _monitorHandle: any;
-    private _monitorTickCount: number = 0;
-    protected _monitor(): void {
-        if (this._monitorHandle) {
-            this._monitorTickCount = 0;
-            return;
-        }
-
-        this._monitorHandle = setTimeout(() => {
-            const refreshPromise: Promise<any> = this.hasEventListener() ? this.refresh() : Promise.resolve(null);
-            refreshPromise.then(() => {
-                this._monitor();
-            });
-            delete this._monitorHandle;
-        }, this._monitorTimeoutDuraction());
-    }
-
-    private _monitorTimeoutDuraction(): number {
-        this._monitorTickCount++;
-        return 30000;
-    }
 
     //  Events  ---
     on(eventID: StateEvents, propIDorCallback: StateCallback | keyof TopologyStateEx, callback?: StatePropCallback): this {
@@ -135,26 +80,5 @@ export class Topology extends StateObject<TopologyStateEx, TopologyStateEx> impl
         }
         this._monitor();
         return this;
-    }
-
-    watch(callback: StateCallback, triggerChange: boolean = true): IObserverHandle {
-        if (typeof callback !== "function") {
-            throw new Error("Invalid Callback");
-        }
-        if (triggerChange) {
-            setTimeout(() => {
-                const props: any = this.properties;
-                const changes: IEvent[] = [];
-                for (const key in props) {
-                    if (props.hasOwnProperty(props)) {
-                        changes.push({ id: key, newValue: props[key], oldValue: undefined });
-                    }
-                }
-                callback(changes);
-            }, 0);
-        }
-        const retVal = super.addObserver("changed", callback);
-        this._monitor();
-        return retVal;
     }
 }

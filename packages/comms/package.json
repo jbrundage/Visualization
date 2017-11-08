@@ -6,6 +6,7 @@
   "module": "lib-es6/index-node.js",
   "browser": "lib-es6/index.js",
   "types": "lib/index-node.d.ts",
+  "unpkg": "dist/comms.min.js",
   "files": [
     "lib/*",
     "lib-es6/*",

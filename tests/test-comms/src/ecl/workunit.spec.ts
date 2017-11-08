@@ -81,6 +81,7 @@ describe("test/esp/ecl/Workunit", function () {
                     expect(wu.Jobname === "GenData");
                 });
             });
+            /*
             it("All Props", function () {
                 return wu.fetchDetails({
                     ScopeOptions: {
@@ -108,7 +109,7 @@ describe("test/esp/ecl/Workunit", function () {
                 return wu.fetchDetails({
                     Filter: {
                         AttributeFilters: {
-                            WUAttributeFilter: [{ Name: "WhenGraphStarted" }]
+                            AttributeFilter: [{ Name: "WhenGraphStarted" }]
                         }
                     }
                 }).then((scopes) => {
@@ -125,7 +126,7 @@ describe("test/esp/ecl/Workunit", function () {
                 return wu.fetchDetails({
                     Filter: {
                         AttributeFilters: {
-                            WUAttributeFilter: [{ Name: "WhenGraphStarted" }]
+                            AttributeFilter: [{ Name: "WhenGraphStarted" }]
                         }
                     },
                     AttributeToReturn: {
@@ -170,6 +171,7 @@ describe("test/esp/ecl/Workunit", function () {
                     });
                 });
             });
+            */
         });
     }
 

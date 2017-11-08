@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
+  "unpkg": "dist/map.min.js",
   "files": [
     "lib/*",
     "lib-es6/*",
@@ -31,7 +32,7 @@
     "d3-selection": "1.1.0",
     "d3-tile": "0.0.4",
     "google-maps": "3.2.1",
-    "topojson": "1.0.0",
+    "topojson": "3.0.2",
     "tslib": "1.8.0"
   },
   "devDependencies": {

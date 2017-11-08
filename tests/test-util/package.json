@@ -3,7 +3,7 @@
   "name": "@hpcc-js/test-util",
   "version": "0.0.25",
   "dependencies": {
-    "@hpcc-js/util": "0.0.33",
+    "@hpcc-js/util": "*",
     "chai": "4.0.0",
     "es6-promise": "4.1.1",
     "mocha": "3.4.2"
@@ -20,10 +20,11 @@
     "rimraf": "2.6.1",
     "source-map-loader": "0.2.1",
     "typescript": "2.5.2",
-    "webpack": "2.6.1"
+    "webpack": "3.8.1"
   },
   "scripts": {
     "build": "tsc && webpack",
+    "watch": "webpack --watch",
     "clean": "rimraf build",
     "test": "npm run test:node",
     "test:node": "./node_modules/.bin/mocha build/index.spec.js --reporter spec",

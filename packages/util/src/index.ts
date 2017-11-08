@@ -1,5 +1,6 @@
 export * from "./array";
 export * from "./cache";
+export * from "./debounce";
 export * from "./dictionary";
 export * from "./esp";
 export * from "./graph";

@@ -22,7 +22,7 @@ describe("test/esp/ecl/Topology", function () {
             const promises = [];
             for (const targetCluster of response) {
                 if (targetCluster.Type === "ThorCluster") {
-                    promises.push(targetCluster.machines({
+                    promises.push(targetCluster.fetchMachines({
                         GetStorageInfo: true,
                         LocalFileSystemsOnly: true
                     }).then(machines => {

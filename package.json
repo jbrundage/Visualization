@@ -7,7 +7,7 @@
     "uninstall": "lerna clean",
     "clean": "lerna run clean && rimraf ./lib*",
     "build": "lerna run build",
-    "watch": "lerna exec --parallel --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/demo-*\" -- tsc -w ",
+    "watch": "lerna exec --parallel --ignore \"@hpcc-js/*-test\" --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/demo-*\" -- tsc -w ",
     "build-es6": "lerna run build-es6",
     "bundle": "lerna run bundle",
     "build-all": "npm run build && npm run build-es6 && npm run bundle",

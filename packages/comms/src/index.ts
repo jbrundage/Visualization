@@ -12,6 +12,7 @@ export * from "./services/wsSMC";
 export * from "./services/wsTopology";
 export * from "./services/wsWorkunits";
 
+export * from "./ecl/activity";
 export * from "./ecl/graph";
 export * from "./ecl/machine";
 export * from "./ecl/query";

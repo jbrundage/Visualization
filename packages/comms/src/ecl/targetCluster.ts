@@ -1,10 +1,8 @@
 import { Cache, StateObject } from "@hpcc-js/util";
 import { IConnection, IOptions } from "../connection";
 import { GetTargetClusterInfo, MachineService } from "../services/wsMachine";
-import { Activity } from "../services/wsSMC";
 import { TopologyService, TpTargetClusterQuery } from "../services/wsTopology";
 import { Machine } from "./machine";
-import { Workunit } from "./workunit";
 
 export class TargetClusterCache extends Cache<{ Name: string }, TargetCluster> {
     constructor() {
@@ -17,11 +15,10 @@ const _targetCluster = new TargetClusterCache();
 
 export interface TpTargetClusterEx {
     MachineInfoEx: GetTargetClusterInfo.MachineInfoEx[];
-    ActiveWorkunit: Activity.ActiveWorkunit[];
 }
 
-export type UTargetClusterState = TpTargetClusterQuery.TpTargetCluster & Activity.TargetCluster3 & TpTargetClusterEx;
-export type ITargetClusterState = TpTargetClusterQuery.TpTargetCluster | Activity.TargetCluster3 | TpTargetClusterEx;
+export type UTargetClusterState = TpTargetClusterQuery.TpTargetCluster & TpTargetClusterEx;
+export type ITargetClusterState = TpTargetClusterQuery.TpTargetCluster | TpTargetClusterEx;
 export class TargetCluster extends StateObject<UTargetClusterState, ITargetClusterState> implements UTargetClusterState {
     protected connection: TopologyService;
     protected machineConnection: MachineService;
@@ -34,21 +31,9 @@ export class TargetCluster extends StateObject<UTargetClusterState, ITargetClust
     get TpEclServers(): TpTargetClusterQuery.TpEclServers { return this.get("TpEclServers"); }
     get TpEclAgents(): TpTargetClusterQuery.TpEclAgents { return this.get("TpEclAgents"); }
     get TpEclSchedulers(): TpTargetClusterQuery.TpEclSchedulers { return this.get("TpEclSchedulers"); }
-    get ClusterName(): string { return this.get("ClusterName"); }
-    get QueueName(): string { return this.get("QueueName"); }
-    get QueueStatus(): string { return this.get("QueueStatus"); }
-    get StatusDetails(): string { return this.get("StatusDetails"); }
-    get Warning(): string { return this.get("Warning"); }
-    get ClusterType(): number { return this.get("ClusterType"); }
-    get ClusterSize(): number { return this.get("ClusterSize"); }
-    get ClusterStatus(): number { return this.get("ClusterStatus"); }
     get MachineInfoEx(): GetTargetClusterInfo.MachineInfoEx[] { return this.get("MachineInfoEx", []); }
     get CMachineInfoEx(): Machine[] {
         return this.MachineInfoEx.map(machineInfoEx => Machine.attach(this.machineConnection, machineInfoEx.Address, machineInfoEx));
-    }
-    get ActiveWorkunit(): Activity.ActiveWorkunit[] { return this.get("ActiveWorkunit", []); }
-    get CActiveWorkunit(): Workunit[] {
-        return this.ActiveWorkunit.map(awu => Workunit.attach(this.connection.connectionOptions(), awu.Wuid, awu));
     }
 
     static attach(optsConnection: IOptions | IConnection | TopologyService, name: string, state?: ITargetClusterState): TargetCluster {

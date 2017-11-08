@@ -1,11 +1,11 @@
 import {
-    Cache, deepMixinT, Graph, IECLDefintion, IEvent, IObserverHandle, scopedLogger,
+    Cache, deepMixinT, Graph, IECLDefintion, IEvent, scopedLogger,
     StateCallback, StateEvents, StateObject, StatePropCallback, StringAnyMap, XMLNode
 } from "@hpcc-js/util";
 import { utcFormat, utcParse } from "d3-time-format";
 import { IConnection, IOptions } from "../connection";
 import { ESPExceptions } from "../espConnection";
-import { Activity } from "../services/wsSMC";
+import { SMCActivity } from "../services/wsSMC";
 import * as WsTopology from "../services/wsTopology";
 import * as WsWorkunits from "../services/wsWorkunits";
 import { createXGMMLGraph, ECLGraph, GraphCache } from "./graph";
@@ -53,8 +53,8 @@ export interface ITimeElapsed {
 }
 
 export type WorkunitEvents = "completed" | StateEvents;
-export type UWorkunitState = WsWorkunits.WUQuery.ECLWorkunit & WsWorkunits.WUInfo.Workunit & Activity.ActiveWorkunit & IWorkunit & IDebugWorkunit;
-export type IWorkunitState = WsWorkunits.WUQuery.ECLWorkunit | WsWorkunits.WUInfo.Workunit | Activity.ActiveWorkunit | IWorkunit | IDebugWorkunit;
+export type UWorkunitState = WsWorkunits.WUQuery.ECLWorkunit & WsWorkunits.WUInfo.Workunit & SMCActivity.ActiveWorkunit & IWorkunit & IDebugWorkunit;
+export type IWorkunitState = WsWorkunits.WUQuery.ECLWorkunit | WsWorkunits.WUInfo.Workunit | SMCActivity.ActiveWorkunit | IWorkunit | IDebugWorkunit;
 export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implements WsWorkunits.WUInfo.Workunit {
     connection: WsWorkunits.WorkunitsService;
     topologyConnection: WsTopology.TopologyService;
@@ -62,8 +62,6 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
     private _debugMode: boolean = false;
     private _debugAllGraph: any;
     private _submitAction: WsWorkunits.WUUpdate.Action;
-    private _monitorHandle: any;
-    private _monitorTickCount: number = 0;
 
     //  Accessors  ---
     get properties(): WsWorkunits.WUQuery.ECLWorkunit & WsWorkunits.WUInfo.Workunit { return this.get(); }
@@ -234,7 +232,6 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
             Wuid: wuid,
             StateID: WUStateID.Unknown
         });
-        this._monitorTickCount = 0;
     }
 
     update(request: Partial<WsWorkunits.WUUpdate.Request>, appData?: any, debugData?: any): Promise<Workunit> {
@@ -402,15 +399,28 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         });
     }
 
-    refresh(full: boolean = false): Promise<Workunit> {
-        const refreshPromise: Promise<WsWorkunits.WUInfo.Response | WsWorkunits.WUQuery.Response> = full ? this.WUInfo({ IncludeExceptions: true }) : this.WUQuery();
-        const debugPromise = this.debugStatus();
-        return Promise.all([
-            refreshPromise,
-            debugPromise
-        ]).then(() => {
-            return this;
-        });
+    async refreshState(): Promise<this> {
+        await this.WUQuery();
+        return this;
+    }
+
+    async refreshInfo(): Promise<this> {
+        await this.WUInfo();
+        return this;
+    }
+
+    async refreshDebug(): Promise<this> {
+        await this.debugStatus();
+        return this;
+    }
+
+    async refresh(full: boolean = false): Promise<this> {
+        if (full) {
+            await Promise.all([this.refreshInfo(), this.refreshDebug()]);
+        } else {
+            await this.refreshState();
+        }
+        return this;
     }
 
     eclExceptions(): WsWorkunits.WUInfo.ECLException[] {
@@ -515,34 +525,29 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
 
     //  Monitoring  ---
     protected _monitor(): void {
-        if (this._monitorHandle || this.isComplete()) {
+        if (this.isComplete()) {
             this._monitorTickCount = 0;
             return;
         }
-
-        this._monitorHandle = setTimeout(() => {
-            const refreshPromise: Promise<any> = this.hasEventListener() ? this.refresh(true) : Promise.resolve(null);
-            refreshPromise.then(() => {
-                this._monitor();
-            });
-            delete this._monitorHandle;
-        }, this._monitorTimeoutDuraction());
+        super._monitor();
     }
 
-    private _monitorTimeoutDuraction(): number {
-        ++this._monitorTickCount;
-        if (this._monitorTickCount <= 1) {
+    protected _monitorTimeoutDuraction(): number {
+        const retVal = super._monitorTimeoutDuraction();
+        if (this._monitorTickCount <= 1) {          //  Once
             return 0;
-        } else if (this._monitorTickCount <= 3) {
+        } else if (this._monitorTickCount <= 3) {   //  Twice
             return 500;
-        } else if (this._monitorTickCount <= 10) {
+        } else if (this._monitorTickCount <= 5) {   //  Twice
             return 1000;
-        } else if (this._monitorTickCount <= 20) {
+        } else if (this._monitorTickCount <= 7) {   //  Twice
             return 3000;
-        } else if (this._monitorTickCount <= 30) {
+        } else if (this._monitorTickCount <= 9) {   //  Twice
             return 5000;
+        } else if (this._monitorTickCount <= 11) {  //  Twice
+            return 10000;
         }
-        return 10000;
+        return retVal;
     }
 
     //  Events  ---
@@ -571,27 +576,6 @@ export class Workunit extends StateObject<UWorkunitState, IWorkunitState> implem
         }
         this._monitor();
         return this;
-    }
-
-    watch(callback: StateCallback, triggerChange: boolean = true): IObserverHandle {
-        if (typeof callback !== "function") {
-            throw new Error("Invalid Callback");
-        }
-        if (triggerChange) {
-            setTimeout(() => {
-                const props: any = this.properties;
-                const changes: IEvent[] = [];
-                for (const key in props) {
-                    if (props.hasOwnProperty(props)) {
-                        changes.push({ id: key, newValue: props[key], oldValue: undefined });
-                    }
-                }
-                callback(changes);
-            }, 0);
-        }
-        const retVal = super.addObserver("changed", callback);
-        this._monitor();
-        return retVal;
     }
 
     watchUntilComplete(callback?: StateCallback): Promise<this> {

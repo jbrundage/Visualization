@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
   "types": "lib/index.d.ts",
+  "unpkg": "dist/composite.min.js",
   "files": [
     "lib/*",
     "lib-es6/*",
