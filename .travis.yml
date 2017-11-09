@@ -1,15 +1,14 @@
 language: node_js
 node_js:
-  - '5'
+  - '8'
 addons:
   firefox: latest
 sudo: false
-install:
-  - npm install
-script:
+cache:
+  directories:
+    - "node_modules"
+before_script:
+  - npm run build-all;
   - export DISPLAY=:99.0;
-    sh -e /etc/init.d/xvfb start;
-    set -e;
-    npm run clean;
-    npm run build;
-    npm run test;
+  - sh -e /etc/init.d/xvfb start;
+  - set -e;

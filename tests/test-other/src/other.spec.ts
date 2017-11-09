@@ -110,7 +110,7 @@ describe("@hpcc-js/other", () => {
                                 );
                                 break;
                             default:
-                                it("Has render test", () => {
+                                it.skip("Missing Test", () => {
                                     expect(false).to.be.true;
                                 });
                         }

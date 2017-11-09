@@ -8,4 +8,5 @@ const watchOptions = {
 const watcher = rollup.watch(watchOptions);
 
 watcher.on("event", event => {
+    console.log(event.code);
 });

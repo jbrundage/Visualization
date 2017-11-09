@@ -355,7 +355,6 @@ export class ThemeEditor extends HTMLWidget {
                         const loadSelect = document.getElementById("te-load-theme");
                         const loadOptions = loadSelect.getElementsByTagName("option");
                         let saveExists = false;
-                        let saveStr;
                         for (const i in loadOptions) {
                             const val = loadOptions[i].value;
                             if (val === themeName) {
@@ -363,13 +362,7 @@ export class ThemeEditor extends HTMLWidget {
                             }
                         }
                         if (!saveExists) {
-                            saveStr = context.save(themeName);
                             loadSelect.innerHTML += "<option value='" + themeName + "'>" + themeName + "</option>";
-                        } else {
-                            const overwrite = confirm("'" + themeName + "' already exists. Do you want to overwrite the existing save? ");
-                            if (overwrite) {
-                                saveStr = context.save(themeName);
-                            }
                         }
                         clickedElm.previousSibling.value = "";
                         (loadSelect as any).value = themeName;

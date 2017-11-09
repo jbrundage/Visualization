@@ -17,7 +17,7 @@ describe("test/esp/ecl/Topology", function () {
         });
     });
 
-    it.only("Target Clusters", function () {
+    it("Target Clusters", function () {
         return topology.fetchTargetClusters().then(response => {
             const promises = [];
             for (const targetCluster of response) {
@@ -26,7 +26,6 @@ describe("test/esp/ecl/Topology", function () {
                         GetStorageInfo: true,
                         LocalFileSystemsOnly: true
                     }).then(machines => {
-                        console.log(machines);
                     }));
                 }
             }

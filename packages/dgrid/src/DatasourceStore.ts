@@ -81,7 +81,6 @@ class RowFormatter {
     private _flattenedColumns = [];
     private _columnIdx = {};
     private _formattedRow = {};
-    private _grid = {};
 
     constructor(columns) {
         this._columns = columns;
@@ -105,7 +104,6 @@ class RowFormatter {
 
     format(row) {
         this._formattedRow = {};
-        this._grid = {};
         this.formatRow(this._columns, row);
         return this.row();
     }

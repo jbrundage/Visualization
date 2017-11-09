@@ -8,7 +8,6 @@ import { View } from "./view";
 
 export class Param extends PropertyExt {
     private _view: View;
-    private _owner: RoxieRequest;
 
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
@@ -20,9 +19,9 @@ export class Param extends PropertyExt {
     localFieldID: publish<this, string>;
     localFieldID_exists: () => boolean;
 
-    constructor(owner: RoxieRequest) {
+    constructor(view: View) {
         super();
-        this._owner = owner;
+        this._view = view;
     }
 
     hash() {
@@ -201,7 +200,7 @@ export class RoxieRequest extends Activity {
             const oldParams = this.request();
             const diffs = compare(oldParams.map(p => p.localFieldID()), this._roxieService.requestFields().map(ff => ff.label));
             const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localFieldID()) >= 0);
-            this.request(newParams.concat(diffs.added.map(label => new Param(this).localFieldID(label))));
+            this.request(newParams.concat(diffs.added.map(label => new Param(this._owner).localFieldID(label))));
         });
     }
 

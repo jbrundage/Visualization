@@ -24,7 +24,7 @@ const simple = {
         ]
     }
 };
-describe("@hpcc-js/common", () => {
+describe("@hpcc-js/chart", () => {
     for (const key in chart) {
         const item = (chart as any)[key];
         if (item) {

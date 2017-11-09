@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./build",
+    "outDir": "./lib",
     "target": "es5",
-    "module": "commonjs",
+    "module": "amd",
     "moduleResolution": "node",
     "sourceMap": true,
     "skipLibCheck": true,

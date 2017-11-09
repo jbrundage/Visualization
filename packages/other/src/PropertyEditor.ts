@@ -337,11 +337,9 @@ export class PropertyEditor extends HTMLWidget {
                 for (const excludeParamItem of context.excludeParams()) {
                     const arr = excludeParamItem.split(".");
                     let widgetName;
-                    let obj;
                     let excludeParam;
                     if (arr.length > 2) {
                         widgetName = arr[0];
-                        obj = arr[1];
                         excludeParam = arr[2];
                     } else {
                         widgetName = arr[0];

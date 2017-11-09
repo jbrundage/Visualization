@@ -1,9 +1,10 @@
 var path = require('path');
 
 module.exports = {
-    entry: './build/index.spec.js',
+    entry: './lib/index.spec.js',
     output: {
-        filename: "./build/bundle.test.js"
+        filename: 'bundle.test.js',
+        path: path.join(__dirname, "build")
     },
     devtool: "source-map",
     module: {

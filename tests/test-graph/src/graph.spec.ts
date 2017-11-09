@@ -20,7 +20,7 @@ const data = {
     }
 };
 
-describe("@hpcc-js/common", () => {
+describe("@hpcc-js/graph", () => {
     for (const key in graph) {
         const item = (graph as any)[key];
         if (item) {

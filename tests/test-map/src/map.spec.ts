@@ -10,7 +10,7 @@ import { classDef, render } from "./coreTests";
 
 const urlSearch: string = window.location.href.split("?")[1];
 
-describe("@hpcc-js/layout", () => {
+describe("@hpcc-js/map", () => {
     for (const key in map) {
         const item = (map as any)[key];
         if (item && item.prototype && item.prototype.constructor) {

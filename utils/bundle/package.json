@@ -19,9 +19,9 @@
     "build": "tsc"
   },
   "dependencies": {
-    "rollup": "0.50.0",
+    "rollup": "0.51.2",
     "rollup-plugin-alias": "1.4.0",
-    "rollup-plugin-commonjs": "8.2.4",
+    "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-postcss": "0.5.5",
     "rollup-plugin-sourcemaps": "0.4.2",
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/node": "6.0.90",
     "rimraf": "2.6.1",
-    "typescript": "2.5.2"
+    "typescript": "2.6.1"
   },
   "repository": {
     "type": "git",

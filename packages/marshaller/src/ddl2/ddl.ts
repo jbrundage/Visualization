@@ -341,13 +341,13 @@ export class DDLAdapter {
         }
     }
 
-    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker): this {
+    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker, view: View): this {
         const ddlDS = this._dsDedup[ddlDSRef.id];
         this.readDatasource(ddlDS, ds);
         const dsDetails = ds.details();
         if (dsDetails instanceof RoxieRequest && DDL2.isIRoxieServiceRef(ddlDSRef)) {
             dsDetails.request(ddlDSRef.request.map(rf => {
-                return new Param(dsDetails)
+                return new Param(view)
                     .source(rf.source)
                     .remoteFieldID(rf.remoteFieldID)
                     .localFieldID(rf.localFieldID)
@@ -400,7 +400,7 @@ export class DDLAdapter {
             const viz = new Viz(this._dashboard).id(ddlView.id).title(ddlView.id);
             this._dashboard.addVisualization(viz);
             const view = viz.view();
-            this.readDatasourceRef(ddlView.datasource, view.dataSource());
+            this.readDatasourceRef(ddlView.datasource, view.dataSource(), view);
             const activities: Activity[] = [
                 view.dataSource(),
                 ...ddlView.activities.map(activity => {

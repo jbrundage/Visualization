@@ -20,13 +20,13 @@
     "karma-mocha-reporter": "2.2.3",
     "rimraf": "2.6.1",
     "source-map-loader": "0.2.1",
-    "typescript": "2.5.2",
+    "typescript": "2.6.1",
     "webpack": "3.8.1"
   },
   "scripts": {
     "build": "tsc && webpack",
-    "clean": "rimraf build",
-    "test": "npm run test:node",
+    "clean": "rimraf build && rimraf lib && rimraf 0*",
+    "test": "npm run test:node && npm run test:firefox",
     "test:node": "./node_modules/.bin/mocha build/index.spec.js --reporter spec",
     "test:chrome": "karma start --browsers=Chrome",
     "test:firefox": "karma start --browsers=Firefox",

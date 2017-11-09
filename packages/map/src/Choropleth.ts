@@ -28,6 +28,14 @@ export class Choropleth extends Layer {
         this._topoJsonFolder = require && require.toUrl ? require.toUrl("@hpcc-js/map/TopoJSON") : "../TopoJSON";
     }
 
+    topoJsonFolder(): string;
+    topoJsonFolder(_: string): this;
+    topoJsonFolder(_?: string): string | this {
+        if (!arguments.length) return this._topoJsonFolder;
+        this._topoJsonFolder = _;
+        return this;
+    }
+
     data(_?) {
         const retVal = Layer.prototype.data.apply(this, arguments);
         if (arguments.length) {

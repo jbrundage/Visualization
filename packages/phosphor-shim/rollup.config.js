@@ -6,10 +6,12 @@ const alias = require('rollup-plugin-alias');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 
 export default {
-    entry: 'lib-es6/index.js',
-    format: 'umd',
-    moduleName: "hpcc-js-phosphor-shim",
-    dest: 'dist/phosphor-shim.js',
+    input: 'lib-es6/index.js',
+    name: "hpcc-js-phosphor-shim",
+    output: {
+        file: 'dist/phosphor-shim.js',
+        format: 'umd'
+    },
     plugins: [
         resolve({
             jsnext: true,

@@ -1,5 +1,5 @@
 import { Class, HTMLWidget, SVGWidget, Text } from "@hpcc-js/common";
-import { Dermatology, MegaChart } from "@hpcc-js/composite";
+import { Dermatology, MegaChart, MultiChart, ChartPanel } from "@hpcc-js/composite";
 import * as composite from "@hpcc-js/composite";
 import { data } from "@hpcc-js/sample-data";
 import { expect } from "chai";
@@ -18,6 +18,11 @@ describe("@hpcc-js/composite", () => {
                     }
                     if (item.prototype instanceof HTMLWidget || item.prototype instanceof SVGWidget) {
                         switch (item.prototype.constructor) {
+                            case MultiChart:
+                                render(new MultiChart()
+                                    .columns(data.Pivot.subjects.columns)
+                                    .data(data.Pivot.subjects.data)
+                                );
                             case Dermatology:
                                 render(new Dermatology()
                                     .widget(new Text().text("Hello and WElcome"))
@@ -29,8 +34,14 @@ describe("@hpcc-js/composite", () => {
                                     .data(data.Pivot.subjects.data)
                                 );
                                 break;
+                            case ChartPanel:
+                                render(new ChartPanel()
+                                    .columns(data.Pivot.subjects.columns)
+                                    .data(data.Pivot.subjects.data)
+                                );
+                                break;
                             default:
-                                it("Has render test", () => {
+                                it("Missing test", () => {
                                     expect(false).to.be.true;
                                 });
                         }

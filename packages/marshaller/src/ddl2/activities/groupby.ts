@@ -85,7 +85,6 @@ AggregateField.prototype._class += " AggregateField";
 
 //  ===========================================================================
 export class GroupBy extends Activity {
-    private _owner: View;
 
     @publish([], "propertyArray", "Source Columns", null, { autoExpand: GroupByColumn })
     column: publish<this, GroupByColumn[]>;
@@ -98,7 +97,6 @@ export class GroupBy extends Activity {
 
     constructor(owner: View) {
         super();
-        this._owner = owner;
     }
 
     hash(): string {

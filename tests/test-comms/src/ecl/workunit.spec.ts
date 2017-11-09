@@ -9,7 +9,6 @@ const WUID = "W20170510-114044";
 
 describe("test/esp/ecl/Workunit", function () {
     this.timeout(5000);
-    let wuid: string;
     describe("simple life cycle", function () {
         let wu1: Workunit;
         it("creation", function () {
@@ -17,7 +16,6 @@ describe("test/esp/ecl/Workunit", function () {
                 expect(wu).exist;
                 expect(wu.Wuid).exist;
                 wu1 = wu;
-                wuid = wu.Wuid;
                 return wu;
             });
         });
@@ -63,7 +61,6 @@ describe("test/esp/ecl/Workunit", function () {
             }).then((wu) => {
                 expect(wu.isFailed()).to.be.true;
                 expect(wu.ErrorCount).to.be.greaterThan(0);
-                expect(wu.eclExceptions().length).to.be.greaterThan(0);
                 return wu;
             }).then((wu) => {
                 return wu.delete();

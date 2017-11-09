@@ -11,7 +11,7 @@ export type StatePropCallback = (changes: IEvent) => void;
 export type StateCallback = (changes: IEvent[]) => void;
 export type StateEvents = "propChanged" | "changed";
 export class StateObject<U, I> {
-    private _espState: U = {} as U;
+    private _espState: Partial<U> = {} as U;
     private _espStateCache: { [key: string]: string } = {};
     private _events = new Observable<StateEvents>();
     private _monitorHandle: number;
@@ -28,7 +28,7 @@ export class StateObject<U, I> {
 
     protected get(): U;
     protected get<K extends keyof U>(key: K, defValue?: U[K]): U[K];
-    protected get<K extends keyof U>(key?: K, defValue?: U[K]): U | U[K] | undefined {
+    protected get<K extends keyof U>(key?: K, defValue?: U[K]): Partial<U> | U[K] | undefined {
         if (key === void 0) {
             return this._espState;
         }
@@ -44,7 +44,7 @@ export class StateObject<U, I> {
         return this.setAll(keyOrNewVals as Partial<U>);
     }
 
-    private setSingle<K extends keyof U>(key: K, newVal: U[K], batchMode: boolean): IEvent | null {
+    private setSingle<K extends keyof U>(key: K, newVal: U[K] | undefined, batchMode: boolean): IEvent | null {
         const oldCacheVal = this._espStateCache[(key as string)];
         const newCacheVal = hashSum(newVal);
         if (oldCacheVal !== newCacheVal) {
@@ -65,7 +65,7 @@ export class StateObject<U, I> {
         const changed: IEvent[] = [];
         for (const key in _) {
             if (_.hasOwnProperty(key)) {
-                const changedInfo = this.setSingle(key, _[key]!, true);
+                const changedInfo = this.setSingle(key, _[key], true);
                 if (changedInfo) {
                     changed.push(changedInfo);
                 }

@@ -31,7 +31,7 @@
     "@types/d3-time-format": "2.0.5",
     "rimraf": "2.6.1",
     "typedoc": "0.7.1",
-    "typescript": "2.5.2"
+    "typescript": "2.6.1"
   },
   "repository": {
     "type": "git",

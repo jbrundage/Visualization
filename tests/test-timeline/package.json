@@ -24,13 +24,13 @@
     "karma-mocha-reporter": "2.2.3",
     "rimraf": "2.6.1",
     "style-loader": "0.19.0",
-    "typescript": "2.5.2",
+    "typescript": "2.6.1",
     "webpack": "3.8.1"
   },
   "scripts": {
     "clean": "rimraf build && rimraf 0../",
     "build": "tsc && webpack",
-    "test": "npm run test:chrome",
+    "test": "npm run test:firefox",
     "test:chrome": "karma start --browsers=Chrome",
     "test:firefox": "karma start --browsers=Firefox",
     "test:ie": "karma start --browsers=IE"

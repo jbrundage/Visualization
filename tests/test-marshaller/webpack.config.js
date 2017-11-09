@@ -3,7 +3,8 @@ var path = require('path');
 module.exports = {
     entry: './build/index.spec.js',
     output: {
-        filename: "./build/bundle.test.js"
+        path: __dirname + "/build",
+        filename: "bundle.test.js"
     },
     devtool: "source-map",
     module: {
@@ -19,7 +20,7 @@ module.exports = {
             use: [{
                 loader: 'file-loader',
                 options: {
-                    name: './build/[name].[ext]'
+                    name: '[name].[ext]'
                 }
             }]
         }]
