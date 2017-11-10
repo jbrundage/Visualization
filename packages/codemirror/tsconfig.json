@@ -2,7 +2,7 @@
     "compilerOptions": {
         "outDir": "./lib",
         "target": "es5",
-        "module": "umd",
+        "module": "es6",
         "moduleResolution": "node",
         "jsx": "react",
         "jsxFactory": "JSXWidget.createElement",
@@ -13,6 +13,7 @@
         "noUnusedLocals": true,
         "strictNullChecks": false,
         "importHelpers": true,
+        "experimentalDecorators": true,
         "lib": [
             "dom",
             "es5",
@@ -21,6 +22,6 @@
         "types": []
     },
     "include": [
-        "src/*"
+        "src/**/*"
     ]
 }

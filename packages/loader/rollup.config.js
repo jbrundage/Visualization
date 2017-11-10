@@ -1,32 +1,26 @@
+import sourcemaps from "rollup-plugin-sourcemaps";
+import postcss from "rollup-plugin-postcss";
 import resolve from 'rollup-plugin-node-resolve';
-import postcss from 'rollup-plugin-postcss';
 import commonjs from "rollup-plugin-commonjs";
-const alias = require('rollup-plugin-alias');
-const uglify = require('rollup-plugin-uglify');
-const sourcemaps = require('rollup-plugin-sourcemaps');
+const definition = require("./package.json");
+const name = definition.name.split("/").pop();
 
 export default {
-    entry: 'lib-es6/index.js',
-    format: 'iife',
-    moduleName: "@hpcc-js/loader",
-    external: [
-    ],
-    dest: 'dist/loader.js',
+    input: "lib/index",
+    output: {
+        file: `build/${name}.js`,
+        format: "umd",
+        name: `@hpcc-js/${name}`
+    },
+    external: [],
+    sourceMap: true,
     plugins: [
-        alias({
-        }),
-        resolve({
-            jsnext: true,
-            main: true
-        }),
-        commonjs({
-            namedExports: {
-            }
-        }),
-        postcss({
-            extensions: ['.css']  // default value
-        }),
+        resolve(),
+        commonjs(),
         sourcemaps(),
-        uglify()
+        postcss({
+            extensions: [".css"],
+            extract: true
+        })
     ]
 };

@@ -1,6 +1,7 @@
 import "codemirror/mode/ecl/ecl";
 import "codemirror/mode/javascript/javascript";
-import * as cm from "codemirror";
-var CodeMirror = cm.default || cm;
+import CM from "codemirror";
 
-export { CodeMirror }
+import "codemirror/lib/codemirror.css";
+
+export { CM as CodeMirror }

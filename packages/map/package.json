@@ -2,22 +2,25 @@
   "name": "@hpcc-js/map",
   "version": "0.0.48",
   "description": "hpcc-js - Viz Map",
-  "main": "lib/index.js",
-  "module": "lib-es6/index.js",
+  "main": "build/map.js",
+  "module": "lib/index",
+  "unpkg": "build/map.min.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/map.min.js",
   "files": [
+    "build/*",
     "lib/*",
-    "lib-es6/*",
-    "src/*.css",
-    "TopoJSON/**/*",
-    "dist/*"
+    "TopoJSON/*",
+    "src/*.css"
   ],
   "scripts": {
-    "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc",
-    "build-es6": "tsc --module esnext --outDir ./lib-es6",
-    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
+    "clean": "rimraf lib && rimraf build",
+    "compile": "tsc",
+    "compile-watch": "tsc -w",
+    "bundle": "rollup -c",
+    "bundle-watch": "rollup -w -c",
+    "minimize": "uglifyjs build/map.js -c -m -o build/map.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
@@ -26,6 +29,7 @@
     "@hpcc-js/graph": "^0.0.45",
     "@hpcc-js/layout": "^0.0.44",
     "@hpcc-js/other": "^0.0.44",
+    "d3-collection": "1.0.4",
     "d3-format": "1.2.0",
     "d3-geo": "1.6.4",
     "d3-request": "1.0.5",
@@ -37,9 +41,13 @@
   },
   "devDependencies": {
     "@hpcc-js/bundle": "^0.0.15",
+    "concurrently": "3.5.0",
     "rimraf": "2.6.1",
+    "rollup": "0.51.3",
+    "rollup-plugin-postcss": "0.5.5",
     "typedoc": "0.7.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8"
   },
   "repository": {
     "type": "git",

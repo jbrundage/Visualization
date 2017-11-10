@@ -2,24 +2,23 @@
   "name": "@hpcc-js/util",
   "version": "0.0.42",
   "description": "hpcc-js - Utilities",
-  "main": "lib/index.js",
-  "module": "lib-es6/index.js",
+  "main": "build/util.js",
+  "module": "lib/index",
+  "unpkg": "build/util.min.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/util.min.js",
   "files": [
-    "lib/*",
-    "lib-es6/*",
-    "src/*.css",
-    "dist/*"
+    "build/*",
+    "lib/*"
   ],
   "scripts": {
-    "clean": "rimraf lib* && rimraf dist*",
-    "build": "tsc",
-    "build-es6": "tsc --module esnext --outDir ./lib-es6",
-    "watch-es6": "tsc -w --module esnext --outDir ./lib-es6",
-    "bundle": "node ./node_modules/@hpcc-js/bundle/lib/rollup",
-    "watch-bundle": "node ./node_modules/@hpcc-js/bundle/lib/watch",
-    "watch": "concurrently --kill-others \"npm run watch-es6\" \"npm run watch-bundle\"",
+    "clean": "rimraf lib && rimraf build",
+    "compile": "tsc",
+    "compile-watch": "tsc -w",
+    "bundle": "rollup -c",
+    "bundle-watch": "rollup -w -c",
+    "minimize": "uglifyjs build/util.js -c -m -o build/util.min.js",
+    "build": "npm run compile && npm run bundle",
+    "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
@@ -29,8 +28,10 @@
     "@hpcc-js/bundle": "^0.0.15",
     "concurrently": "3.5.0",
     "rimraf": "2.6.1",
+    "rollup": "0.51.3",
     "typedoc": "0.7.1",
-    "typescript": "2.6.1"
+    "typescript": "2.6.1",
+    "uglify-js": "3.1.8"
   },
   "repository": {
     "type": "git",

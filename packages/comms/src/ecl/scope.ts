@@ -61,9 +61,8 @@ export class Scope extends StateObject<ScopeEx, ScopeEx> implements ScopeEx {
                 timeElapsed.end = scopeAttr;
             } else {
                 retVal.push(new Attribute(this, scopeAttr));
-            }
+            };
         });
-        console.log(timeElapsed);
         if (timeElapsed.start && timeElapsed.end) {
             // const endTime = parser(timeElapsed.start.Formatted);
             // endTime!.setMilliseconds(endTime!.getMilliseconds() + (+timeElapsed.elapsed.RawValue) / 1000000);
