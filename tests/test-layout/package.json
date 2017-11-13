@@ -25,7 +25,7 @@
   },
   "scripts": {
     "clean": "rimraf build && rimraf lib",
-    "compile": "tsc",
+    "compile": "tsc --module esnext --outDir ./lib",
     "bundle": "webpack",
     "build": "npm run compile && npm run bundle",
     "test": "mocha-chrome --chrome-flags \"[\\\"--allow-file-access-from-files\\\"]\" ./test.html"

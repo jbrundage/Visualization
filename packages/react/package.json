@@ -12,11 +12,12 @@
     "src/*.css"
   ],
   "scripts": {
-    "clean": "rimraf lib && rimraf build",
-    "compile": "tsc",
-    "compile-watch": "tsc -w",
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
+    "compile-umd": "tsc",
     "bundle": "rollup -c",
-    "bundle-watch": "rollup -w -c",
+    "bundle-watch": "npm run bundle -- -w",
     "minimize": "uglifyjs build/react.js -c -m -o build/react.min.js",
     "build": "npm run compile && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",
@@ -25,7 +26,9 @@
   "dependencies": {
     "@hpcc-js/common": "^0.0.44",
     "d3-format": "1.2.0",
-    "orb": "1.0.9",
+    "orb-fix": "2.0.4",
+    "react": "~15.5.4",
+    "react-dom": "^15.5.4",
     "tslib": "1.8.0"
   },
   "devDependencies": {

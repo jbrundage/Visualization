@@ -22,7 +22,7 @@
   },
   "scripts": {
     "clean": "rimraf build && rimraf lib",
-    "compile": "tsc",
+    "compile": "tsc --module esnext --outDir ./lib",
     "bundle": "webpack",
     "build": "npm run compile && npm run bundle",
     "test": "npm run test:node && npm run test:chrome",

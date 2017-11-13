@@ -11,11 +11,11 @@
     "src/*.css"
   ],
   "scripts": {
-    "clean": "rimraf lib && rimraf build",
-    "compile": "tsc",
-    "compile-watch": "tsc -w",
+    "clean": "rimraf lib* && rimraf build",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
     "bundle": "rollup -c",
-    "bundle-watch": "rollup -w -c",
+    "bundle-watch": "npm run bundle -- -w",
     "minimize": "uglifyjs build/codemirror-shim.js -c -m -o build/codemirror-shim.min.js",
     "build": "npm run compile && npm run bundle",
     "watch": "concurrently --kill-others \"npm run compile-watch\" \"npm run bundle-watch\"",

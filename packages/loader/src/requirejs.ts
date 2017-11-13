@@ -1,5 +1,29 @@
 import { define, require as requirejs } from "@hpcc-js/requirejs-shim";
-import { packages, shims, thirdParty } from "./meta";
+import { packages, rawgitPackages, shims, npmPackages } from "./meta";
+
+function guessScriptURL() {
+    if (document && document.currentScript) {
+        if ((document.currentScript as any).src) {
+            return (document.currentScript as any).src;
+        }
+    }
+    const scripts = document.getElementsByTagName("script");
+    return scripts[scripts.length - 1].src;
+}
+
+function parseScriptUrl() {
+    const scriptUrl = guessScriptURL();
+    const scriptUrlParts = scriptUrl.split("/loader/build/loader.js");
+    const isLocal = scriptUrl.indexOf("file://") === 0;
+    return {
+        isLocal,
+        libUrl: isLocal ? scriptUrlParts[0] : "https://unpkg.com/@hpcc-js",
+        node_modulesUrl: isLocal ? scriptUrlParts[0] + "/../node_modules" : "https://unpkg.com"
+    };
+}
+
+const config = parseScriptUrl();
+config;
 
 //  Calculate hosting url
 
@@ -56,8 +80,8 @@ requirejs.load = function (context, moduleId, url) {
     } else if (url.length >= 20 && url.indexOf("/common/lib/index.js") === url.length - 20) {
         addCssToDoc(url.replace("/common/lib/index.js", "/common/font-awesome/css/font-awesome.min.css"));
     }
-    if (moduleId.indexOf("@hpcc-js/") === 0) {
-        addCssToDoc(url.replace(".js", ".css"));
+    if (moduleId.indexOf("@hpcc-js/") === 0 && moduleId.indexOf("/build/") > 0) {
+        // addCssToDoc(url.replace(".js", ".css"));
     }
     return load(context, moduleId, url);
 };
@@ -92,28 +116,41 @@ export function cdn(version?: string, additionalPaths: { [key: string]: string }
     return bundle(url, additionalPaths, min);
 }
 
-export function amd(url: string = hostUrl, additionalPaths: { [key: string]: string } = {}, thirdPartyUrl: string = "file:///C:/Users/gordon/git/hpcc-js/node_modules"): any {
+function local(devMode: boolean, additionalPaths: { [key: string]: string }): any {
     const thirdPartyPaths: { [key: string]: string } = {};
-    for (const key in thirdParty) {
-        thirdPartyPaths[key] = `${thirdPartyUrl}/${thirdParty[key]}`;
+    for (const key in npmPackages) {
+        thirdPartyPaths[key] = `${config.node_modulesUrl}/${npmPackages[key]}`;
+    }
+    if (!config.isLocal) {
+        for (const key in rawgitPackages) {
+            thirdPartyPaths[key] = `https://cdn.rawgit.com/${rawgitPackages[key]}`;
+        }
     }
     const paths: { [key: string]: string } = {
         ...thirdPartyPaths,
         ...additionalPaths
     };
     const rjsPackages: any = [];
-    shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${url}/${shim}/build/${shim}`; });
+    shims.forEach(shim => { paths[`@hpcc-js/${shim}`] = `${config.libUrl}/${shim}/build/${shim}`; });
     packages.forEach(pckg => {
-        paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}`;
+        paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
         rjsPackages.push({
             name: `@hpcc-js/${pckg}`,
-            main: `build/${pckg}`
+            main: devMode && config.isLocal ? `lib-umd/index` : `build/${pckg}`
         });
-        paths[`@hpcc-js/${pckg}`] = `${url}/${pckg}`;
+        paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
     });
     return requirejs.config({
-        context: url,
+        context: config.libUrl,
         paths,
         packages: rjsPackages
     });
+}
+
+export function amd(additionalPaths: { [key: string]: string } = {}): any {
+    return local(false, additionalPaths);
+}
+
+export function dev(additionalPaths: { [key: string]: string } = {}): any {
+    return local(true, additionalPaths);
 }

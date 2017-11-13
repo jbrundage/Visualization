@@ -6,6 +6,7 @@
     "install": "lerna bootstrap --hoist",
     "uninstall": "lerna clean",
     "clean": "lerna run clean",
+    "compile-umd": "lerna run --ignore \"@hpcc-js/test-*\" compile-umd",
     "build": "lerna run --ignore \"@hpcc-js/test-*\" build",
     "minimize": "lerna run --ignore \"@hpcc-js/test-*\" minimize",
     "watch": "lerna exec --parallel --ignore \"@hpcc-js/test-*\" --ignore \"@hpcc-js/*-shim\" --ignore \"@hpcc-js/demo-*\" -- tsc -w ",

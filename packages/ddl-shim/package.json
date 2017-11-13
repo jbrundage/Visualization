@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./src/ddl*Schema*.ts && rimraf lib* && rimraf build",
-    "compile": "tsc",
-    "compile-watch": "tsc -w",
+    "compile": "tsc --module esnext --outDir ./lib",
+    "compile-watch": "npm run compile -- -w",
     "compile-util": "tsc -p ./tsconfig-util.json",
     "generate": "node ./lib-util/createSchema.js",
     "bundle": "webpack",
@@ -29,7 +29,7 @@
     "tslib": "1.8.0"
   },
   "devDependencies": {
-    "@types/node": "6.0.90",
+    "@types/node": "8.0.51",
     "extract-text-webpack-plugin": "2.1.0",
     "rimraf": "2.6.1",
     "typescript-json-schema": "0.18.0",
