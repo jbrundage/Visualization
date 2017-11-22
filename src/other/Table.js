@@ -371,6 +371,8 @@
                 };
             });
         });
+        
+        this.setAverageColumnAlignments(cells);
         cells.enter()
             .append("td")
             .attr("class", "td_" + this.id())
@@ -385,7 +387,7 @@
                 }
             })
             .each(function (tdContents, tdIdx) {
-                var alignment = context.getColumnAlignment(tdContents.rowInfo.rowIdx, tdContents.colIdx, tdContents.cell);
+                var alignment = context.getAverageColumnAlignment(tdContents.colIdx);
                 var el = d3.select(this);
                 el
                     .style({
@@ -879,6 +881,30 @@
                 }
             })
         ;
+    };
+
+    Table.prototype.setAverageColumnAlignments = function (cells) {
+        var context = this;
+        var alignmentSums = {};
+        cells.each(function(tdContents){
+            var alignment = context.getColumnAlignment(tdContents.rowInfo.rowIdx, tdContents.colIdx, tdContents.cell);
+            if("undefined" === typeof alignmentSums[tdContents.colIdx]){
+                alignmentSums[tdContents.colIdx] = {left:0,right:0,center:0,other:0};
+            }
+            alignmentSums[tdContents.colIdx][alignment ? alignment : 'other']++;
+        });
+
+        this._averageColumnAlignments = {};
+        for(var colIdx in alignmentSums){
+            var colAlignment = alignmentSums[colIdx].left > alignmentSums[colIdx].right ? 'left' : 'right';
+            colAlignment = alignmentSums[colIdx].center > alignmentSums[colIdx][colAlignment] ? 'center' : colAlignment;
+            colAlignment = alignmentSums[colIdx].other > alignmentSums[colIdx][colAlignment] ? null : colAlignment;
+            this._averageColumnAlignments[colIdx] = colAlignment;
+        }
+    };
+
+    Table.prototype.getAverageColumnAlignment = function (colIdx) {
+        return this._asdf[colIdx];
     };
 
     Table.prototype.getColumnAlignment = function (rowIdx, colIdx, cell) {
