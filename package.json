@@ -4,7 +4,8 @@
   "description": "HPCC Visualization Framework",
   "dependencies": {},
   "devDependencies": {
-    "lerna": "^2.0.0-rc.5"
+    "lerna": "^2.0.0-rc.5",
+    "require-css": "~0.1.8"
   },
   "devDependenciesOld": {
     "async": "~1.5.0",
