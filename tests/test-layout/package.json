@@ -1,12 +1,12 @@
 {
   "private": true,
   "name": "@hpcc-js/test-layout",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.54",
-    "@hpcc-js/common": "^0.0.52",
-    "@hpcc-js/layout": "^0.0.52",
-    "@hpcc-js/sample-data": "^0.0.28",
+    "@hpcc-js/chart": "^0.0.55",
+    "@hpcc-js/common": "^0.0.53",
+    "@hpcc-js/layout": "^0.0.53",
+    "@hpcc-js/sample-data": "^0.0.29",
     "chai": "4.0.0",
     "es6-promise": "4.1.1",
     "mocha": "3.4.2",

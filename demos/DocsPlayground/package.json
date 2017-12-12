@@ -1,30 +1,25 @@
 {
   "private": true,
-  "name": "@hpcc-js/demo-wecare",
-  "version": "0.0.34",
+  "name": "@hpcc-js/demo-docsPlayground",
+  "version": "0.0.35",
   "scripts": {
-    "clean": "rimraf lib* && rimraf dist",
+    "clean": "rimraf lib* && rimraf dist && rimraf build",
     "compile-es6": "tsc --module es6 --outDir ./lib-es6",
     "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
     "bundle2": "rollup -c",
-    "build": "npm run compile-es6 && npm run bundle-es6 && npm run bundle2"
+    "build": "npm run compile-es6 && npm run bundle"
   },
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.55",
-    "@hpcc-js/common": "^0.0.53",
+    "@hpcc-js/codemirror": "^0.0.65",
     "@hpcc-js/comms": "^0.0.57",
     "@hpcc-js/dgrid": "^0.0.63",
-    "@hpcc-js/form": "^0.0.55",
-    "@hpcc-js/map": "^0.0.58",
+    "@hpcc-js/dgrid-shim": "^0.0.48",
     "d3-selection": "1.1.0",
-    "d3-time-format": "2.1.0",
-    "impress.js": "GordonSmith/impressjs.git#MILEHIGH_UI"
+    "tslib": "1.8.0"
   },
   "devDependencies": {
-    "@types/d3": "4.9.0",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
     "source-map-loader": "0.2.1",
     "typescript": "2.6.1",
     "webpack": "3.10.0"
