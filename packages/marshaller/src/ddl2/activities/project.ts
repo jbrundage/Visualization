@@ -1,4 +1,5 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Activity, ReferencedFields } from "./activity";
@@ -21,6 +22,36 @@ export class ComputedField extends PropertyExt {
     constructor(owner: Project) {
         super();
         this._owner = owner;
+    }
+
+    toDDL(): DDL2.TransformationType {
+        if (this.type() === "scale") {
+            return {
+                fieldID: this.label(),
+                type: "scale",
+                param1: this.column1(),
+                factor: this.constValue()
+            };
+        }
+        return {
+            fieldID: this.label(),
+            type: this.type() as DDL2.ICalculatedType,
+            param1: this.column1(),
+            param2: this.column2()
+        };
+    }
+
+    static fromDDL(owner: Project, ddl: DDL2.TransformationType): ComputedField {
+        const retVal = new ComputedField(owner)
+            .label(ddl.fieldID)
+            .column1(ddl.param1)
+            ;
+        if (ddl.type === "scale") {
+            retVal.constValue(ddl.factor);
+        } else {
+            retVal.column2(ddl.param2);
+        }
+        return retVal;
     }
 
     hash(): string {
@@ -66,6 +97,27 @@ export class Project extends Activity {
 
     constructor() {
         super();
+    }
+
+    toDDL(): DDL2.IProject {
+        return {
+            type: "project",
+            transformations: this.transformations()
+        };
+    }
+
+    static fromDDL(ddl: DDL2.IProject): Project {
+        return new Project()
+            .transformations(ddl.transformations)
+            ;
+    }
+
+    transformations(): DDL2.TransformationType[];
+    transformations(_: DDL2.TransformationType[]): this;
+    transformations(_?: DDL2.TransformationType[]): DDL2.TransformationType[] | this {
+        if (!arguments.length) return this.validComputedFields().map(cf => cf.toDDL());
+        this.computedFields(_.map(transformation => ComputedField.fromDDL(this, transformation)));
+        return this;
     }
 
     hash(): string {

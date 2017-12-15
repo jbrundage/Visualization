@@ -3,10 +3,8 @@ import { Result, XSDXMLNode } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { Activity, schemaRow2IField } from "./activity";
-import { View } from "./view";
 
 export abstract class ESPResult extends Activity {
-    _owner: View;
     protected _result: Result;
     protected _schema: XSDXMLNode[] = [];
     protected _total: number;
@@ -19,9 +17,8 @@ export abstract class ESPResult extends Activity {
     @publish(100, "number", "Sample size")
     sampleSize: publish<this, number>;
 
-    constructor(owner: View) {
+    constructor() {
         super();
-        this._owner = owner;
     }
 
     hash(more: object = {}): string {
@@ -129,8 +126,12 @@ export class WUResult extends ESPResult {
     @publish("", "string", "Result Name")
     resultName: publish<this, string>;
 
-    constructor(owner: View) {
-        super(owner);
+    constructor() {
+        super();
+    }
+
+    toJS(): string {
+        return `new WUResult().url("${this.url()}").wuid("${this.wuid()}").resultName("${this.resultName()}")`;
     }
 
     _createResult(): Result {

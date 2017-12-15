@@ -1,20 +1,35 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
-import { Activity, ReferencedFields } from "./activity";
+import { Activity, ReferencedFields, stringify } from "./activity";
 
 export class SortColumn extends PropertyExt {
     private _owner: Sort;
 
     @publish(null, "set", "Sort Field", function (this: SortColumn) { return this.fieldIDs(); }, { optional: true })
     fieldID: publish<this, string>;
-    @publish(null, "boolean", "Sort Field")
+    @publish(false, "boolean", "Sort Field")
     descending: publish<this, boolean>;
 
     constructor(owner: Sort) {
         super();
         this._owner = owner;
+    }
+
+    toDDL(): DDL2.ISortCondition {
+        return {
+            fieldID: this.fieldID(),
+            descending: this.descending()
+        };
+    }
+
+    static fromDDL(owner: Sort, condition: DDL2.ISortCondition): SortColumn {
+        return new SortColumn(owner)
+            .fieldID(condition.fieldID)
+            .descending(condition.descending)
+            ;
     }
 
     hash(): string {
@@ -46,6 +61,32 @@ export class Sort extends Activity {
         super();
     }
 
+    toDDL(): DDL2.ISort {
+        return {
+            type: "sort",
+            conditions: this.conditions()
+        };
+    }
+
+    static fromDDL(ddl: DDL2.ISort) {
+        const retVal = new Sort();
+        retVal.conditions(ddl.conditions);
+        return retVal;
+    }
+
+    toJS(): string {
+        return `new Sort().conditions(${stringify(this.conditions())})`;
+    }
+
+    conditions(): DDL2.ISortCondition[];
+    conditions(_: DDL2.ISortCondition[]): this;
+    conditions(_?: DDL2.ISortCondition[]): DDL2.ISortCondition[] | this {
+        if (!arguments.length) return this.validSortBy().map(column => column.toDDL());
+        this.column(_.map(condition => SortColumn.fromDDL(this, condition)));
+        return this;
+    }
+
+    //  Activitiy  ---
     hash(): string {
         return hashSum({
             Sort: this.column().map(sb => sb.hash())

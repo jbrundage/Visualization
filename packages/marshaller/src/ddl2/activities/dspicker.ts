@@ -2,15 +2,15 @@ import { publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { Activity, ActivitySelection } from "./activity";
 import { Databomb, Form } from "./databomb";
+import { HipiePipeline } from "./hipiepipeline";
 import { LogicalFile } from "./logicalfile";
 import { HipieRequest, RoxieRequest } from "./roxie";
 import { sampleData } from "./sampledata";
-import { View } from "./view";
 import { WUResult } from "./wuresult";
 
 let dsPickerID = 0;
 export class DSPicker extends ActivitySelection {
-    private _view: View;
+    private _view: HipiePipeline;
 
     @publish("wuresult", "set", "Type", ["wuresult", "logicalfile", "form", "databomb", "roxieservice", "hipieservice"])
     _type: DDL2.IDatasourceType;
@@ -43,17 +43,17 @@ export class DSPicker extends ActivitySelection {
     @publish(null, "widget", "Data Source")
     details: publish<this, Activity>;
 
-    constructor(view: View) {
+    constructor(view: HipiePipeline) {
         super();
         this._id = `ds-${++dsPickerID}`;
         this._view = view;
         this.activities([
-            new WUResult(this._view)
+            new WUResult()
                 .url("http://192.168.3.22:8010")
                 .wuid("W20170424-070701")
                 .resultName("Result 1")
             ,
-            new LogicalFile(this._view)
+            new LogicalFile()
                 .url("http://192.168.3.22:8010")
                 .logicalFile("progguide::exampledata::peopleaccts")
             ,

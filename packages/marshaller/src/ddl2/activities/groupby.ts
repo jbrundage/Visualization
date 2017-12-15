@@ -1,10 +1,10 @@
 import { PropertyExt, publish } from "@hpcc-js/common";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
-import { Activity, ReferencedFields } from "./activity";
-import { View } from "./view";
+import { Activity, ReferencedFields, stringify } from "./activity";
 
 export class GroupByColumn extends PropertyExt {
     private _owner: GroupBy;
@@ -17,12 +17,22 @@ export class GroupByColumn extends PropertyExt {
         this._owner = owner;
     }
 
+    toDDL(): string {
+        return this.label();
+    }
+
+    static fromDDL(owner: GroupBy, label: string): GroupByColumn {
+        return new GroupByColumn(owner)
+            .label(label)
+            ;
+    }
+
     hash(): string {
         return hashSum(this.label());
     }
 
     columns() {
-        return this._owner.fieldIDs();
+        return this._owner.inFieldIDs();
     }
 }
 GroupByColumn.prototype._class += " GroupByColumn";
@@ -61,6 +71,31 @@ export class AggregateField extends PropertyExt {
         this._owner = owner;
     }
 
+    toDDL(): DDL2.IAggregate | DDL2.ICount {
+        if (this.aggrType() === "count") {
+            return {
+                label: this.label(),
+                type: "count"
+            };
+        }
+        return {
+            label: this.label(),
+            type: this.aggrType() as DDL2.IAggregateType,
+            fieldID: this.aggrColumn()
+        };
+    }
+
+    static fromDDL(owner: GroupBy, ddl: DDL2.IAggregate | DDL2.ICount): AggregateField {
+        const retVal = new AggregateField(owner)
+            .label(ddl.label)
+            .aggrType(ddl.type)
+            ;
+        if (ddl.type !== "count") {
+            retVal.aggrColumn(ddl.fieldID);
+        }
+        return retVal;
+    }
+
     hash(): string {
         return hashSum({
             label: this.label(),
@@ -95,10 +130,46 @@ export class GroupBy extends Activity {
     @publish(false, "boolean", "Show groupBy fileds in details")
     fullDetails: publish<this, boolean>;
 
-    constructor(owner: View) {
+    constructor() {
         super();
     }
 
+    toDDL(): DDL2.IGroupBy {
+        return {
+            type: "groupby",
+            groupByIDs: this.fieldIDs(),
+            aggregates: this.aggregates()
+        };
+    }
+
+    static fromDDL(ddl: DDL2.IGroupBy): GroupBy {
+        return new GroupBy()
+            .fieldIDs(ddl.groupByIDs)
+            .aggregates(ddl.aggregates)
+            ;
+    }
+
+    toJS(): string {
+        return `new GroupBy().fieldIDs(${JSON.stringify(this.fieldIDs())}).aggregates(${stringify(this.aggregates())})`;
+    }
+
+    fieldIDs(): string[];
+    fieldIDs(_: string[]): this;
+    fieldIDs(_?: string[]): string[] | this {
+        if (!arguments.length) return this.validGroupBy().map(gb => gb.toDDL());
+        this.column(_.map(fieldID => GroupByColumn.fromDDL(this, fieldID)));
+        return this;
+    }
+
+    aggregates(): DDL2.AggregateType[];
+    aggregates(_: DDL2.AggregateType[]): this;
+    aggregates(_?: DDL2.AggregateType[]): DDL2.AggregateType[] | this {
+        if (!arguments.length) return this.validComputedFields().map(cf => cf.toDDL());
+        this.computedFields(_.map(aggrType => AggregateField.fromDDL(this, aggrType)));
+        return this;
+    }
+
+    //  Activity
     hash(): string {
         return hashSum({
             groupBy: this.column().map(gb => gb.hash()),
@@ -123,7 +194,7 @@ export class GroupBy extends Activity {
         return this.validGroupBy().length > 0;
     }
 
-    fieldIDs(): string[] {
+    inFieldIDs(): string[] {
         return this.inFields().map(field => field.id);
     }
 

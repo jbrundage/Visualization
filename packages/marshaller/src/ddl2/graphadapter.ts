@@ -2,11 +2,11 @@ import { Surface, Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Activity } from "./activities/activity";
 import { DSPicker } from "./activities/dspicker";
+import { HipiePipeline } from "./activities/hipiepipeline";
 import { RoxieRequest } from "./activities/roxie";
-import { View } from "./activities/view";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
-import { Viz } from "./viz";
+import { Element } from "./viz";
 
 export class GraphAdapter {
     private _dashboard: Dashboard;
@@ -84,7 +84,7 @@ export class GraphAdapter {
         return `${dsDetails.url()}/${dsDetails.querySet()}/${dsDetails.queryID()}`;
     }
 
-    createDatasource(sourceID: string, viz: Viz, view: View, data: any): string {
+    createDatasource(sourceID: string, viz: Element, view: HipiePipeline, data: any): string {
         const ds = view.dataSource();
         const dsDetails = ds.details();
         if (dsDetails instanceof WUResult) {
@@ -126,7 +126,7 @@ export class GraphAdapter {
         }
     }
 
-    createActivity(sourceID: string, viz: Viz, view: View, activity: Activity): string {
+    createActivity(sourceID: string, viz: Element, view: HipiePipeline, activity: Activity): string {
         const surface: Surface = this.createSurface(view.id(), `${view.label()} [${viz.id()}]`, { viz, view });
         const vertex: Vertex = this.createVertex(activity.id(), `${activity.classID()}`, { viz, view, activity }, activity.exists() ? null : "lightgray");
         if (sourceID) {

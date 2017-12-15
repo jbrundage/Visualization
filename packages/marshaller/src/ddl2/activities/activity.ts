@@ -1,7 +1,24 @@
 import { IMonitorHandle, PropertyExt } from "@hpcc-js/common";
-import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IDatasource, IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
+
+export function stringify(obj_from_json) {
+    if (Array.isArray(obj_from_json)) {
+        // not an object, stringify using native function
+        return "[" + obj_from_json.map(stringify).join(", ") + "]";
+    }
+    if (typeof obj_from_json !== "object") {
+        // not an object, stringify using native function
+        return JSON.stringify(obj_from_json);
+    }
+    // Implements recursive object serialization according to JSON spec
+    // but without quotes around the keys.
+    const props = Object
+        .keys(obj_from_json)
+        .map(key => `${key}: ${stringify(obj_from_json[key])}`)
+        .join(", ");
+    return `{ ${props} }`;
+}
 
 export function schemaRow2IField(row: any): IField {
     return {
@@ -22,13 +39,6 @@ export abstract class Activity extends PropertyExt {
     sourceActivity(_?: Activity): Activity | this {
         if (!arguments.length) return this._sourceActivity;
         this._sourceActivity = _;
-        return this;
-    }
-
-    datasource(): DDL2.IDatasource | null;
-    datasource(_?: DDL2.IDatasource): this;
-    datasource(_?: DDL2.IDatasource): DDL2.IDatasource | null | this {
-        if (!arguments.length) return null;
         return this;
     }
 
@@ -124,7 +134,23 @@ export class ActivityArray extends Activity {
 }
 ActivityArray.prototype._class += " ActivityArray";
 
-export class ActivitySequence extends ActivityArray {
+export class ActivityPipeline extends ActivityArray {
+
+    activities(): Activity[];
+    activities(_: Activity[]): this;
+    activities(_?: Activity[]): Activity[] | this {
+        const retVal = super.activities.apply(this, arguments);
+        if (arguments.length) {
+            let prevActivity: Activity;
+            for (const activity of this.activities()) {
+                if (prevActivity) {
+                    activity.sourceActivity(prevActivity);
+                }
+                prevActivity = activity;
+            }
+        }
+        return retVal;
+    }
 
     first(): Activity {
         const retVal = this.activities();
@@ -134,6 +160,30 @@ export class ActivitySequence extends ActivityArray {
     last(): Activity | null {
         const retVal = this.activities();
         return retVal[retVal.length - 1];
+    }
+
+    private calcUpdatedGraph(activity: Activity): Array<{ from: string, to: Activity }> {
+        return activity.updatedBy().map(source => {
+            return {
+                from: source,
+                to: activity
+            };
+        });
+    }
+
+    updatedByGraph(): Array<{ from: string, to: Activity }> {
+        let retVal: Array<{ from: string, to: Activity }> = [];
+        for (const activity of this.activities()) {
+            retVal = retVal.concat(this.calcUpdatedGraph(activity));
+        }
+        return retVal;
+    }
+
+    fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
+        return this.last().exec().then(() => {
+            const data = this.last().pullData();
+            return data.slice(from, from + count);
+        });
     }
 
     //  Activity overrides ---
@@ -183,8 +233,15 @@ export class ActivitySequence extends ActivityArray {
     resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
         this.last().resolveFields(refs, fieldIDs);
     }
+    exec(): Promise<void> {
+        return this.last().exec();
+    }
+
+    pullData(): object[] {
+        return this.last().pullData();
+    }
 }
-ActivitySequence.prototype._class += " ActivitySequence";
+ActivityPipeline.prototype._class += " ActivitySequence";
 
 export class ActivitySelection extends ActivityArray {
     private _selection: Activity;

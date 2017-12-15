@@ -1,11 +1,10 @@
 import { Result } from "@hpcc-js/comms";
-import { View } from "./view";
 import { ESPResult } from "./wuresult";
 
 export class LogicalFile extends ESPResult {
 
-    constructor(owner: View) {
-        super(owner);
+    constructor() {
+        super();
     }
 
     _createResult(): Result {

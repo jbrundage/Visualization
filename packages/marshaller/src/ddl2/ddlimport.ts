@@ -6,18 +6,17 @@ import { AggregateField, GroupByColumn } from "./activities/groupby";
 import { ComputedField } from "./activities/project";
 import { HipieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
-import { Dashboard } from "./dashboard";
-import { Viz } from "./viz";
+import { Element, ElementContainer } from "./viz";
 
 export class DDLImport {
-    _owner: Dashboard;
+    _owner: ElementContainer;
     _url: string;
     _datasources: { [key: string]: DDL.IDatasource } = {};
     _dashboards: { [key: string]: DDL.IDashboard } = {};
     _visualizations: { [key: string]: DDL.IAnyVisualization } = {};
-    _vizzies: { [key: string]: Viz } = {};
+    _vizzies: { [key: string]: Element } = {};
 
-    constructor(dashboard: Dashboard, url: string, ddl: DDL.IDDL) {
+    constructor(dashboard: ElementContainer, url: string, ddl: DDL.IDDL) {
         this._owner = dashboard;
         this._url = url;
 
@@ -34,7 +33,7 @@ export class DDLImport {
         }
     }
 
-    form(ddlVisualization: DDL.IVisualization, viz: Viz) {
+    form(ddlVisualization: DDL.IVisualization, viz: Element) {
         viz.view().dataSource().type("form");
         const payload: any = {};
         const inputs: Input[] = [];
@@ -59,7 +58,7 @@ export class DDLImport {
         viz.widget().multiChart().chart(form);
     }
 
-    line(ddlVisualization: DDL.ILineVisualization, viz: Viz) {
+    line(ddlVisualization: DDL.ILineVisualization, viz: Element) {
         const mappingFields: ComputedField[] = [];
         try {
             for (const id of ddlVisualization.source.mappings.x.concat(ddlVisualization.source.mappings.y)) {
@@ -78,7 +77,7 @@ export class DDLImport {
         (viz.widget() as ChartPanel).chartType(ddlVisualization.properties.charttype || "COLUMN");
     }
 
-    table(ddlVisualization: DDL.ITableVisualization, viz: Viz) {
+    table(ddlVisualization: DDL.ITableVisualization, viz: Element) {
         const mappingFields: ComputedField[] = [];
         try {
             ddlVisualization.source.mappings.value.forEach((value, idx) => {
@@ -99,7 +98,7 @@ export class DDLImport {
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
         this._visualizations[ddlVisualization.id] = ddlVisualization;
-        const viz = new Viz(this._owner).title(ddlVisualization.title);
+        const viz = new Element(this._owner).title(ddlVisualization.title);
         viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
             for (const filteredViz of this._owner.filteredBy(viz)) {
                 filteredViz.refresh().then(() => {

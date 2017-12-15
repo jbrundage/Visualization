@@ -2,12 +2,12 @@ import { PropertyExt, publish, publishProxy } from "@hpcc-js/common";
 import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
-import { Viz } from "../viz";
+import { Element } from "../viz";
 import { Activity, ReferencedFields, schemaRow2IField } from "./activity";
-import { View } from "./view";
+import { HipiePipeline } from "./hipiepipeline";
 
 export class Param extends PropertyExt {
-    private _view: View;
+    private _view: HipiePipeline;
 
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
@@ -19,7 +19,7 @@ export class Param extends PropertyExt {
     localFieldID: publish<this, string>;
     localFieldID_exists: () => boolean;
 
-    constructor(view: View) {
+    constructor(view: HipiePipeline) {
         super();
         this._view = view;
     }
@@ -33,15 +33,15 @@ export class Param extends PropertyExt {
     }
 
     visualizationIDs() {
-        return this._view._dashboard.visualizationIDs();
+        return this._view._elementContainer.visualizationIDs();
     }
 
     sourceFields() {
         return this.sourceOutFields().map(field => field.label);
     }
 
-    sourceViz(): Viz {
-        return this._view._dashboard.visualization(this.source());
+    sourceViz(): Element {
+        return this._view._elementContainer.visualization(this.source());
     }
 
     sourceOutFields(): IField[] {
@@ -138,7 +138,7 @@ export class RoxieService extends PropertyExt {
 RoxieService.prototype._class += " RoxieService";
 
 export class RoxieRequest extends Activity {
-    private _owner: View;
+    private _owner: HipiePipeline;
     protected _roxieService = new RoxieService(this);
     private _data: any[] = [];
 
@@ -160,7 +160,7 @@ export class RoxieRequest extends Activity {
         return this;
     }
 
-    constructor(owner: View) {
+    constructor(owner: HipiePipeline) {
         super();
         this._owner = owner;
     }
