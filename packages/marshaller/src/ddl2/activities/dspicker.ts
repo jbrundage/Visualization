@@ -45,7 +45,7 @@ export class DSPicker extends ActivitySelection {
 
     constructor(view: HipiePipeline) {
         super();
-        this._id = `ds-${++dsPickerID}`;
+        this._id = `ds_${++dsPickerID}`;
         this._view = view;
         this.activities([
             new WUResult()

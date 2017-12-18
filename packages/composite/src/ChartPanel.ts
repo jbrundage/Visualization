@@ -1,4 +1,4 @@
-import { HTMLWidget, publish, publishProxy, Utility } from "@hpcc-js/common";
+import { HTMLWidget, publish, publishProxy, Utility, Widget } from "@hpcc-js/common";
 import { Border2 } from "@hpcc-js/layout";
 import { Legend } from "./Legend";
 import { MultiChart } from "./MultiChart";
@@ -84,13 +84,25 @@ export class ChartPanel extends Border2 implements IClickHandler {
         return this;
     }
 
-    chartTypeDefaults(_?) {
+    chart(): Widget;
+    chart(_: Widget): this;
+    chart(_?: Widget): Widget | this {
+        if (!arguments.length) return this._multiChart.chart();
+        this._multiChart.chart(_);
+        return this;
+    }
+
+    chartTypeDefaults(): object;
+    chartTypeDefaults(_: object): this;
+    chartTypeDefaults(_?: object): this | object {
         if (!arguments.length) return this._multiChart.chartTypeDefaults();
         this._multiChart.chartTypeDefaults(_);
         return this;
     }
 
-    chartTypeProperties(_?) {
+    chartTypeProperties(): object;
+    chartTypeProperties(_: object): this;
+    chartTypeProperties(_?: object): this | object {
         if (!arguments.length) return this._multiChart.chartTypeProperties();
         this._multiChart.chartTypeProperties(_);
         return this;
@@ -179,6 +191,7 @@ export class ChartPanel extends Border2 implements IClickHandler {
     dblclick(row, column, selected) {
         console.log("Double click:  " + JSON.stringify(row) + ", " + column + ", " + selected);
     }
+
     vertex_click(row, col, sel, more) {
         if (more && more.vertex) {
             console.log("Vertex click: " + more.vertex.id());

@@ -1,5 +1,5 @@
 import { publish } from "@hpcc-js/common";
-import { ElementContainer } from "../viz";
+import { ElementContainer } from "../model";
 import { ActivityPipeline } from "./activity";
 import { DSPicker } from "./dspicker";
 import { Filters } from "./filter";

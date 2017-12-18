@@ -1,31 +1,26 @@
 import { PropertyExt } from "@hpcc-js/common";
-import { Activity } from "./activities/activity";
+import { Activity, stringify } from "./activities/activity";
+import { Databomb } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
+import { LogicalFile } from "./activities/logicalfile";
+import { Project } from "./activities/project";
+import { RoxieRequest } from "./activities/roxie";
 import { Sort } from "./activities/sort";
 import { WUResult } from "./activities/wuresult";
-import { Element, ElementContainer } from "./viz";
+import { Dashboard } from "./dashboard";
+import { Element, ElementContainer } from "./model";
 
 export class JavaScriptAdapter {
-    private _dashboard: ElementContainer;
+    private _dashboard: Dashboard;
+    private _elementContainer: ElementContainer;
+    private _dsDedup: { [key: string]: Activity } = {};
 
-    constructor(dashboard: ElementContainer) {
+    constructor(dashboard: Dashboard) {
         this._dashboard = dashboard;
-    }
-
-    dummy(viz: Element) {
-        const dashboard = new ElementContainer();
-        const viz0 = new Element(dashboard)
-            .title(viz.title())
-            ;
-        viz0;
-    }
-
-    createDashboard() {
-        const retVal = `const dashboard = new Dashboard();\n`;
-        return retVal;
+        this._elementContainer = dashboard.elementContainer();
     }
 
     createProps(prefix: string, pe: PropertyExt, postfix: string = ""): string[] {
@@ -56,50 +51,127 @@ export class JavaScriptAdapter {
         return retVal;
     }
 
-    writeActivity(activity: Activity): string {
-        if (activity instanceof DSPicker) {
-            activity = activity.details();
-        }
-        if (activity instanceof WUResult) {
-            return activity.toJS();
-        } else if (activity instanceof GroupBy) {
-            return activity.toJS();
-        } else if (activity instanceof Sort) {
-            return activity.toJS();
-        } else if (activity instanceof Limit) {
-            return activity.toJS();
-        } else if (activity instanceof Filters) {
-            return activity.toJS();
-        }
-        return `new ${activity.classID()}()`;
-    }
-
-    writeVisualization(vizID: string, viz: Element) {
-        const activities: string[] = [];
-        for (const activity of viz.view().activities()) {
-            if (activity.exists()) {
-                activities.push(this.writeActivity(activity));
+    createProps2(pe: PropertyExt): { [key: string]: any } {
+        const retVal: { [key: string]: any } = {};
+        for (const meta of pe.publishedProperties()) {
+            if ((pe as any)[meta.id + "_modified"]() && meta.id !== "fields") {
+                retVal[meta.id] = (pe as any)[meta.id]();
             }
         }
-        const widget = `new ChartPanel().chartType("${viz.widget().chartType()}")`;
-        return `
-const ${vizID} = new Element(dashboard)
-    .pipeline([
-        ${activities.join(",\n        ")}
-    ])
-    .widget(${widget})
-    ;
-${vizID}.refresh();
+        return retVal;
+    }
 
-visualizations.push(${ vizID});
+    writeDSActivity(activity: DSPicker): string {
+        const dsID = activity.id();
+        const details = activity.details();
+        if (details instanceof WUResult) {
+            return `const ${dsID} = new WUResult().url("${details.url()}").wuid("${details.wuid()}").resultName("${details.resultName()}");`;
+        } else if (details instanceof LogicalFile) {
+            return `const ${dsID} = new LogicalFile().url("${details.url()}").logicalFile("${details.logicalFile()}");`;
+        } else if (details instanceof RoxieRequest) {
+            return `const ${dsID} = new RoxieService().url("${details.url()}").querySet("${details.querySet()}").queryID("${details.queryID()}").resultName("${details.resultName()}");`;
+        } else if (details instanceof Databomb) {
+            return `const ${dsID} = new Databomb().payload(${JSON.stringify(details.payload())});`;
+        }
+
+        return `const ${dsID} = TODO-writeDSActivity: ${details.classID()}`;
+    }
+
+    writeActivity(activity: Activity): string {
+        if (activity instanceof GroupBy) {
+            return `new GroupBy().fieldIDs(${JSON.stringify(activity.fieldIDs())}).aggregates(${stringify(activity.aggregates())})`;
+        } else if (activity instanceof Sort) {
+            return `new Sort().conditions(${stringify(activity.conditions())})`;
+        } else if (activity instanceof Filters) {
+            return `new Filters(ec).conditions(${stringify(activity.conditions())})`;
+        } else if (activity instanceof Project) {
+            return `new Project().transformations(${stringify(activity.transformations())})`;
+        } else if (activity instanceof Limit) {
+            return `new Limit().rows(${activity.rows()})`;
+        }
+        return `TODO-writeActivity: ${activity.classID()}`;
+    }
+
+    writeDatasource(element: Element): string[] {
+        const dataSources: string[] = [];
+        for (const activity of element.view().activities()) {
+            if (activity.exists()) {
+                if (activity instanceof DSPicker) {
+                    if (!this._dsDedup[activity.hash()]) {
+                        this._dsDedup[activity.hash()] = activity;
+                        dataSources.push(this.writeDSActivity(activity));
+                    }
+                }
+            }
+        }
+        return dataSources;
+    }
+
+    writeWidget(element: Element) {
+        const chartPanel = element.widget();
+        const props = this.createProps2(chartPanel.chart());
+        const vizID = chartPanel.id();
+        return `
+const ${vizID} = new ChartPanel()
+    .id("${vizID}")
+    .title("${element.widget().title()}")
+    .chartType("${element.widget().chartType()}")
+    .chartTypeProperties(${stringify(props)})
+    ;
 `;
     }
 
-    writeVisualizations() {
+    writeElement(element: Element) {
+        const activities: string[] = [];
+        for (const activity of element.view().activities()) {
+            if (activity.exists()) {
+                if (activity instanceof DSPicker) {
+                    activities.push(this._dsDedup[activity.hash()].id());
+                } else {
+                    activities.push(this.writeActivity(activity));
+                }
+            }
+        }
+        const updates: string[] = [];
+        for (const filteredViz of this._elementContainer.filteredBy(element)) {
+            updates.push(`${filteredViz.id()}.refresh();`);
+        }
+        const vizID = element.widget().id();
+        return `
+const ${element.id()} = new Element(ec)
+    .id("${element.id()}")
+    .pipeline([
+        ${activities.join(",\n        ")}
+    ])
+    .widget(${vizID})
+    .on("selectionChanged", () => {
+        ${updates.join("\n        ")}
+    }, true)
+    ;
+ec.append(${element.id()});
+`;
+    }
+
+    writeDatasources(): string[] {
+        let retVal: string[] = [];
+        for (const element of this._elementContainer.elements()) {
+            retVal = retVal.concat(this.writeDatasource(element));
+        }
+        return retVal;
+    }
+
+    writeWidgets(): string {
         let retVal = "";
-        let vizID = 0;
-        for (const viz of this._dashboard.visualizations()) {
-            retVal += this.writeVisualization(`viz_${vizID++}`, viz);
+        for (const element of this._elementContainer.elements()) {
+            retVal += this.writeWidget(element);
+        }
+        return retVal;
+    }
+
+    writeElements(): string {
+        let retVal = "";
+        for (const element of this._elementContainer.elements()) {
+            retVal += this.writeElement(element);
         }
         return retVal;
     }
@@ -107,17 +179,27 @@ visualizations.push(${ vizID});
     createJavaScript(): string {
         return `
 import { ChartPanel } from "@hpcc-js/composite";
-import { Dashboard, Element, GroupBy, Limit, Sort, WUResult } from "@hpcc-js/marshaller";
+import { Dashboard, Databomb, Element, ElementContainer, Filters, GroupBy, Limit, LogicalFile, Project, Sort, WUResult } from "@hpcc-js/marshaller";
 
-const dashboard = new Dashboard()
+//  Data Sources  ---
+${this.writeDatasources().join("\n").trim()}
+
+//  Visualization Widgets  ---
+${this.writeWidgets().trim()}
+
+//  Dashboard Elements  ---
+const ec = new ElementContainer();
+
+${this.writeElements().trim()}
+
+ec.refresh();
+
+//  Dashboard (optional) ---
+const dashboard = new Dashboard(ec)
     .target("placeholder")
-    ;
-
-const visualizations = [];
-${this.writeVisualizations()}
-dashboard
-    .addVisualizations(visualizations)
-    .render()
+    .render(w => {
+        (w as Dashboard).layout(${stringify(this._dashboard.layout())});
+    })
     ;
 `;
     }

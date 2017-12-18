@@ -5,11 +5,10 @@ import { DSPicker } from "./activities/dspicker";
 import { HipiePipeline } from "./activities/hipiepipeline";
 import { RoxieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
-import { Dashboard } from "./dashboard";
-import { Element } from "./viz";
+import { Element, ElementContainer } from "./model";
 
 export class GraphAdapter {
-    private _dashboard: Dashboard;
+    private _elementContainer: ElementContainer;
     private subgraphMap: { [key: string]: Surface } = {};
     private vertexMap: { [key: string]: Vertex } = {};
     private edgeMap: { [key: string]: Edge } = {};
@@ -17,8 +16,8 @@ export class GraphAdapter {
     private vertices: Widget[] = [];
     private edges: Edge[] = [];
 
-    constructor(dashboard: Dashboard) {
-        this._dashboard = dashboard;
+    constructor(dashboard: ElementContainer) {
+        this._elementContainer = dashboard;
     }
 
     clear() {
@@ -140,7 +139,7 @@ export class GraphAdapter {
         this.clear();
 
         const lastID: { [key: string]: string } = {};
-        for (const viz of this._dashboard.visualizations()) {
+        for (const viz of this._elementContainer.elements()) {
             const view = viz.view();
             let prevID = "";
             for (const activity of view.activities()) {
@@ -153,10 +152,10 @@ export class GraphAdapter {
             lastID[view.id()] = prevID;
         }
 
-        for (const viz of this._dashboard.visualizations()) {
+        for (const viz of this._elementContainer.elements()) {
             const view = viz.view();
             for (const updateInfo of view.updatedByGraph()) {
-                this.createEdge(lastID[this._dashboard.visualization(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? this.roxieServiceID(updateInfo.to.details() as RoxieRequest) : updateInfo.to.id())
+                this.createEdge(lastID[this._elementContainer.element(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? this.roxieServiceID(updateInfo.to.details() as RoxieRequest) : updateInfo.to.id())
                     .weight(10)
                     .strokeDasharray("1,5")
                     .text("updates")

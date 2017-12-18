@@ -3,7 +3,7 @@ import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { ascending as d3Ascending, descending as d3Descending } from "d3-array";
-import { Activity, ReferencedFields, stringify } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 
 export class SortColumn extends PropertyExt {
     private _owner: Sort;
@@ -74,10 +74,6 @@ export class Sort extends Activity {
         return retVal;
     }
 
-    toJS(): string {
-        return `new Sort().conditions(${stringify(this.conditions())})`;
-    }
-
     conditions(): DDL2.ISortCondition[];
     conditions(_: DDL2.ISortCondition[]): this;
     conditions(_?: DDL2.ISortCondition[]): DDL2.ISortCondition[] | this {
@@ -112,18 +108,19 @@ export class Sort extends Activity {
 
     pullData(): object[] {
         const data = super.pullData();
-        const sortByArr: Array<{ descending: boolean, id: string }> = [];
+        const sortByArr: Array<{ compare: (l, r) => number, id: string }> = [];
         for (const sortBy of this.validSortBy()) {
             sortByArr.push({
-                descending: sortBy.descending(),
+                compare: sortBy.descending() ? d3Descending : d3Ascending,
                 id: sortBy.fieldID()
             });
         }
 
         if (sortByArr.length) {
+            console.log("Sort Len:  " + data.length);
             return data.sort((l: any, r: any) => {
                 for (const item of sortByArr) {
-                    const retVal2 = (item.descending ? d3Descending : d3Ascending)(l[item.id], r[item.id]);
+                    const retVal2 = item.compare(l[item.id], r[item.id]);
                     if (retVal2 !== 0) {
                         return retVal2;
                     }

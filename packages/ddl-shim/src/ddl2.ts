@@ -19,7 +19,6 @@ export interface IDatasource {
 
 export interface IDatasourceRef {
     id: string;
-    fields: IField[];
 }
 
 export interface IESPService extends IDatasource {
@@ -101,6 +100,14 @@ export function isFilterActivity(activity: IActivity): activity is IFilter {
 }
 
 //  Project  ==================================================================
+export type ICalculatedType = "=" | "+" | "-" | "*" | "/";
+export interface ICalculated {
+    fieldID: string;
+    type: ICalculatedType;
+    param1: string;
+    param2: string;
+}
+
 export interface IScale {
     fieldID: string;
     type: "scale";
@@ -108,14 +115,13 @@ export interface IScale {
     factor: number;
 }
 
-export interface ICalculated {
+export interface ITemplate {
     fieldID: string;
-    type: "=" | "+" | "-" | "*" | "/";
-    param1: string;
-    param2: string;
+    type: "template";
+    template: string;
 }
 
-export type TransformationType = IScale | ICalculated;
+export type TransformationType = ICalculated | IScale | ITemplate;
 
 export interface IProject extends IActivity {
     type: "project";
@@ -126,9 +132,10 @@ export function isProjectActivity(activity: IActivity): activity is IProject {
 }
 
 //  GroupBy  ==================================================================
+export type IAggregateType = "min" | "max" | "sum" | "mean" | "variance" | "deviation";
 export interface IAggregate {
     label: string;
-    type: "min" | "max" | "sum" | "mean" | "variance" | "deviation";
+    type: IAggregateType;
     fieldID: string;
 }
 
@@ -175,7 +182,7 @@ export function isLimitActivity(activity: IActivity): activity is ILimit {
 export interface IView {
     id: string;
     datasource: IDatasourceRef | IRoxieServiceRef;
-    activities: IActivity[];
+    activities: ActivityType[];
 }
 
 //  DDL  ======================================================================

@@ -20,7 +20,7 @@ export default {
         }),
         postcss({
             extensions: ['.css'],
-            extract: true
+            extract: false
         }),
         commonjs({
         }),

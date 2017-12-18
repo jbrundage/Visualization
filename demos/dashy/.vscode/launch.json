@@ -5,10 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Chrome Debug",
+            "name": "Dashy",
             "type": "chrome",
             "request": "launch",
             "url": "file:///${workspaceRoot}/index.html",
+            "runtimeArgs": [
+                "--allow-file-access-from-files"
+            ],
+            "webRoot": "${workspaceRoot}",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${workspaceRoot}/*",
+                "webpack:///*": "/*"
+            }
+        },
+        {
+            "name": "Dash POC",
+            "type": "chrome",
+            "request": "launch",
+            "url": "file:///${workspaceRoot}/dashPOC.html",
             "runtimeArgs": [
                 "--allow-file-access-from-files"
             ],

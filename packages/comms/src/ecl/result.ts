@@ -93,16 +93,18 @@ export class Result extends StateObject<ECLResultEx & DFUQuery.DFULogicalFile, E
 
     fetchRows(from: number = 0, count: number = -1, includeSchema: boolean = false): Promise<any[]> {
         return this.WUResult(from, count, !includeSchema).then((response) => {
+            const result = response.Result;
+            delete response.Result; //  Do not want it in "set"
             this.set({
                 ...response
             } as any);
-            if (exists("Result.XmlSchema.xml", response)) {
-                this.xsdSchema = parseXSD(response.Result.XmlSchema.xml);
+            if (exists("XmlSchema.xml", result)) {
+                this.xsdSchema = parseXSD(result.XmlSchema.xml);
             }
-            if (exists("Result.Row", response)) {
-                return response.Result.Row;
-            } else if (this.ResultName && exists(`Result.${this.ResultName}`, response)) {
-                return response.Result[this.ResultName].Row;
+            if (exists("Row", result)) {
+                return result.Row;
+            } else if (this.ResultName && exists(this.ResultName, result)) {
+                return result[this.ResultName].Row;
             }
             return [];
         });

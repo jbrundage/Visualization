@@ -7,7 +7,7 @@ export function stringify(obj_from_json) {
         // not an object, stringify using native function
         return "[" + obj_from_json.map(stringify).join(", ") + "]";
     }
-    if (typeof obj_from_json !== "object") {
+    if (typeof obj_from_json !== "object" || obj_from_json === null || obj_from_json === undefined) {
         // not an object, stringify using native function
         return JSON.stringify(obj_from_json);
     }
@@ -182,6 +182,12 @@ export class ActivityPipeline extends ActivityArray {
     fetch(from: number = 0, count: number = Number.MAX_VALUE): Promise<any[]> {
         return this.last().exec().then(() => {
             const data = this.last().pullData();
+            if (from === 0 && data.length <= count) {
+                return data;
+            } else if (from === 0) {
+                data.length = count;
+                return data;
+            }
             return data.slice(from, from + count);
         });
     }
@@ -346,6 +352,13 @@ export class DatasourceAdapt implements IDatasource {
         return this._activity.pullData().length;
     }
     fetch(from: number, count: number): Promise<any[]> {
-        return Promise.resolve(this._activity.pullData().slice(from, from + count));
+        const data = this._activity.pullData();
+        if (from === 0 && data.length <= count) {
+            return Promise.resolve(data);
+        } else if (from === 0) {
+            data.length = count;
+            return Promise.resolve(data);
+        }
+        return Promise.resolve(data.slice(from, from + count));
     }
 }

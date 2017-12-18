@@ -5,9 +5,13 @@ import { Activity } from "./activities/activity";
 import { HipiePipeline } from "./activities/hipiepipeline";
 import { DDL2, DDLAdapter } from "./ddl";
 import { DDLImport } from "./ddlimport";
-import { JavaScriptAdapter } from "./javascriptadapter";
 
 export class State extends PropertyExt {
+
+    constructor() {
+        super();
+        this.selection([]);
+    }
 
     removeInvalid(data: object[]) {
         const newSelection: object[] = [];
@@ -35,6 +39,7 @@ State.prototype.publish("selection", [], "array", "State");
 
 let vizID = 0;
 export class Element extends PropertyExt {
+    private _elementContainer: ElementContainer;
     private _chartPanel: ChartPanel = new ChartPanel();
 
     @publishProxy("_chartPanel")
@@ -49,7 +54,6 @@ export class Element extends PropertyExt {
         if (!arguments.length) return this._widget;
         this._widget = _;
         this._widget
-            .id(this.id())
             .on("click", (row: object, col: string, sel: boolean) => {
                 this.state().selection(sel ? [row] : []);
             })
@@ -59,13 +63,15 @@ export class Element extends PropertyExt {
     @publish(null, "widget", "State")
     state: publish<this, State>;
 
-    constructor(model: ElementContainer) {
+    constructor(ec: ElementContainer) {
         super();
+        this._elementContainer = ec;
         vizID++;
-        this._id = `viz-${vizID}`;
-        const view = new HipiePipeline(model, `view-${vizID}`);
+        this._id = `element_${vizID}`;
+        const view = new HipiePipeline(ec, `pipeline_${vizID}`);
         this.view(view);
         this._chartPanel
+            .id(`viz_${vizID}`)
             .title(this.id())
             .chartType("TABLE")
             ;
@@ -120,6 +126,17 @@ export class Element extends PropertyExt {
         this.state().removeInvalid(data);
     }
 
+    //  Events  ---
+    selectionChanged() {
+        const promises: Array<Promise<void>> = [];
+        for (const filteredViz of this._elementContainer.filteredBy(this)) {
+            promises.push(filteredViz.refresh());
+        }
+        Promise.all(promises).then(() => {
+            this._elementContainer.vizStateChanged(this);
+        });
+    }
+
     monitor(func: (id: string, newVal: any, oldVal: any, source: PropertyExt) => void): { remove: () => void; } {
         return this.view().monitor(func);
     }
@@ -132,64 +149,51 @@ export interface IPersist {
 }
 
 export class ElementContainer extends PropertyExt {
-    private _visualizations: Element[] = [];
-    private _nullVisualization = new Element(this);
+    private _elements: Element[] = [];
+    private _nullElement = new Element(this);
 
     clear() {
-        this._visualizations = [];
+        this._elements = [];
     }
 
-    visualizations() {
-        return [...this._visualizations];
+    elements() {
+        return [...this._elements];
     }
 
-    visualization(w: string | PropertyExt): Element {
+    element(w: string | PropertyExt): Element {
         let retVal: Element[];
         if (typeof w === "string") {
-            retVal = this._visualizations.filter(viz => viz.id() === w);
+            retVal = this._elements.filter(viz => viz.id() === w);
         } else {
-            retVal = this._visualizations.filter(v => v.vizProps() === w);
+            retVal = this._elements.filter(v => v.vizProps() === w);
         }
         if (retVal.length) {
             return retVal[0];
         }
-        return this._nullVisualization;
+        return this._nullElement;
     }
 
-    visualizationIDs() {
-        return this._visualizations.map(viz => viz.id());
+    elementIDs() {
+        return this._elements.map(viz => viz.id());
     }
 
-    addVisualizations(vizs: Element[]): this {
-        for (const viz of vizs) {
-            this.addVisualization(viz);
-        }
-        return this;
-    }
-
-    addVisualization(viz: Element): this {
-        this._visualizations.push(viz);
-        viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
-            const promises: Array<Promise<void>> = [];
-            for (const filteredViz of this.filteredBy(viz)) {
-                promises.push(filteredViz.refresh());
-            }
-            Promise.all(promises).then(() => {
-                this.vizStateChanged(viz);
-            });
+    append(element: Element): this {
+        this._elements.push(element);
+        element.state().monitorProperty("selection", () => {
+            element.selectionChanged();
         });
         return this;
     }
 
     filteredBy(viz: Element): Element[] {
-        return this._visualizations.filter(otherViz => {
+        return this._elements.filter(otherViz => {
             const filterIDs = otherViz.view().updatedBy();
             return filterIDs.indexOf(viz.id()) >= 0;
         });
     }
 
     views(): HipiePipeline[] {
-        return this._visualizations.map(viz => viz.view());
+        return this._elements.map(viz => viz.view());
     }
 
     view(id: string): HipiePipeline | undefined {
@@ -211,13 +215,8 @@ export class ElementContainer extends PropertyExt {
         ddl;
     }
 
-    javascript(): string {
-        const ddlAdapter = new JavaScriptAdapter(this);
-        return ddlAdapter.createJavaScript();
-    }
-
     async refresh(): Promise<this> {
-        await Promise.all(this.visualizations().map(viz => viz.refresh()));
+        await Promise.all(this.elements().map(viz => viz.refresh()));
         return this;
     }
 

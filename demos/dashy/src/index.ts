@@ -2,7 +2,7 @@
 import { PropertyExt, Widget } from "@hpcc-js/common";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
-import { Activity, Dashboard, DatasourceAdapt, GraphAdapter, JavaScriptAdapter, Viz } from "@hpcc-js/marshaller";
+import { Activity, Dashboard, DatasourceAdapt, Element, ElementContainer, GraphAdapter, JavaScriptAdapter } from "@hpcc-js/marshaller";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
@@ -45,19 +45,21 @@ async function scopedLock(m: Mutex, func: (...params: any[]) => Promise<void>) {
 export class App {
     private _dockPanel = new DockPanel();
     private _dataSplit = new SplitPanel();
-    private _dashboard: Dashboard = new Dashboard()
-        .on("vizActivation", (viz: Viz) => {
+    private _elementContainer: ElementContainer = new ElementContainer();
+
+    private _dashboard: Dashboard = new Dashboard(this._elementContainer)
+        .on("vizActivation", (viz: Element) => {
             this.selectionChanged(viz);
         })
-        .on("vizStateChanged", (viz: Viz) => {
-            for (const filteredViz of this._dashboard.filteredBy(viz)) {
+        .on("vizStateChanged", (viz: Element) => {
+            for (const filteredViz of this._elementContainer.filteredBy(viz)) {
                 if (this._currViz === filteredViz) {
                     this.refreshPreview();
                 }
             }
         })
         ;
-    private _graphAdapter = new GraphAdapter(this._dashboard);
+    private _graphAdapter = new GraphAdapter(this._elementContainer);
     private _javaScripAdapter = new JavaScriptAdapter(this._dashboard);
     private _graph: Graph = new Graph()
         .allowDragging(false)
@@ -84,7 +86,8 @@ export class App {
     private _ddlEditor = new DDLEditor();
     private _layoutEditor = new JSONEditor();
     private _jsEditor = new JSEditor();
-    private _clone: Dashboard = new Dashboard();
+    private _cloneEC: ElementContainer = new ElementContainer();
+    private _clone: Dashboard = new Dashboard(this._cloneEC);
     private _preview = new DatasourceTable();
 
     constructor(placeholder: string) {
@@ -101,7 +104,8 @@ export class App {
             .addWidget(this._stateProperties, "State", "tab-after", this._vizProperties)
             .addWidget(this._graph as any, "Pipeline", "tab-after", this._dashboard)    //  TODO Fix Graph Declaration  ---
             .addWidget(this._ddlEditor, "DDL", "tab-after", this._graph as any)         //  TODO Fix Graph Declaration  ---
-            .addWidget(this._layoutEditor, "Layout", "tab-after", this._ddlEditor)
+            .addWidget(this._jsEditor, "TS", "tab-after", this._ddlEditor)
+            .addWidget(this._layoutEditor, "Layout", "tab-after", this._jsEditor)
             .addWidget(this._clone, "Clone", "tab-after", this._layoutEditor)
             .on("childActivation", (w: Widget) => {
                 switch (w) {
@@ -114,12 +118,15 @@ export class App {
                     case this._ddlEditor:
                         this.loadDDL(true);
                         break;
+                    case this._jsEditor:
+                        this.loadJavaScript(true);
+                        break;
                     case this._layoutEditor:
                         this.loadLayout(true);
                         break;
                     case this._clone:
                         this.loadClone();
-                        this.loadDataProps(this._clone.test());
+                        //  this.loadDataProps(this._clone.test());
                         break;
                 }
             })
@@ -162,9 +169,9 @@ export class App {
         }
     }
 
-    private _currViz: Viz | undefined;
+    private _currViz: Element | undefined;
     private _currActivity: Activity | undefined;
-    selectionChanged(viz?: Viz, activity?: Activity) {
+    selectionChanged(viz?: Element, activity?: Activity) {
         if (activity && (this._currActivity !== activity)) {
             this.loadDataProps(activity);
             this.loadPreview(activity);
@@ -229,10 +236,21 @@ export class App {
 
     loadDDL(refresh: boolean = false) {
         this._ddlEditor
-            .ddl(this._dashboard.ddl())
+            .ddl(this._elementContainer.ddl())
             ;
         if (refresh && this._dockPanel.isVisible(this._ddlEditor as any)) {
             this._ddlEditor
+                .lazyRender()
+                ;
+        }
+    }
+
+    loadJavaScript(refresh: boolean = false) {
+        this._jsEditor
+            .javascript(this._dashboard.javascript())
+            ;
+        if (refresh && this._dockPanel.isVisible(this._jsEditor as any)) {
+            this._jsEditor
                 .lazyRender()
                 ;
         }
@@ -250,7 +268,7 @@ export class App {
     }
 
     async loadClone() {
-        await this._clone.restore(this._dashboard.save());
+        // await this._clone.restore(this._dashboard.save());
         this._clone.lazyRender();
     }
 
@@ -259,10 +277,10 @@ export class App {
 
         //  Dashboard  Commands  ---
         commands.addCommand("dash_add", {
-            label: "Add Viz",
+            label: "Add Element",
             execute: () => {
-                const viz = new Viz(this._dashboard);
-                this._dashboard.addVisualization(viz);
+                const viz = new Element(this._elementContainer);
+                this._elementContainer.append(viz);
                 this.loadDashboard();
                 viz.refresh().then(() => {
                     this.selectionChanged(viz);
@@ -273,18 +291,16 @@ export class App {
         commands.addCommand("dash_add_ddl", {
             label: "Add DDL",
             execute: () => {
-                this._dashboard.restoreDDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
+                // this._dashboard.restoreDDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
                 this.loadDashboard();
-                for (const viz of this._dashboard.visualizations()) {
-                    viz.refresh();
-                }
+                this._elementContainer.refresh();
             }
         });
 
         commands.addCommand("dash_clear", {
             label: "Clear",
             execute: () => {
-                this._dashboard.clear();
+                this._elementContainer.clear();
             }
         });
 

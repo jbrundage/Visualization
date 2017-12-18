@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
-    "outDir": "./lib-umd",
+    "module": "es6",
+    "outDir": "./lib-es6",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

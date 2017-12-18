@@ -2,7 +2,7 @@ import { PropertyExt, publish, publishProxy } from "@hpcc-js/common";
 import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, hashSum } from "@hpcc-js/util";
-import { Element } from "../viz";
+import { Element } from "../model";
 import { Activity, ReferencedFields, schemaRow2IField } from "./activity";
 import { HipiePipeline } from "./hipiepipeline";
 
@@ -33,7 +33,7 @@ export class Param extends PropertyExt {
     }
 
     visualizationIDs() {
-        return this._view._elementContainer.visualizationIDs();
+        return this._view._elementContainer.elementIDs();
     }
 
     sourceFields() {
@@ -41,7 +41,7 @@ export class Param extends PropertyExt {
     }
 
     sourceViz(): Element {
-        return this._view._elementContainer.visualization(this.source());
+        return this._view._elementContainer.element(this.source());
     }
 
     sourceOutFields(): IField[] {

@@ -12,7 +12,7 @@ import { Project } from "./activities/project";
 import { Param, RoxieRequest } from "./activities/roxie";
 import { Sort } from "./activities/sort";
 import { WUResult } from "./activities/wuresult";
-import { Element, ElementContainer } from "./viz";
+import { Element, ElementContainer } from "./model";
 
 export { DDL2 };
 
@@ -131,7 +131,7 @@ export class DDLAdapter {
 
     writeDatasources(): DDL2.DatasourceType[] {
         const retVal: DDL2.DatasourceType[] = [];
-        for (const viz of this._elementContainer.visualizations()) {
+        for (const viz of this._elementContainer.elements()) {
             const ds = viz.view().dataSource();
             if (!this._dsDedup[ds.hash()]) {
                 const ddlDataSource = this.writeDatasource(ds, {});
@@ -206,7 +206,6 @@ export class DDLAdapter {
         if (dsDetails instanceof RoxieRequest) {
             return {
                 id: this._dsDedup[ds.hash()].id,
-                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0)),
                 request: dsDetails.request().map((rf): DDL2.IRequestField => {
                     return {
                         source: rf.source(),
@@ -217,8 +216,7 @@ export class DDLAdapter {
             };
         } else {
             return {
-                id: this._dsDedup[ds.hash()].id,
-                fields: this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0))
+                id: this._dsDedup[ds.hash()].id
             };
         }
     }
@@ -239,7 +237,7 @@ export class DDLAdapter {
         return this;
     }
 
-    writeActivities(view: ActivityPipeline): DDL2.IActivity[] {
+    writeActivities(view: ActivityPipeline): DDL2.ActivityType[] {
         return view.activities().map(activity => {
             if (activity instanceof Filters) {
                 return this.writeFilters(activity);
@@ -256,10 +254,10 @@ export class DDLAdapter {
     }
 
     writeDDLViews(refs: ReferencedFields): DDL2.IView[] {
-        for (const viz of this._elementContainer.visualizations()) {
+        for (const viz of this._elementContainer.elements()) {
             viz.view().referencedFields(refs);
         }
-        return this._elementContainer.visualizations().map(viz => {
+        return this._elementContainer.elements().map(viz => {
             const view = viz.view();
             const ds = view.dataSource();
             const retVal = {
@@ -268,7 +266,9 @@ export class DDLAdapter {
                 activities: this.writeActivities(view)
             };
             const ddlDatasource = this._dsDedup[ds.hash()];
-            for (const field of retVal.datasource.fields) {
+            const dsDetails = ds.details();
+            const fields = this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0));
+            for (const field of fields) {
                 if (ddlDatasource.fields.filter(ddlField => ddlField.id === field.id).length === 0) {
                     ddlDatasource.fields.push(field);
                 }
@@ -280,7 +280,7 @@ export class DDLAdapter {
     readDDLViews(ddlViews: DDL2.IView[]) {
         for (const ddlView of ddlViews) {
             const viz = new Element(this._elementContainer).id(ddlView.id).title(ddlView.id);
-            this._elementContainer.addVisualization(viz);
+            this._elementContainer.append(viz);
             const view = viz.view();
             this.readDatasourceRef(ddlView.datasource, view.dataSource(), view);
             const activities: Activity[] = [

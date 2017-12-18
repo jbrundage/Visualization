@@ -2,8 +2,8 @@ import { PropertyExt, publish } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
-import { Element, ElementContainer } from "../viz";
-import { Activity, ReferencedFields, stringify } from "./activity";
+import { Element, ElementContainer } from "../model";
+import { Activity, ReferencedFields } from "./activity";
 
 export class ColumnMapping extends PropertyExt {
     private _owner: Filter;
@@ -55,26 +55,23 @@ export class ColumnMapping extends PropertyExt {
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
         const lf = this.localField();
         const rf = this.remoteField();
+        const fs = filterSelection[0][rf];
         switch (this.condition()) {
             case "==":
-                return (localRow) => localRow[lf] === filterSelection[0][rf];
+                return (localRow) => localRow[lf] === fs;
             case "!=":
-                return (localRow) => localRow[lf] !== filterSelection[0][rf];
+                return (localRow) => localRow[lf] !== fs;
             case "<":
-                return (localRow) => localRow[lf] < filterSelection[0][rf];
+                return (localRow) => localRow[lf] < fs;
             case "<=":
-                return (localRow) => localRow[lf] <= filterSelection[0][rf];
+                return (localRow) => localRow[lf] <= fs;
             case ">":
-                return (localRow) => localRow[lf] > filterSelection[0][rf];
+                return (localRow) => localRow[lf] > fs;
             case ">=":
-                return (localRow) => localRow[lf] >= filterSelection[0][rf];
+                return (localRow) => localRow[lf] >= fs;
             case "contains":
                 return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[rf]);
         }
-    }
-
-    doFilter(row: object, filterSelection: any[]): boolean {
-        return this.createFilter(filterSelection)(row);
     }
 }
 ColumnMapping.prototype._class += " ColumnMapping";
@@ -160,17 +157,14 @@ export class Filter extends PropertyExt {
         return this.sourceViz().state().selection();
     }
 
-    dataFilter(data: any[]): any[] {
+    createFilter(): (localRow: any) => boolean {
         const selection = this.sourceSelection();
-        if (selection.length === 0 && !this.nullable()) {
-            return [];
+        const nullable = this.nullable();
+        if (selection.length === 0) {
+            return (localRow: any) => nullable;
         }
-        return data;
-    }
-
-    rowFilter(row: object): boolean {
-        const validMappings = this.validMappings();
-        return validMappings.every(mapping => mapping.doFilter(row, this.sourceSelection()));
+        const mappingFilters = this.validMappings().map(mapping => mapping.createFilter(selection));
+        return (row: object): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
     }
 }
 Filter.prototype._class += " Filter";
@@ -199,10 +193,6 @@ export class Filters extends Activity {
             ;
     }
 
-    toJS(): string {
-        return `new Filters().conditions(${stringify(this.conditions())})`;
-    }
-
     conditions(): DDL2.IFilterCondition[];
     conditions(_: DDL2.IFilterCondition[]): this;
     conditions(_?: DDL2.IFilterCondition[]): DDL2.IFilterCondition[] | this {
@@ -212,11 +202,11 @@ export class Filters extends Activity {
     }
 
     visualizationIDs(): string[] {
-        return this._elementContainer.visualizationIDs();
+        return this._elementContainer.elementIDs();
     }
 
     visualization(sourceID: string | PropertyExt): Element {
-        return this._elementContainer.visualization(sourceID);
+        return this._elementContainer.element(sourceID);
     }
 
     //  Activity overrides  ---
@@ -252,14 +242,10 @@ export class Filters extends Activity {
     }
 
     pullData(): object[] {
-        let data = super.pullData();
-        const filters = this.validFilters();
-        //  Test for null selection + nullable
-        for (const filter of filters) {
-            data = filter.dataFilter(data);
-        }
+        const data = super.pullData();
+        const filters = this.validFilters().map(filter => filter.createFilter());
         return data.filter(row => {
-            return filters.every(filter => filter.rowFilter(row));
+            return filters.every(filter => filter(row));
         });
     }
 

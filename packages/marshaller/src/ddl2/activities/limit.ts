@@ -26,10 +26,6 @@ export class Limit extends Activity {
             ;
     }
 
-    toJS(): string {
-        return `new Limit().rows(${this.rows()})`;
-    }
-
     hash(): string {
         return hashSum({
             limit: this.rows()

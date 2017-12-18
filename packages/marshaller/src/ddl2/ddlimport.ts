@@ -6,7 +6,7 @@ import { AggregateField, GroupByColumn } from "./activities/groupby";
 import { ComputedField } from "./activities/project";
 import { HipieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
-import { Element, ElementContainer } from "./viz";
+import { Element, ElementContainer } from "./model";
 
 export class DDLImport {
     _owner: ElementContainer;
@@ -177,7 +177,7 @@ export class DDLImport {
             default:
                 break;
         }
-        this._owner.addVisualization(this._vizzies[ddlVisualization.id]);
+        this._owner.append(this._vizzies[ddlVisualization.id]);
     }
 
     visualizationPost(ddlVisualization: DDL.IAnyVisualization) {

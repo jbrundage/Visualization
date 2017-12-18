@@ -4,7 +4,7 @@ import { IField } from "@hpcc-js/dgrid";
 import { hashSum } from "@hpcc-js/util";
 import { deviation as d3Deviation, max as d3Max, mean as d3Mean, median as d3Median, min as d3Min, sum as d3Sum, variance as d3Variance } from "d3-array";
 import { nest as d3Nest } from "d3-collection";
-import { Activity, ReferencedFields, stringify } from "./activity";
+import { Activity, ReferencedFields } from "./activity";
 
 export class GroupByColumn extends PropertyExt {
     private _owner: GroupBy;
@@ -38,8 +38,8 @@ export class GroupByColumn extends PropertyExt {
 GroupByColumn.prototype._class += " GroupByColumn";
 
 //  ===========================================================================
-type AggrFuncCallback = (item: any) => number;
-type AggrFunc = (leaves: any[], callback: AggrFuncCallback) => number;
+export type AggrFuncCallback = (item: any) => number;
+export type AggrFunc = (leaves: any[], callback: AggrFuncCallback) => number;
 function localCount(leaves: any[], callback: AggrFuncCallback): number {
     return leaves.length;
 }
@@ -105,7 +105,7 @@ export class AggregateField extends PropertyExt {
     }
 
     columns() {
-        return this._owner.fieldIDs();
+        return this._owner.inFieldIDs();
     }
 
     hasColumn() {
@@ -114,6 +114,14 @@ export class AggregateField extends PropertyExt {
 
     aggregate(values: Array<{ [key: string]: any }>) {
         return d3Aggr[this.aggrType() as string](values, leaf => +leaf[this.aggrColumn()]);
+    }
+
+    aggrFunc(): (leaves: any[]) => number {
+        const aggrFunc = d3Aggr[this.aggrType() as string];
+        const aggrColumn = this.aggrColumn();
+        return (values: any[]) => {
+            return aggrFunc(values, leaf => +leaf[aggrColumn]);
+        };
     }
 }
 AggregateField.prototype._class += " AggregateField";
@@ -149,10 +157,6 @@ export class GroupBy extends Activity {
             ;
     }
 
-    toJS(): string {
-        return `new GroupBy().fieldIDs(${JSON.stringify(this.fieldIDs())}).aggregates(${stringify(this.aggregates())})`;
-    }
-
     fieldIDs(): string[];
     fieldIDs(_: string[]): this;
     fieldIDs(_?: string[]): string[] | this {
@@ -186,7 +190,7 @@ export class GroupBy extends Activity {
         return this;
     }
 
-    validGroupBy() {
+    validGroupBy(): GroupByColumn[] {
         return this.column().filter(groupBy => !!groupBy.label());
     }
 
@@ -291,29 +295,28 @@ export class GroupBy extends Activity {
     pullData(): object[] {
         const data = super.pullData();
         if (data.length === 0) return data;
+        const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
+        const computedFields = this.validComputedFields().map(cf => {
+            return { label: cf.label(), aggrFunc: cf.aggrFunc() };
+        });
         const retVal = d3Nest()
             .key((row: { [key: string]: any }) => {
                 let key = "";
-                for (const groupBy of this.column()) {
-                    if (groupBy.label()) {
-                        if (key) {
-                            key += ":";
-                        }
-                        key += row[groupBy.label()];
-                    }
+                for (const groupByLabel of columnLabels) {
+                    key += ":" + row[groupByLabel];
                 }
                 return key;
             })
             .entries(data).map(_row => {
-                const row: { [key: string]: any } = _row;
+                const row: {
+                    [key: string]: any
+                } = _row;
                 delete row.key;
-                for (const groupBy of this.validGroupBy()) {
-                    row[groupBy.label()] = row.values[0][groupBy.label()];
+                for (const groupByLabel of columnLabels) {
+                    row[groupByLabel] = row.values[0][groupByLabel];
                 }
-                for (const cf of this.computedFields()) {
-                    if (cf.label()) {
-                        row[cf.label()] = cf.aggregate(row.values);
-                    }
+                for (const cf of computedFields) {
+                    row[cf.label] = cf.aggrFunc(row.values);
                 }
                 return row;
             })

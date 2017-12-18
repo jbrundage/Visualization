@@ -60,7 +60,7 @@ export class Databomb extends Activity {
 Databomb.prototype._class += " Filters";
 
 export class Form extends Activity {
-    @publish([], "object", "Form object")
+    @publish({}, "object", "Form object")
     payload: publish<this, object>;
 
     constructor() {
