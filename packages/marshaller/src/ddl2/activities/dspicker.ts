@@ -57,10 +57,10 @@ export class DSPicker extends ActivitySelection {
                 .url("http://192.168.3.22:8010")
                 .logicalFile("progguide::exampledata::peopleaccts")
             ,
-            new RoxieRequest(this._view)
+            new RoxieRequest(this._view._elementContainer)
                 .url("http://192.168.3.22:8010")
                 .querySet("roxie")
-                .queryID("peopleaccounts.3")
+                .queryID("peopleaccounts.2")
                 .resultName("Accounts"),
             new Databomb()
                 .payload(sampleData)
@@ -68,7 +68,7 @@ export class DSPicker extends ActivitySelection {
             new Form()
                 .payload({})
             ,
-            new HipieRequest(this._view)
+            new HipieRequest(this._view._elementContainer)
         ]);
         this.type("form");
     }

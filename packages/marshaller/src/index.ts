@@ -19,6 +19,7 @@ export * from "./ddl2/activities/wuresult";
 export * from "./ddl2/activities/filter";
 export * from "./ddl2/activities/groupby";
 export * from "./ddl2/activities/project";
+export * from "./ddl2/activities/roxie";
 export * from "./ddl2/activities/sort";
 export * from "./ddl2/activities/limit";
 export * from "./ddl2/activities/logicalfile";

@@ -5,7 +5,6 @@ import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
-import { HipiePipeline } from "./activities/hipiepipeline";
 import { Limit } from "./activities/limit";
 import { LogicalFile } from "./activities/logicalfile";
 import { Project } from "./activities/project";
@@ -221,13 +220,13 @@ export class DDLAdapter {
         }
     }
 
-    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker, view: HipiePipeline): this {
+    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker, elementContainer: ElementContainer): this {
         const ddlDS = this._dsDedup[ddlDSRef.id];
         this.readDatasource(ddlDS, ds);
         const dsDetails = ds.details();
         if (dsDetails instanceof RoxieRequest && DDL2.isIRoxieServiceRef(ddlDSRef)) {
             dsDetails.request(ddlDSRef.request.map(rf => {
-                return new Param(view)
+                return new Param(elementContainer)
                     .source(rf.source)
                     .remoteFieldID(rf.remoteFieldID)
                     .localFieldID(rf.localFieldID)
@@ -282,7 +281,7 @@ export class DDLAdapter {
             const viz = new Element(this._elementContainer).id(ddlView.id).title(ddlView.id);
             this._elementContainer.append(viz);
             const view = viz.view();
-            this.readDatasourceRef(ddlView.datasource, view.dataSource(), view);
+            this.readDatasourceRef(ddlView.datasource, view.dataSource(), this._elementContainer);
             const activities: Activity[] = [
                 view.dataSource(),
                 ...ddlView.activities.map(activity => {
