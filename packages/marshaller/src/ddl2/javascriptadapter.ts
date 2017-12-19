@@ -190,7 +190,7 @@ ${this.writeDatasources().join("\n").trim()}
 //  Visualization Widgets (View) ---
 ${this.writeWidgets().trim()}
 
-//  Dashboard Elements  (Controllers) ---
+//  Dashboard Elements  (Controller) ---
 ${this.writeElements().trim()}
 
 ec.refresh();

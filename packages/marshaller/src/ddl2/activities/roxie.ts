@@ -2,12 +2,12 @@ import { PropertyExt, publish, publishProxy } from "@hpcc-js/common";
 import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
-import { compare, hashSum } from "@hpcc-js/util";
+import { compare, debounce, hashSum } from "@hpcc-js/util";
 import { Element, ElementContainer } from "../model";
 import { Activity, ReferencedFields, schemaRow2IField } from "./activity";
 
 export class Param extends PropertyExt {
-    private _elementContainer: ElementContainer;
+    private _owner: RoxieRequest;
 
     @publish(null, "set", "Datasource", function (this: Param) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
@@ -19,9 +19,9 @@ export class Param extends PropertyExt {
     localFieldID: publish<this, string>;
     localFieldID_exists: () => boolean;
 
-    constructor(elementContainer: ElementContainer) {
+    constructor(owner: RoxieRequest) {
         super();
-        this._elementContainer = elementContainer;
+        this._owner = owner;
     }
 
     toDDL(): DDL2.IRequestField {
@@ -32,8 +32,8 @@ export class Param extends PropertyExt {
         };
     }
 
-    static fromDDL(elementContainer: ElementContainer, ddl: DDL2.IRequestField): Param {
-        return new Param(elementContainer)
+    static fromDDL(owner: RoxieRequest, ddl: DDL2.IRequestField): Param {
+        return new Param(owner)
             .source(ddl.source)
             .remoteFieldID(ddl.remoteFieldID)
             .localFieldID(ddl.localFieldID)
@@ -49,7 +49,7 @@ export class Param extends PropertyExt {
     }
 
     visualizationIDs() {
-        return this._elementContainer.elementIDs();
+        return this._owner.elementIDs();
     }
 
     sourceFields() {
@@ -57,7 +57,7 @@ export class Param extends PropertyExt {
     }
 
     sourceViz(): Element {
-        return this._elementContainer.element(this.source());
+        return this._owner.element(this.source());
     }
 
     sourceOutFields(): IField[] {
@@ -139,9 +139,9 @@ export class RoxieService extends PropertyExt {
         return [];
     }
 
-    submit(request: { [key: string]: any }): Promise<{ [key: string]: any }> {
+    submit = debounce((request: { [key: string]: any }): Promise<{ [key: string]: any }> => {
         return this._query.submit(request);
-    }
+    });
 
     requestFields(): IField[] {
         if (this._query) {
@@ -190,7 +190,7 @@ export class RoxieRequest extends Activity {
     requestFields(_: DDL2.IRequestField[]): this;
     requestFields(_?: DDL2.IRequestField[]): DDL2.IRequestField[] | this {
         if (!arguments.length) return this.validParams().map(param => param.toDDL());
-        this.request(_.map(fc => Param.fromDDL(this._elementContainer, fc)));
+        this.request(_.map(fc => Param.fromDDL(this, fc)));
         return this;
     }
 
@@ -203,6 +203,14 @@ export class RoxieRequest extends Activity {
 
     label(): string {
         return `${this._roxieService.label()}\n${this.resultName()}`;
+    }
+
+    elementIDs() {
+        return this._elementContainer.elementIDs();
+    }
+
+    element(source) {
+        return this._elementContainer.element(source);
     }
 
     referencedFields(refs: ReferencedFields): void {
@@ -225,7 +233,7 @@ export class RoxieRequest extends Activity {
             const oldParams = this.request();
             const diffs = compare(oldParams.map(p => p.localFieldID()), this._roxieService.requestFields().map(ff => ff.label));
             const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localFieldID()) >= 0);
-            this.request(newParams.concat(diffs.added.map(label => new Param(this._elementContainer).localFieldID(label))));
+            this.request(newParams.concat(diffs.added.map(label => new Param(this).localFieldID(label))));
         });
     }
 

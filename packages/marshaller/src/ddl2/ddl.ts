@@ -226,7 +226,7 @@ export class DDLAdapter {
         const dsDetails = ds.details();
         if (dsDetails instanceof RoxieRequest && DDL2.isIRoxieServiceRef(ddlDSRef)) {
             dsDetails.request(ddlDSRef.request.map(rf => {
-                return new Param(elementContainer)
+                return new Param(dsDetails)
                     .source(rf.source)
                     .remoteFieldID(rf.remoteFieldID)
                     .localFieldID(rf.localFieldID)
