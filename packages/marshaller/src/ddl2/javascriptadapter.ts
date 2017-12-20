@@ -41,7 +41,7 @@ export class JavaScriptAdapter {
                         break;
                     case "propertyArray":
                         if (meta.ext)
-                            retVal.push(`XXX${prefix}.${meta.id}([${(pe as any)[meta.id]()}])${postfix};`);
+                            retVal.push(`${prefix}.${meta.id}([${(pe as any)[meta.id]()}])${postfix};`);
                         break;
                     default:
                         break;

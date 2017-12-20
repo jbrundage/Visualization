@@ -49,18 +49,18 @@ export class DSPicker extends ActivitySelection {
         this._view = view;
         this.activities([
             new WUResult()
-                .url("http://192.168.3.22:8010")
-                .wuid("W20170424-070701")
+                .url("http://52.51.90.23:8010")
+                .wuid("W20171220-053645")
                 .resultName("Result 1")
             ,
             new LogicalFile()
-                .url("http://192.168.3.22:8010")
+                .url("http://52.51.90.23:8010")
                 .logicalFile("progguide::exampledata::peopleaccts")
             ,
             new RoxieRequest(this._view._elementContainer)
-                .url("http://192.168.3.22:8010")
+                .url("http://52.51.90.23:8010")
                 .querySet("roxie")
-                .queryID("peopleaccounts.2")
+                .queryID("peopleaccounts")
                 .resultName("Accounts"),
             new Databomb()
                 .payload(sampleData)

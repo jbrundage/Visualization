@@ -13,11 +13,11 @@ export class Param extends PropertyExt {
     source: publish<this, string>;
     source_exists: () => boolean;
     @publish(null, "set", "Source Field", function (this: Param) { return this.sourceFields(); }, { optional: true })
-    remoteFieldID: publish<this, string>;
-    remoteFieldID_exists: () => boolean;
+    remoteField: publish<this, string>;
+    remoteField_exists: () => boolean;
     @publish(null, "string", "Label")  //  TODO Add ReadOnly
-    localFieldID: publish<this, string>;
-    localFieldID_exists: () => boolean;
+    localField: publish<this, string>;
+    localField_exists: () => boolean;
 
     constructor(owner: RoxieRequest) {
         super();
@@ -27,24 +27,24 @@ export class Param extends PropertyExt {
     toDDL(): DDL2.IRequestField {
         return {
             source: this.source(),
-            remoteFieldID: this.remoteFieldID(),
-            localFieldID: this.localFieldID()
+            remoteFieldID: this.remoteField(),
+            localFieldID: this.localField()
         };
     }
 
     static fromDDL(owner: RoxieRequest, ddl: DDL2.IRequestField): Param {
         return new Param(owner)
             .source(ddl.source)
-            .remoteFieldID(ddl.remoteFieldID)
-            .localFieldID(ddl.localFieldID)
+            .remoteField(ddl.remoteFieldID)
+            .localField(ddl.localFieldID)
             ;
     }
 
     hash() {
         return hashSum({
-            label: this.localFieldID(),
+            label: this.localField(),
             source: this.source(),
-            sourceField: this.remoteFieldID(),
+            sourceField: this.remoteField(),
         });
     }
 
@@ -69,7 +69,7 @@ export class Param extends PropertyExt {
     }
 
     exists(): boolean {
-        return this.localFieldID_exists() && this.source_exists() && this.remoteFieldID_exists();
+        return this.localField_exists() && this.source_exists() && this.remoteField_exists();
     }
 }
 Param.prototype._class += " ColumnMapping";
@@ -218,8 +218,8 @@ export class RoxieRequest extends Activity {
         const localFieldIDs: string[] = [];
         for (const param of this.validParams()) {
             const filterSource = param.sourceViz().view();
-            localFieldIDs.push(param.localFieldID());
-            filterSource.resolveFields(refs, [param.remoteFieldID()]);
+            localFieldIDs.push(param.localField());
+            filterSource.resolveFields(refs, [param.remoteField()]);
         }
         super.resolveFields(refs, localFieldIDs);
     }
@@ -231,9 +231,9 @@ export class RoxieRequest extends Activity {
     refreshMeta(): Promise<void> {
         return this._roxieService.refreshMeta().then(() => {
             const oldParams = this.request();
-            const diffs = compare(oldParams.map(p => p.localFieldID()), this._roxieService.requestFields().map(ff => ff.label));
-            const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localFieldID()) >= 0);
-            this.request(newParams.concat(diffs.added.map(label => new Param(this).localFieldID(label))));
+            const diffs = compare(oldParams.map(p => p.localField()), this._roxieService.requestFields().map(ff => ff.label));
+            const newParams = oldParams.filter(op => diffs.unchanged.indexOf(op.localField()) >= 0);
+            this.request(newParams.concat(diffs.added.map(label => new Param(this).localField(label))));
         });
     }
 
@@ -251,7 +251,7 @@ export class RoxieRequest extends Activity {
             for (const param of this.validParams()) {
                 const sourceSelection = param.sourceSelection();
                 if (sourceSelection.length) {
-                    request[param.localFieldID()] = sourceSelection[0][param.remoteFieldID()];
+                    request[param.localField()] = sourceSelection[0][param.remoteField()];
                 }
             }
             return this._roxieService.submit(request);

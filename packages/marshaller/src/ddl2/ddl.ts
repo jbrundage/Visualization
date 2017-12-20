@@ -208,8 +208,8 @@ export class DDLAdapter {
                 request: dsDetails.request().map((rf): DDL2.IRequestField => {
                     return {
                         source: rf.source(),
-                        remoteFieldID: rf.remoteFieldID(),
-                        localFieldID: rf.localFieldID()
+                        remoteFieldID: rf.remoteField(),
+                        localFieldID: rf.localField()
                     };
                 })
             };
@@ -228,8 +228,8 @@ export class DDLAdapter {
             dsDetails.request(ddlDSRef.request.map(rf => {
                 return new Param(dsDetails)
                     .source(rf.source)
-                    .remoteFieldID(rf.remoteFieldID)
-                    .localFieldID(rf.localFieldID)
+                    .remoteField(rf.remoteFieldID)
+                    .localField(rf.localFieldID)
                     ;
             }));
         }
