@@ -1,5 +1,4 @@
-import { HTMLWidget } from "@hpcc-js/common";
-import { publish } from "@hpcc-js/common";
+import { HTMLWidget, publish } from "@hpcc-js/common";
 import { Grid, PagingGrid } from "@hpcc-js/dgrid-shim";
 import { Memory } from "@hpcc-js/dgrid-shim";
 
@@ -50,6 +49,16 @@ export class Common extends HTMLWidget {
             this._dgrid.on("dgrid-select", (evt) => {
                 if (evt.rows && evt.rows.length) {
                     this.click(this.rowToObj(evt.rows[0].data.__hpcc_orig), "", true);
+                }
+            });
+            this._dgrid.on(".dgrid-cell:mouseover", () => {
+                const cell = this._dgrid.cell(event);
+                cell;
+            });
+            this._dgrid.on(".dgrid-cell:mouseout", () => {
+                const cell = this._dgrid.cell(event);
+                if (cell.row) {
+                    console.log("out:  " + JSON.stringify(cell.row.data));
                 }
             });
         }

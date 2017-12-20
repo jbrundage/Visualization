@@ -1,6 +1,6 @@
 import { PropertyExt } from "@hpcc-js/common";
 import { Activity, stringify } from "./activities/activity";
-import { Databomb } from "./activities/databomb";
+import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
@@ -12,6 +12,16 @@ import { Sort } from "./activities/sort";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
 import { Element, ElementContainer } from "./model";
+
+export function createProps(pe: PropertyExt): { [key: string]: any } {
+    const retVal: { [key: string]: any } = {};
+    for (const meta of pe.publishedProperties()) {
+        if ((pe as any)[meta.id + "_modified"]() && meta.id !== "fields") {
+            retVal[meta.id] = (pe as any)[meta.id]();
+        }
+    }
+    return retVal;
+}
 
 export class JavaScriptAdapter {
     private _dashboard: Dashboard;
@@ -51,16 +61,6 @@ export class JavaScriptAdapter {
         return retVal;
     }
 
-    createProps2(pe: PropertyExt): { [key: string]: any } {
-        const retVal: { [key: string]: any } = {};
-        for (const meta of pe.publishedProperties()) {
-            if ((pe as any)[meta.id + "_modified"]() && meta.id !== "fields") {
-                retVal[meta.id] = (pe as any)[meta.id]();
-            }
-        }
-        return retVal;
-    }
-
     writeDSActivity(activity: DSPicker): string {
         const dsID = activity.id();
         const details = activity.details();
@@ -72,6 +72,8 @@ export class JavaScriptAdapter {
             return `const ${dsID} = new RoxieRequest(ec).url("${details.url()}").querySet("${details.querySet()}").queryID("${details.queryID()}").resultName("${details.resultName()}").requestFields(${stringify(details.requestFields())});`;
         } else if (details instanceof Databomb) {
             return `const ${dsID} = new Databomb().payload(${JSON.stringify(details.payload())});`;
+        } else if (details instanceof Form) {
+            return `const ${dsID} = new Form().payload(${JSON.stringify(details.payload())});`;
         }
 
         return `const ${dsID} = TODO-writeDSActivity: ${details.classID()}`;
@@ -109,7 +111,7 @@ export class JavaScriptAdapter {
 
     writeWidget(element: Element) {
         const chartPanel = element.widget();
-        const props = this.createProps2(chartPanel.chart());
+        const props = createProps(chartPanel.chart());
         const vizID = chartPanel.id();
         return `
 const ${vizID} = new ChartPanel()
@@ -179,7 +181,7 @@ ec.append(${element.id()});
     createJavaScript(): string {
         return `
 import { ChartPanel } from "@hpcc-js/composite";
-import { Dashboard, Databomb, Element, ElementContainer, Filters, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
+import { Dashboard, Databomb, Element, ElementContainer, Form, Filters, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
 const ec = new ElementContainer();

@@ -195,6 +195,7 @@ export class Project extends Activity {
                     id: cf.label(),
                     label: cf.label(),
                     type: "string",
+                    default: undefined,
                     children: null
                 };
                 retVal.push(computedField);

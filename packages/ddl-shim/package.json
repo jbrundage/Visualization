@@ -4,10 +4,10 @@
   "description": "hpcc-js DDL parser",
   "main": "build/ddl-shim.js",
   "unpkg": "build/ddl-shim.min.js",
-  "types": "lib-es6/index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "build/*",
-    "lib/*",
+    "types/*",
     "src/*.css"
   ],
   "scripts": {

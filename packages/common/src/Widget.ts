@@ -589,6 +589,7 @@ export abstract class Widget extends PropertyExt {
     postUpdate(_domNode: HTMLElement, _element: d3SelectionType) { }
     exit(_domNode?: HTMLElement, _element?: d3SelectionType) { }
 
+    //  Proxy stub  ---
     fields(): Field[];
     fields(_: Field[]): this;
     fields(_?: Field[]): Field[] | this { return this; }

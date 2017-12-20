@@ -267,8 +267,10 @@ export class App {
         }
     }
 
-    async loadClone() {
-        // await this._clone.restore(this._dashboard.save());
+    loadClone() {
+        this._cloneEC.clear();
+        this._clone.restore(this._dashboard.save());
+        this._cloneEC.refresh();
         this._clone.lazyRender();
     }
 
@@ -303,6 +305,22 @@ export class App {
                 this._elementContainer.clear();
             }
         });
+
+        /*
+        commands.addCommand("dash_save", {
+            label: "Save",
+            execute: () => {
+                this._elementContainer.save();
+            }
+        });
+
+        commands.addCommand("dash_load", {
+            label: "Load",
+            execute: () => {
+                this._elementContainer.load();
+            }
+        });
+        */
 
         //  Model Commands  ---
         const palette = new CommandPalette({ commands });

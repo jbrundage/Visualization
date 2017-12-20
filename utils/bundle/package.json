@@ -4,9 +4,9 @@
   "description": "hpcc-js - bundle",
   "main": "lib/index.js",
   "module": "lib-es6/index.js",
-  "types": "lib-es6/index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
-    "lib/*",
+    "types/*",
     "lib-es6/*",
     "src/*.css",
     "build/*"

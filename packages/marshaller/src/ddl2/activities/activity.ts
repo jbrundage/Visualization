@@ -25,6 +25,7 @@ export function schemaRow2IField(row: any): IField {
         id: row.name,
         label: row.name,
         type: row.type,
+        default: undefined,
         children: (row._children && row._children.length) ? row._children.map(schemaRow2IField) : null
     };
 }

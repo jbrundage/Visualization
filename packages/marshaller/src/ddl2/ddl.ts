@@ -52,7 +52,7 @@ export class DDLAdapter {
                     return {
                         id: field.id,
                         type: field.type as any,
-                        default: ""
+                        default: field.default
                     };
                 })
             };

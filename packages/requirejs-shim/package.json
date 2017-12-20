@@ -6,7 +6,7 @@
   "types": "types/requirejs-shim.d.ts",
   "files": [
     "build/*",
-    "lib/*",
+    "types/*",
     "types/*"
   ],
   "scripts": {

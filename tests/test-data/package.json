@@ -4,7 +4,7 @@
   "version": "0.0.29",
   "description": "hpcc-js - Test Data",
   "main": "lib-umd/index.js",
-  "types": "lib-umd/index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "lib/**/*.d.ts",
     "lib/**/*.js"

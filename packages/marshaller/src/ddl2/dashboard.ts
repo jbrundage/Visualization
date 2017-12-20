@@ -1,9 +1,23 @@
-
 import { d3SelectionType, Widget } from "@hpcc-js/common";
+import { ChartPanel } from "@hpcc-js/composite";
+import { DDL2 } from "@hpcc-js/ddl-shim";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
-import { JavaScriptAdapter } from "./javascriptadapter";
+import { DDLAdapter } from "./ddl";
+import { createProps, JavaScriptAdapter } from "./javascriptadapter";
 import { Element, ElementContainer } from "./model";
+
+export interface ICPPersist {
+    id: string;
+    type: string;
+    props: object;
+}
+
+export interface IDashboardPersist {
+    ddl: DDL2.Schema;
+    widgets: ICPPersist[];
+    layout: object;
+}
 
 export class Dashboard extends DockPanel {
     private _ec: ElementContainer;
@@ -18,9 +32,39 @@ export class Dashboard extends DockPanel {
         return this._ec;
     }
 
+    save(): IDashboardPersist {
+        const ddlAdapter = new DDLAdapter(this._ec);
+        return {
+            ddl: ddlAdapter.write(),
+            widgets: this.widgets().map(_cp => {
+                const cp: ChartPanel = _cp as ChartPanel;
+                return {
+                    id: cp.id(),
+                    type: cp.chartType(),
+                    props: createProps((cp as ChartPanel).chart())
+                };
+            }),
+            layout: this.layout()
+        };
+    }
+
+    restore(_: IDashboardPersist): this {
+        const ddlAdapter = new DDLAdapter(this._ec);
+        ddlAdapter.read(_.ddl);
+        this.syncWidgets();
+        for (const w of _.widgets) {
+            this._ec.element(w.id).widget()
+                .chartType(w.type)
+                .chartTypeProperties(w.props)
+                ;
+        }
+        // this.layout(_.layout);
+        return this;
+    }
+
     javascript(): string {
-        const ddlAdapter = new JavaScriptAdapter(this);
-        return ddlAdapter.createJavaScript();
+        const jsAdapter = new JavaScriptAdapter(this);
+        return jsAdapter.createJavaScript();
     }
 
     syncWidgets() {

@@ -1,11 +1,12 @@
 var DojoWebpackPlugin = require("dojo-webpack-plugin");
+var CopyWebpackPlugin = require("copy-webpack-plugin");
 
 var path = require("path");
 var webpack = require("webpack");
 
 module.exports = {
     context: __dirname,
-    entry: "./lib-amd/index.js",
+    entry: "./lib-es6/index",
     output: {
         path: path.join(__dirname, "build"),
         publicPath: "build/",
@@ -31,10 +32,6 @@ module.exports = {
                 }]
             }]
     },
-    node: {
-        process: false,
-        global: false
-    },
     plugins: [
         new DojoWebpackPlugin({
             loaderConfig: require.resolve("./src/loaderConfig"),
@@ -42,6 +39,12 @@ module.exports = {
             buildEnvironment: { dojoRoot: "../../node_modules" }, // used at build time
             locales: ["en"]
         }),
+        // Copy non-packed resources needed by the app to the release directory
+        new CopyWebpackPlugin([{
+            context: "../../node_modules",
+            from: "dojo/resources/blank.gif",
+            to: "dojo/resources"
+        }]),
         // For plugins registered after the DojoAMDPlugin, data.request has been normalized and
         // resolved to an absMid and loader-config maps and aliases have been applied
         new webpack.NormalModuleReplacementPlugin(/^dojox\/gfx\/renderer!/, "dojox/gfx/canvas"),
@@ -50,6 +53,7 @@ module.exports = {
                 data.request = data.request.replace(/^css!/, "!style-loader!css-loader!")
             }
         ),
+        /*
         new webpack.optimize.UglifyJsPlugin({
             cache: true,
             parallel: true,
@@ -57,11 +61,16 @@ module.exports = {
             compress: { warnings: false },
             sourceMap: true
         })
+        */
     ],
     resolveLoader: {
         modules: [
             path.join(__dirname, "../../node_modules")
         ]
     },
-    devtool: "#source-map"
+    devtool: "#source-map",
+    node: {
+        process: false,
+        global: false
+    }
 };

@@ -66,8 +66,17 @@ export class DSPicker extends ActivitySelection {
                 .payload(sampleData)
             ,
             new Form()
-                .payload({})
-            ,
+                .payload([{
+                    id: 770,
+                    fname: "TIMTOHY",
+                    lname: "SALEEMI",
+                    minitial: "",
+                    gender: "M",
+                    street: "1734 NOSTRAND AVE # 3",
+                    city: "DRACUT",
+                    st: "MA",
+                    zip: "01826"
+                }]),
             new HipieRequest(this._view._elementContainer)
         ]);
         this.type("form");

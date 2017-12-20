@@ -12,20 +12,20 @@ export function debounce<TParam, R extends Promise<any>>(fn: (...params: TParam[
         const hash = hashSum(params);
         if (!promises[hash]) {
             promises[hash] = {
+                clockStart: Date.now(),
                 promise: fn(...params).then(response => {
                     if (timeout === undefined) {
                         promises[hash] = null;
                     } else {
                         setTimeout(() => {
                             promises[hash] = null;
-                        }, Math.max(timeout - (Date.now() - this.clockStart), 0));
+                        }, Math.max(timeout - (Date.now() - promises[hash]!.clockStart), 0));
                     }
                     return response;
                 }).catch(e => {
                     promises[hash] = null;
                     throw e;
-                }) as R,
-                clockStart: Date.now()
+                }) as R
             };
         }
         return promises[hash]!.promise;

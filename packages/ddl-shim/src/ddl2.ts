@@ -83,11 +83,11 @@ export interface IMapping {
     remoteFieldID: string;
     localFieldID: string;
     condition: IMappingConditionType;
+    nullable: boolean;
 }
 
 export interface IFilterCondition {
     viewID: string;
-    nullable: boolean;
     mappings: IMapping[];
 }
 

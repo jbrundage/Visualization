@@ -243,6 +243,7 @@ export class GroupBy extends Activity {
                 id: groupBy.label(),
                 label: groupBy.label(),
                 type: groupByField ? groupByField.type : undefined,
+                default: undefined,
                 children: null
             };
             retVal.push(field);
@@ -253,6 +254,7 @@ export class GroupBy extends Activity {
                     id: cf.label(),
                     label: cf.label(),
                     type: "number",
+                    default: undefined,
                     children: null
                 };
                 retVal.push(computedField);
@@ -265,6 +267,7 @@ export class GroupBy extends Activity {
                     id: "values",
                     label: "details",
                     type: "object",
+                    default: undefined,
                     children: []
                 };
                 retVal.push(rows);

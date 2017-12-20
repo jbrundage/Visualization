@@ -14,6 +14,8 @@ export class ColumnMapping extends PropertyExt {
     localField: publish<this, string>;
     @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
     condition: publish<this, DDL2.IMappingConditionType>;
+    @publish(false, "boolean", "Ignore null filters")
+    nullable: publish<this, boolean>;
 
     constructor(owner: Filter) {
         super();
@@ -24,7 +26,8 @@ export class ColumnMapping extends PropertyExt {
         return {
             remoteFieldID: this.remoteField(),
             localFieldID: this.localField(),
-            condition: this.condition()
+            condition: this.condition(),
+            nullable: this.nullable()
         };
     }
 
@@ -33,6 +36,7 @@ export class ColumnMapping extends PropertyExt {
             .remoteField(ddl.remoteFieldID)
             .localField(ddl.localFieldID)
             .condition(ddl.condition)
+            .nullable(ddl.nullable)
             ;
     }
 
@@ -40,7 +44,8 @@ export class ColumnMapping extends PropertyExt {
         return hashSum({
             remoteField: this.remoteField(),
             localField: this.localField(),
-            condition: this.condition()
+            condition: this.condition(),
+            nullable: this.nullable()
         });
     }
 
@@ -55,7 +60,10 @@ export class ColumnMapping extends PropertyExt {
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
         const lf = this.localField();
         const rf = this.remoteField();
-        const fs = filterSelection[0][rf];
+        const fs = filterSelection.length ? filterSelection[0][rf] : undefined;
+        if ((fs === undefined || fs === null) && this.nullable()) {
+            return (localRow) => true;
+        }
         switch (this.condition()) {
             case "==":
                 return (localRow) => localRow[lf] === fs;
@@ -81,8 +89,6 @@ export class Filter extends PropertyExt {
 
     @publish(null, "set", "Datasource", function (this: Filter) { return this.visualizationIDs(); }, { optional: true })
     source: publish<this, string>;
-    @publish(false, "boolean", "Ignore null filters")
-    nullable: publish<this, boolean>;
     @publish([], "propertyArray", "Mappings", null, { autoExpand: ColumnMapping })
     mappings: publish<this, ColumnMapping[]>;
 
@@ -94,7 +100,6 @@ export class Filter extends PropertyExt {
     toDDL(): DDL2.IFilterCondition {
         return {
             viewID: this.source(),
-            nullable: this.nullable(),
             mappings: this.ddlMappings()
         };
     }
@@ -102,7 +107,6 @@ export class Filter extends PropertyExt {
     static fromDDL(owner: Filters, ddl: DDL2.IFilterCondition): Filter {
         return new Filter(owner)
             .source(ddl.viewID)
-            .nullable(ddl.nullable)
             .ddlMappings(ddl.mappings)
             ;
     }
@@ -122,7 +126,6 @@ export class Filter extends PropertyExt {
     hash(): string {
         return hashSum({
             source: this.source(),
-            nullable: this.nullable(),
             mappings: this.validMappings().map(mapping => mapping.hash())
         });
     }
@@ -159,10 +162,6 @@ export class Filter extends PropertyExt {
 
     createFilter(): (localRow: any) => boolean {
         const selection = this.sourceSelection();
-        const nullable = this.nullable();
-        if (selection.length === 0) {
-            return (localRow: any) => nullable;
-        }
         const mappingFilters = this.validMappings().map(mapping => mapping.createFilter(selection));
         return (row: object): boolean => mappingFilters.every(mappingFilter => mappingFilter(row));
     }

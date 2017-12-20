@@ -110,6 +110,7 @@ export class Element extends PropertyExt {
         const view = this.view();
         await view.refreshMeta();
         const columns = view.outFields().map(field => field.label);
+        // const fields = view.outFields().map(field => new Field());
         const data = await view.fetch();
         const mappedData = data.map(row => {
             const retVal = [];

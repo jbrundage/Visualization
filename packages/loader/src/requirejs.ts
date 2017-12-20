@@ -107,16 +107,12 @@ export function bundle(url: string, additionalPaths: { [key: string]: string } =
     });
 }
 
-export function npm(additionalPaths: { [key: string]: string } = {}, min: boolean = true): any {
-    return bundle("https://unpkg.com/@hpcc-js", additionalPaths, min);
-}
-
 export function cdn(version?: string, additionalPaths: { [key: string]: string } = {}, min: boolean = true): any {
     const url = version === void 0 ? hostUrl : `https://viz.hpccsystems.com/${version}`;
     return bundle(url, additionalPaths, min);
 }
 
-function local(devMode: boolean, additionalPaths: { [key: string]: string }): any {
+function local(devMode: boolean, additionalPaths: { [key: string]: string }, min: boolean = false): any {
     const thirdPartyPaths: { [key: string]: string } = {};
     for (const key in npmPackages) {
         thirdPartyPaths[key] = `${config.node_modulesUrl}/${npmPackages[key]}`;
@@ -136,7 +132,7 @@ function local(devMode: boolean, additionalPaths: { [key: string]: string }): an
         paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
         rjsPackages.push({
             name: `@hpcc-js/${pckg}`,
-            main: devMode && config.isLocal ? `lib-umd/index` : `build/index`
+            main: devMode && config.isLocal ? `lib-umd/index` : `build/index.min`
         });
         paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;
     });
@@ -147,10 +143,14 @@ function local(devMode: boolean, additionalPaths: { [key: string]: string }): an
     });
 }
 
+export function dev(additionalPaths: { [key: string]: string } = {}): any {
+    return local(true, additionalPaths);
+}
+
 export function amd(additionalPaths: { [key: string]: string } = {}): any {
     return local(false, additionalPaths);
 }
 
-export function dev(additionalPaths: { [key: string]: string } = {}): any {
-    return local(true, additionalPaths);
+export function npm(additionalPaths: { [key: string]: string } = {}): any {
+    return local(false, additionalPaths);
 }
