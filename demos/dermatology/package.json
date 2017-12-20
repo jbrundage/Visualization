@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-dermatology",
-  "version": "0.0.40",
+  "version": "0.0.41",
   "scripts": {},
   "dependencies": {
     "@hpcc-js/amchart": "^0.0.54",
@@ -22,7 +22,7 @@
     "@hpcc-js/handson": "^0.0.54",
     "@hpcc-js/html": "^0.0.54",
     "@hpcc-js/layout": "^0.0.54",
-    "@hpcc-js/loader": "^0.0.59",
+    "@hpcc-js/loader": "^0.0.60",
     "@hpcc-js/map": "^0.0.59",
     "@hpcc-js/marshaller": "^0.0.66",
     "@hpcc-js/other": "^0.0.54",
