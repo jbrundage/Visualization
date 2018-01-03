@@ -78,7 +78,7 @@ export interface IActivity {
 }
 
 //  Filter  ===================================================================
-export type IMappingConditionType = "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains";
+export type IMappingConditionType = "==" | "!=" | ">" | ">=" | "<" | "<=" | "in";
 export interface IMapping {
     remoteFieldID: string;
     localFieldID: string;
@@ -134,13 +134,13 @@ export function isProjectActivity(activity: IActivity): activity is IProject {
 //  GroupBy  ==================================================================
 export type IAggregateType = "min" | "max" | "sum" | "mean" | "variance" | "deviation";
 export interface IAggregate {
-    label: string;
-    type: IAggregateType;
     fieldID: string;
+    type: IAggregateType;
+    inFieldID: string;
 }
 
 export interface ICount {
-    label: string;
+    fieldID: string;
     type: "count";
 }
 

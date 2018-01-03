@@ -1,5 +1,6 @@
 ﻿import { DDLEditor, JSEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { PropertyExt, Widget } from "@hpcc-js/common";
+import { IDDL } from "@hpcc-js/ddl-shim";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
 import { Activity, Dashboard, DatasourceAdapt, Element, ElementContainer, GraphAdapter, JavaScriptAdapter } from "@hpcc-js/marshaller";
@@ -157,6 +158,18 @@ export class App {
         });
     }
 
+    clear() {
+        this._elementContainer.clear();
+        this.loadDashboard();
+        this._elementContainer.refresh();
+    }
+
+    importV1DDL(target: string, ddl: IDDL) {
+        this._elementContainer.importV1DDL(target, ddl);
+        this.loadDashboard();
+        this._elementContainer.refresh();
+    }
+
     refreshPreview() {
         const ds = this._preview.datasource() as DatasourceAdapt;
         if (ds) {
@@ -293,16 +306,14 @@ export class App {
         commands.addCommand("dash_add_ddl", {
             label: "Add DDL",
             execute: () => {
-                // this._dashboard.restoreDDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
-                this.loadDashboard();
-                this._elementContainer.refresh();
+                this.importV1DDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
             }
         });
 
         commands.addCommand("dash_clear", {
             label: "Clear",
             execute: () => {
-                this._elementContainer.clear();
+                this.clear();
             }
         });
 

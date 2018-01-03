@@ -1,5 +1,6 @@
 import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { ChartPanel } from "@hpcc-js/composite";
+import { IDDL } from "@hpcc-js/ddl-shim";
 import { find } from "@hpcc-js/util";
 import { Activity } from "./activities/activity";
 import { HipiePipeline } from "./activities/hipiepipeline";
@@ -211,7 +212,7 @@ export class ElementContainer extends PropertyExt {
         return this;
     }
 
-    importV1DDL(url: string, ddlObj: any) {
+    importV1DDL(url: string, ddlObj: IDDL) {
         const ddl = new DDLImport(this, url, ddlObj);
         ddl;
     }

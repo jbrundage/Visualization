@@ -8,9 +8,10 @@
     "clean": "rimraf lib* && rimraf types && rimraf build",
     "compile-es6": "tsc --module es6 --outDir ./lib-es6",
     "compile-amd": "tsc --module amd --outDir ./lib-amd",
+    "compile-cjs": "tsc --module commonjs --outDir ./lib-cjs",
     "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
-    "build": "npm run compile-es6 && npm run bundle",
+    "build": "npm run compile-cjs && npm run bundle",
     "lint": "tslint --project . src/**/*.ts"
   },
   "files": [

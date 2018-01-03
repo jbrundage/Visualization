@@ -12,7 +12,7 @@ export class ColumnMapping extends PropertyExt {
     remoteField: publish<this, string>;
     @publish(null, "set", "Local Fields", function (this: ColumnMapping) { return this.localFields(); }, { optional: true })
     localField: publish<this, string>;
-    @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "contains"])
+    @publish("==", "set", "Filter Fields", ["==", "!=", ">", ">=", "<", "<=", "in"])
     condition: publish<this, DDL2.IMappingConditionType>;
     @publish(false, "boolean", "Ignore null filters")
     nullable: publish<this, boolean>;
@@ -60,15 +60,19 @@ export class ColumnMapping extends PropertyExt {
     createFilter(filterSelection: any[]): (localRow: any) => boolean {
         const lf = this.localField();
         const rf = this.remoteField();
-        const fs = filterSelection.length ? filterSelection[0][rf] : undefined;
-        if ((fs === undefined || fs === null) && this.nullable()) {
+        let fs = filterSelection.length ? filterSelection[0][rf] : undefined;
+        const isString = typeof fs === "string";
+        if (isString) {
+            fs = fs.trim();
+        }
+        if ((fs === undefined || fs === null || fs === "") && this.nullable()) {
             return (localRow) => true;
         }
         switch (this.condition()) {
             case "==":
-                return (localRow) => localRow[lf] === fs;
+                return (localRow) => isString && typeof localRow[lf] === "string" ? localRow[lf].trim() === fs : localRow[lf] === fs;
             case "!=":
-                return (localRow) => localRow[lf] !== fs;
+                return (localRow) => isString && typeof localRow[lf] === "string" ? localRow[lf].trim() !== fs : localRow[lf] !== fs;
             case "<":
                 return (localRow) => localRow[lf] < fs;
             case "<=":
@@ -77,8 +81,8 @@ export class ColumnMapping extends PropertyExt {
                 return (localRow) => localRow[lf] > fs;
             case ">=":
                 return (localRow) => localRow[lf] >= fs;
-            case "contains":
-                return (localRow) => filterSelection.some(fsRow => localRow[lf] === fsRow[rf]);
+            case "in":
+                return (localRow) => filterSelection.some(fsRow => typeof localRow[lf] === "string" && typeof fsRow[rf] === "string" ? localRow[lf].trim() === fsRow[rf].trim() : localRow[lf] === fsRow[rf]);
         }
     }
 }

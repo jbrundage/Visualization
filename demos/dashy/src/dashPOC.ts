@@ -1,6 +1,6 @@
 
 import { ChartPanel } from "@hpcc-js/composite";
-import { Dashboard, Databomb, Element, ElementContainer, Form, Filters, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
+import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
 const ec = new ElementContainer();

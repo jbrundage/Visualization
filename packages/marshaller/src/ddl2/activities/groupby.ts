@@ -59,11 +59,11 @@ export type AggregateType = "count" | "min" | "max" | "sum" | "mean" | "median" 
 export class AggregateField extends PropertyExt {
     private _owner: GroupBy;
 
-    @publish(null, "string", "Label", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() })
-    label: publish<this, string>;
-    @publish("count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: w => !w.label() })
+    @publish(null, "string", "new Field ID", null, { optional: true, disable: (w: AggregateField) => !w.hasColumn() })
+    fieldID: publish<this, string>;
+    @publish("count", "set", "Aggregation Type", ["count", "min", "max", "sum", "mean", "median", "variance", "deviation"], { optional: true, disable: (w: AggregateField) => !w.fieldID() })
     aggrType: publish<this, AggregateType>;
-    @publish(null, "set", "Aggregation Field", function (this: AggregateField) { return this.columns(); }, { optional: true, disable: w => !w.label() || !w.aggrType() || w.aggrType() === "count" })
+    @publish(null, "set", "Aggregation Field", function (this: AggregateField) { return this.columns(); }, { optional: true, disable: (w: AggregateField) => !w.fieldID() || !w.aggrType() || w.aggrType() === "count" })
     aggrColumn: publish<this, string>;
 
     constructor(owner: GroupBy) {
@@ -74,31 +74,31 @@ export class AggregateField extends PropertyExt {
     toDDL(): DDL2.IAggregate | DDL2.ICount {
         if (this.aggrType() === "count") {
             return {
-                label: this.label(),
+                fieldID: this.fieldID(),
                 type: "count"
             };
         }
         return {
-            label: this.label(),
+            fieldID: this.fieldID(),
             type: this.aggrType() as DDL2.IAggregateType,
-            fieldID: this.aggrColumn()
+            inFieldID: this.aggrColumn()
         };
     }
 
     static fromDDL(owner: GroupBy, ddl: DDL2.IAggregate | DDL2.ICount): AggregateField {
         const retVal = new AggregateField(owner)
-            .label(ddl.label)
+            .fieldID(ddl.fieldID)
             .aggrType(ddl.type)
             ;
         if (ddl.type !== "count") {
-            retVal.aggrColumn(ddl.fieldID);
+            retVal.aggrColumn(ddl.inFieldID);
         }
         return retVal;
     }
 
     hash(): string {
         return hashSum({
-            label: this.label(),
+            label: this.fieldID(),
             aggrType: this.aggrType(),
             aggrColumn: this.aggrColumn()
         });
@@ -214,7 +214,7 @@ export class GroupBy extends Activity {
     appendComputedFields(aggregateFields: [{ label: string, type: AggregateType, column?: string }]): this {
         for (const aggregateField of aggregateFields) {
             const aggrField = new AggregateField(this)
-                .label(aggregateField.label)
+                .fieldID(aggregateField.label)
                 .aggrType(aggregateField.type)
                 ;
             if (aggregateField.column !== void 0) {
@@ -226,7 +226,7 @@ export class GroupBy extends Activity {
     }
 
     validComputedFields() {
-        return this.computedFields().filter(computedField => computedField.label());
+        return this.computedFields().filter(computedField => computedField.fieldID());
     }
 
     hasComputedFields() {
@@ -249,10 +249,10 @@ export class GroupBy extends Activity {
             retVal.push(field);
         }
         for (const cf of this.computedFields()) {
-            if (cf.label()) {
+            if (cf.fieldID()) {
                 const computedField: IField = {
-                    id: cf.label(),
-                    label: cf.label(),
+                    id: cf.fieldID(),
+                    label: cf.fieldID(),
                     type: "number",
                     default: undefined,
                     children: null
@@ -300,7 +300,7 @@ export class GroupBy extends Activity {
         if (data.length === 0) return data;
         const columnLabels: string[] = this.validGroupBy().map(gb => gb.label());
         const computedFields = this.validComputedFields().map(cf => {
-            return { label: cf.label(), aggrFunc: cf.aggrFunc() };
+            return { label: cf.fieldID(), aggrFunc: cf.aggrFunc() };
         });
         const retVal = d3Nest()
             .key((row: { [key: string]: any }) => {

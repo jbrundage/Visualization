@@ -6,7 +6,7 @@ var webpack = require("webpack");
 
 module.exports = {
     context: __dirname,
-    entry: "./lib-es6/index",
+    entry: "./lib-cjs/index",
     output: {
         path: path.join(__dirname, "build"),
         publicPath: "build/",
@@ -53,7 +53,6 @@ module.exports = {
                 data.request = data.request.replace(/^css!/, "!style-loader!css-loader!")
             }
         ),
-        /*
         new webpack.optimize.UglifyJsPlugin({
             cache: true,
             parallel: true,
@@ -61,7 +60,6 @@ module.exports = {
             compress: { warnings: false },
             sourceMap: true
         })
-        */
     ],
     resolveLoader: {
         modules: [

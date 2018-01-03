@@ -71,7 +71,7 @@ export class JavaScriptAdapter {
         } else if (details instanceof RoxieRequest) {
             return `const ${dsID} = new RoxieRequest(ec).url("${details.url()}").querySet("${details.querySet()}").queryID("${details.queryID()}").resultName("${details.resultName()}").requestFields(${stringify(details.requestFields())});`;
         } else if (details instanceof Databomb) {
-            return `const ${dsID} = new Databomb().payload(${JSON.stringify(details.payload())});`;
+            return `const ${dsID} = new Databomb().payload(${stringify(details.payload())});`;
         } else if (details instanceof Form) {
             return `const ${dsID} = new Form().payload(${JSON.stringify(details.payload())});`;
         }
@@ -181,7 +181,7 @@ ec.append(${element.id()});
     createJavaScript(): string {
         return `
 import { ChartPanel } from "@hpcc-js/composite";
-import { Dashboard, Databomb, Element, ElementContainer, Form, Filters, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
+import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
 const ec = new ElementContainer();

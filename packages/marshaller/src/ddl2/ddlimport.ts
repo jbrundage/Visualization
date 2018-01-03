@@ -133,7 +133,7 @@ export class DDLImport {
                     );
                     */
                     groupByFields.push(new AggregateField(viz.view().groupBy())
-                        .label(field.id.toLowerCase())
+                        .fieldID(field.id.toLowerCase())
                         .aggrType("mean")
                         .aggrColumn(field.id.toLowerCase())
                     );

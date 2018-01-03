@@ -36,10 +36,11 @@ import * as CompoundColumns from "dgrid/extensions/CompoundColumns";
 import * as nlsPagination from "dgrid/extensions/nls/pagination";
 import * as Pagination from "dgrid/extensions/Pagination";
 
-import "css!dgrid/css/dgrid.css";
+//  Other ---
+import { GridHelper } from "./gridHelper";
 
-export const Grid = declare([OnDemandGrid, Keyboard, Selection, ColumnResizer, CompoundColumns]);
+export const Grid = declare([OnDemandGrid, Keyboard, Selection, ColumnResizer, CompoundColumns, GridHelper]);
 Grid.prototype.i18nPagination = nlsPagination.root;
 
-export const PagingGrid = declare([_Grid, Pagination, Keyboard, Selection, ColumnResizer, CompoundColumns]);
+export const PagingGrid = declare([_Grid, Pagination, Keyboard, Selection, ColumnResizer, CompoundColumns, GridHelper]);
 PagingGrid.prototype.i18nPagination = nlsPagination.root;
