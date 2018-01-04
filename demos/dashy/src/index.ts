@@ -1,5 +1,6 @@
 ﻿import { DDLEditor, JSEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { PropertyExt, Widget } from "@hpcc-js/common";
+import { hookSend, IOptions, ResponseType, SendFunc } from "@hpcc-js/comms";
 import { IDDL } from "@hpcc-js/ddl-shim";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
@@ -8,6 +9,14 @@ import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { ddl } from "./sampleddl";
+
+const origSend = hookSend((opts: IOptions, action: string, request: any, responseType: ResponseType): Promise<any> => {
+    return origSend(opts, action, request, responseType).then(response => {
+        return response;
+    }).catch(e => {
+        throw e;
+    });
+});
 
 class Mutex {
     private _locking: Promise<any>;

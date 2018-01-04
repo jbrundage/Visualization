@@ -93,7 +93,7 @@ export class DDLImport {
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
             ;
-        (viz.widget() as ChartPanel).chartType(ddlVisualization.properties.charttype || "TABLE");
+        (viz.widget() as ChartPanel).chartType((ddlVisualization.properties && ddlVisualization.properties.charttype) ? ddlVisualization.properties.charttype : "TABLE");
     }
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
@@ -117,37 +117,39 @@ export class DDLImport {
         const groupByColumns: GroupByColumn[] = [];
         const groupByFields: AggregateField[] = [];
         for (const field of ddlVisualization.fields) {
-            switch (field.properties.function) {
-                case "SUM":
-                    break;
-                case "AVE":
-                    projectFields.push(new ComputedField(viz.view().project())
-                        .label(field.id.toLowerCase())
-                        .type("/")
-                        .column1(field.properties.params.param1.toLowerCase())
-                        .column2(field.properties.params.param2.toLowerCase())
-                    );
-                    /*
-                    groupByColumns.push(new GroupByColumn(viz.view().groupBy())
-                        .label(field.id.toLowerCase())
-                    );
-                    */
-                    groupByFields.push(new AggregateField(viz.view().groupBy())
-                        .fieldID(field.id.toLowerCase())
-                        .aggrType("mean")
-                        .aggrColumn(field.id.toLowerCase())
-                    );
-                    break;
-                case "MIN":
-                    break;
-                case "MAX":
-                    break;
-                case undefined:
-                default:
-                    groupByColumns.push(new GroupByColumn(viz.view().groupBy())
-                        .label(field.id.toLowerCase())
-                    );
-                    break;
+            if (field.properties) {
+                switch (field.properties.function) {
+                    case "SUM":
+                        break;
+                    case "AVE":
+                        projectFields.push(new ComputedField(viz.view().project())
+                            .label(field.id.toLowerCase())
+                            .type("/")
+                            .column1(field.properties.params.param1.toLowerCase())
+                            .column2(field.properties.params.param2.toLowerCase())
+                        );
+                        /*
+                        groupByColumns.push(new GroupByColumn(viz.view().groupBy())
+                            .label(field.id.toLowerCase())
+                        );
+                        */
+                        groupByFields.push(new AggregateField(viz.view().groupBy())
+                            .fieldID(field.id.toLowerCase())
+                            .aggrType("mean")
+                            .aggrColumn(field.id.toLowerCase())
+                        );
+                        break;
+                    case "MIN":
+                        break;
+                    case "MAX":
+                        break;
+                    case undefined:
+                    default:
+                        groupByColumns.push(new GroupByColumn(viz.view().groupBy())
+                            .label(field.id.toLowerCase())
+                        );
+                        break;
+                }
             }
         }
         viz.view().project().computedFields(projectFields);
@@ -171,6 +173,8 @@ export class DDLImport {
                 this.line(ddlVisualization as DDL.ILineVisualization, viz);
                 break;
             case "GRAPH":
+                //                this.graph(ddlVisualization as DDL.IGraphVisualization, viz);
+                break;
             case "TABLE":
                 this.table(ddlVisualization as DDL.ITableVisualization, viz);
                 break;

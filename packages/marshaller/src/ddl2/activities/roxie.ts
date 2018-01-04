@@ -1,5 +1,5 @@
 import { PropertyExt, publish, publishProxy } from "@hpcc-js/common";
-import { Query as CommsQuery, RequestType } from "@hpcc-js/comms";
+import { Query as CommsQuery } from "@hpcc-js/comms";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { IField } from "@hpcc-js/dgrid";
 import { compare, debounce, hashSum } from "@hpcc-js/util";
@@ -124,7 +124,7 @@ export class RoxieService extends PropertyExt {
             delete this.refreshMetaPromise;
         }
         if (!this.refreshMetaPromise) {
-            this.refreshMetaPromise = CommsQuery.attach({ baseUrl: this.url(), type: RequestType.JSONP }, this.querySet(), this.queryID()).then((query) => {
+            this.refreshMetaPromise = CommsQuery.attach({ baseUrl: this.url(), type: "jsonp" }, this.querySet(), this.queryID()).then((query) => {
                 this._query = query;
             });
         }

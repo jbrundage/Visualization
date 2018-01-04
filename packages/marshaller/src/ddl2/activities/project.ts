@@ -12,7 +12,7 @@ export class ComputedField extends PropertyExt {
     label: publish<this, string>;
     @publish("mapping", "set", "Project type", ["=", "*", "/", "+", "-", "scale", "template"], { optional: true, disable: w => !w.label() })
     type: publish<this, ComputedType>;
-    @publish(null, "set", "Param 1", function (this: ComputedField) { return this.columns(); }, { optional: false, disable: (w: ComputedField) => !w.label() || ["*", "/", "+", "-", "scale"].indexOf(w.type()) < 0 })
+    @publish(null, "set", "Param 1", function (this: ComputedField) { return this.columns(); }, { optional: false, disable: (w: ComputedField) => !w.label() || ["=", "*", "/", "+", "-", "scale"].indexOf(w.type()) < 0 })
     column1: publish<this, string>;
     @publish(null, "set", "Param 2", function (this: ComputedField) { return this.columns(); }, { optional: true, disable: (w: ComputedField) => !w.label() || ["*", "/", "+", "-"].indexOf(w.type()) < 0 })
     column2: publish<this, string>;

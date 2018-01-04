@@ -10,22 +10,17 @@ function guessScriptURL() {
     const scripts = document.getElementsByTagName("script");
     return scripts[scripts.length - 1].src;
 }
+const scriptUrl = guessScriptURL();
 
-function parseScriptUrl() {
-    const scriptUrl = guessScriptURL();
+function parseScriptUrl(forceLocal: boolean) {
     const scriptUrlParts = scriptUrl.split("/loader/build/index.js");
-    const isLocal = scriptUrl.indexOf("file://") === 0;
+    const isLocal = forceLocal || scriptUrl.indexOf("file://") === 0;
     return {
         isLocal,
         libUrl: isLocal ? scriptUrlParts[0] : "https://unpkg.com/@hpcc-js",
         node_modulesUrl: isLocal ? scriptUrlParts[0] + "/../node_modules" : "https://unpkg.com"
     };
 }
-
-const config = parseScriptUrl();
-config;
-
-//  Calculate hosting url
 
 function getElementAttrVal(tagName: string = "script", attr: string = "src", val: string) {
     const scripts = document.getElementsByTagName(tagName);
@@ -113,6 +108,7 @@ export function cdn(version?: string, additionalPaths: { [key: string]: string }
 }
 
 function local(devMode: boolean, additionalPaths: { [key: string]: string }, min: boolean = false): any {
+    const config = parseScriptUrl(devMode);
     const thirdPartyPaths: { [key: string]: string } = {};
     for (const key in npmPackages) {
         thirdPartyPaths[key] = `${config.node_modulesUrl}/${npmPackages[key]}`;

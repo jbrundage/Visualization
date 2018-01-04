@@ -8,7 +8,8 @@
     "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
     "bundle2": "rollup -c",
-    "build": "npm run compile-es6 && npm run bundle && npm run bundle2"
+    "build": "npm run compile-es6 && npm run bundle && npm run bundle2",
+    "start:dev": "ws"
   },
   "dependencies": {
     "@hpcc-js/api": "^0.0.56",
@@ -34,6 +35,7 @@
     "tslib": "1.8.0"
   },
   "devDependencies": {
+    "local-web-server": "2.3.0",
     "material-design-lite": "1.2.1",
     "pure-css": "1.0.4",
     "rimraf": "2.6.2",
