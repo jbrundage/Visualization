@@ -1,0 +1,140 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Panel Magic</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <script src="test_data.js"></script>
+    <script src="../../packages/loader/build/index.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.dev("../../../packages", { "test": "../tests" }, "../../../node_modules");
+    </script>
+    <style>
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .surfaceTitle {
+            text-align: left!important;
+            background-color: #FFF!important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="placeholder" style="width:80%;height:80vh;margin: 10vh 10%;"></div>
+    <script>
+        init();
+
+        function init() {
+            require(["@hpcc-js/composite", "@hpcc-js/chart", "@hpcc-js/layout", "@hpcc-js/other"], function (comp, chart, layout, other) {
+                window.g_comp = comp;
+                window.g_chart = chart;
+                window.g_other = other;
+                window.g_layout = layout;
+
+                g_data = g_data.sort((a, b) => { return a.name < b.name ? -1 : 1; });
+
+                window.cols1 = ['Species', '5° C', '10° C', '25° C', '30° C'];
+                window.cols2 = ['Species', '2500 Lux', '5000 Lux'];
+                window.data1 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp5_lux2500,
+                        row.temp10_lux2500,
+                        row.temp25_lux2500,
+                        row.temp30_lux2500,
+                    ];
+                });
+                window.data2 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp5_lux5000,
+                        row.temp10_lux5000,
+                        row.temp25_lux5000,
+                        row.temp30_lux5000
+                    ];
+                });
+                window.data3 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp5_lux2500,
+                        row.temp5_lux5000,
+                    ];
+                });
+                window.data4 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp10_lux2500,
+                        row.temp10_lux5000,
+                    ];
+                });
+                window.data5 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp25_lux2500,
+                        row.temp25_lux5000,
+                    ];
+                });
+                window.data6 = g_data.map(function (row) {
+                    return [
+                        row.name,
+                        row.temp30_lux2500,
+                        row.temp30_lux5000,
+                    ];
+                });
+
+                window.g_chart1 = new chart.Column().columns(cols1).data(data1);
+                window.g_chart2 = new chart.Column().columns(cols1).data(data2);
+                window.g_chart3 = new chart.Column().columns(cols2).data(data3);
+                window.g_chart4 = new chart.Column().columns(cols2).data(data4);
+                window.g_chart5 = new chart.Column().columns(cols2).data(data5);
+                window.g_chart6 = new chart.Column().columns(cols2).data(data6);
+                g_chart1.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                g_chart2.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                g_chart3.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                g_chart4.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                g_chart5.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                g_chart6.xAxisOverlapMode('rotate').xAxisLabelRotation(90);
+                window.g_grid1 = new layout.Grid()
+                    .gutter(0)
+                    .surfaceBorderWidth(0)
+                    .surfaceShadow(false)
+                    .setContent(0, 0, g_chart1, "2500 Lux", 1, 1)
+                    .setContent(1, 0, g_chart2, "5000 Lux", 1, 1)
+                window.g_grid2 = new layout.Grid()
+                    .gutter(0)
+                    .surfaceBorderWidth(0)
+                    .surfaceShadow(false)
+                    .setContent(0, 0, g_chart3, '5° C', 1, 1)
+                    .setContent(0, 1, g_chart4, '10° C', 1, 1)
+                    .setContent(1, 0, g_chart5, '25° C', 1, 1)
+                    .setContent(1, 1, g_chart6, '30° C', 1, 1)
+
+                window.g_mainGrid = new layout.Grid()
+                    .surfaceShadow(false)
+                    .surfaceBorderWidth(0)
+                    .setContent(0, 0, g_grid1, "How does light affect the growth rate?", 1, 1)
+                    .setContent(0, 1, g_grid2, "How does temperature affect the growth rate?", 1, 1)
+
+                window.g_panel = new comp.ChartPanel().target('placeholder');
+
+                g_panel.title("Algae Growth Rate Analysis");
+                g_panel.chart(g_mainGrid);
+                // g_panel.chart(g_chart1);
+                //g_panel.columns(cols1).data(data1);
+
+                g_panel.render(function () {
+                    g_panel.resize().render();
+                });
+            });
+        }
+
+    </script>
+</body>
+
+</html>

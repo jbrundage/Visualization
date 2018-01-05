@@ -1,7 +1,7 @@
+import { Column } from "@hpcc-js/chart";
 import { HTMLWidget, publish, publishProxy, Utility, Widget } from "@hpcc-js/common";
 import { Border2 } from "@hpcc-js/layout";
 import { Legend } from "./Legend";
-import { MultiChart } from "./MultiChart";
 import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
 
 import "../src/ChartPanel.css";
@@ -39,31 +39,31 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     @publishProxy("_titleBar", undefined, undefined, { reset: true })
     title: publish<this, string>;
-    @publish(null, "widget", "Multi Chart")
-    _multiChart: MultiChart;
-    multiChart(): MultiChart;
-    multiChart(_: MultiChart): this;
-    multiChart(_?: MultiChart): MultiChart | this {
-        if (!arguments.length) return this._multiChart;
-        this._multiChart = _;
+    @publish(null, "widget", "Chart to display within the ChartPanel")
+    _chart: Widget;
+    chart(): Widget;
+    chart(_: Widget): this;
+    chart(_?: Widget): Widget | this {
+        if (!arguments.length) return this._chart;
+        this._chart = _;
 
         const context = this;
-        this._multiChart.click = function () {
+        this._chart["click"] = function () {
             context.click.apply(context, arguments);
         };
-        this._multiChart.dblclick = function () {
+        this._chart["dblclick"] = function () {
             context.dblclick.apply(context, arguments);
         };
-        this._multiChart.vertex_click = function () {
+        this._chart["vertex_click"] = function () {
             context.vertex_click.apply(context, arguments);
         };
-        this._multiChart.vertex_dblclick = function () {
+        this._chart["vertex_dblclick"] = function () {
             context.vertex_dblclick.apply(context, arguments);
         };
-        this._multiChart.edge_click = function () {
+        this._chart["edge_click"] = function () {
             context.edge_click.apply(context, arguments);
         };
-        this._multiChart.edge_dblclick = function () {
+        this._chart["edge_dblclick"] = function () {
             context.edge_dblclick.apply(context, arguments);
         };
         return this;
@@ -73,57 +73,25 @@ export class ChartPanel extends Border2 implements IClickHandler {
         super();
         this._tag = "div";
         this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
-        this.multiChart(new MultiChart().chartType("COLUMN"));
-    }
-
-    chartType(): string;
-    chartType(_: string): this;
-    chartType(_?: string): string | this {
-        if (!arguments.length) return this._multiChart.chartType();
-        this._multiChart.chartType(_);
-        return this;
-    }
-
-    chart(): Widget;
-    chart(_: Widget): this;
-    chart(_?: Widget): Widget | this {
-        if (!arguments.length) return this._multiChart.chart();
-        this._multiChart.chart(_);
-        return this;
-    }
-
-    chartTypeDefaults(): object;
-    chartTypeDefaults(_: object): this;
-    chartTypeDefaults(_?: object): this | object {
-        if (!arguments.length) return this._multiChart.chartTypeDefaults();
-        this._multiChart.chartTypeDefaults(_);
-        return this;
-    }
-
-    chartTypeProperties(): object;
-    chartTypeProperties(_: object): this;
-    chartTypeProperties(_?: object): this | object {
-        if (!arguments.length) return this._multiChart.chartTypeProperties();
-        this._multiChart.chartTypeProperties(_);
-        return this;
+        this.chart(new Column());
     }
 
     columns(): string[];
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {
-        if (!arguments.length) return this._multiChart.columns();
+        if (!arguments.length) return this._chart.columns();
         this._legend.columns(_, asDefault);
         return this;
     }
 
     data(_?) {
-        if (!arguments.length) return this._multiChart.data();
+        if (!arguments.length) return this._chart.data();
         this._legend.data(_);
         return this;
     }
 
     downloadCSV() {
-        Utility.downloadBlob("CSV", this._multiChart.export("CSV"));
+        Utility.downloadBlob("CSV", this._chart.export("CSV"));
         return this;
     }
 
@@ -131,33 +99,23 @@ export class ChartPanel extends Border2 implements IClickHandler {
         super.enter(domNode, element);
 
         this.top(this._titleBar);
-        this.center(this._multiChart);
+        this.center(this._chart);
         this.right(this._legend);
 
         this._legend
-            .targetWidget(this._multiChart)
+            .targetWidget(this._chart)
             .orientation("vertical")
             .title("")
             .visible(false)
             ;
     }
 
-    private _prevChartDataFamily;
     update(domNode, element) {
-        this._multiChart
+        this._chart
             .columns(this._legend.filteredColumns())
             .data(this._legend.filteredData())
             ;
-        if (this._prevChartDataFamily !== this._multiChart.getChartDataFamily()) {
-            this._prevChartDataFamily = this._multiChart.getChartDataFamily();
-            switch (this._prevChartDataFamily) {
-                case "any":
-                    this._toggleLegend.selected(false);
-                    this._legend.visible(false);
-                    break;
-            }
-        }
-        this._legend.dataFamily(this._multiChart.getChartDataFamily());
+        this._legend.dataFamily("ND");
         super.update(domNode, element);
     }
 
