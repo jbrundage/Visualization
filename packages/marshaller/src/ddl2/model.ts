@@ -1,6 +1,7 @@
 import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
-import { ChartPanel } from "@hpcc-js/composite";
+import { MultiChartPanel } from "@hpcc-js/composite";
 import { IDDL } from "@hpcc-js/ddl-shim";
+import { ChartPanel } from "@hpcc-js/layout";
 import { find } from "@hpcc-js/util";
 import { Activity } from "./activities/activity";
 import { HipiePipeline } from "./activities/hipiepipeline";
@@ -41,18 +42,30 @@ State.prototype.publish("selection", [], "array", "State");
 let vizID = 0;
 export class Element extends PropertyExt {
     private _elementContainer: ElementContainer;
-    private _chartPanel: ChartPanel = new ChartPanel();
+    private _MultiChartPanel: MultiChartPanel = new MultiChartPanel();
 
-    @publishProxy("_chartPanel")
+    @publishProxy("_MultiChartPanel")
     title: publish<this, string>;
     @publish(null, "widget", "Data View")
     view: publish<this, HipiePipeline>;
     @publish(null, "widget", "Visualization")
     _widget: ChartPanel;
-    widget(): ChartPanel;
-    widget(_: ChartPanel): this;
-    widget(_?: ChartPanel): ChartPanel | this {
+    chartPanel(): ChartPanel;
+    chartPanel(_: ChartPanel): this;
+    chartPanel(_?: ChartPanel): ChartPanel | this {
         if (!arguments.length) return this._widget;
+        this._widget = _;
+        this._widget
+            .on("click", (row: object, col: string, sel: boolean) => {
+                this.state().selection(sel ? [row] : []);
+            })
+            ;
+        return this;
+    }
+    multiChartPanel(): MultiChartPanel;
+    multiChartPanel(_: MultiChartPanel): this;
+    multiChartPanel(_?: MultiChartPanel): MultiChartPanel | this {
+        if (!arguments.length) return this._widget as MultiChartPanel;
         this._widget = _;
         this._widget
             .on("click", (row: object, col: string, sel: boolean) => {
@@ -71,12 +84,12 @@ export class Element extends PropertyExt {
         this._id = `element_${vizID}`;
         const view = new HipiePipeline(ec, `pipeline_${vizID}`);
         this.view(view);
-        this._chartPanel
+        this._MultiChartPanel
             .id(`viz_${vizID}`)
             .title(this.id())
             .chartType("TABLE")
             ;
-        this.widget(this._chartPanel);
+        this.chartPanel(this._MultiChartPanel);
         this.state(new State());
     }
 
@@ -85,7 +98,7 @@ export class Element extends PropertyExt {
     id(_?: string): string | this {
         const retVal = super.id.apply(this, arguments);
         if (arguments.length) {
-            this._chartPanel.id(_);
+            this._MultiChartPanel.id(_);
         }
         return retVal;
     }
@@ -100,7 +113,7 @@ export class Element extends PropertyExt {
     }
 
     vizProps(): Widget {
-        return this.widget();
+        return this.chartPanel();
     }
 
     stateProps(): PropertyExt {
@@ -120,7 +133,7 @@ export class Element extends PropertyExt {
             }
             return retVal;
         });
-        this.widget()
+        this.chartPanel()
             .columns(columns)
             .data(mappedData)
             .lazyRender()

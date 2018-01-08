@@ -1,4 +1,4 @@
-import { ChartPanel } from "@hpcc-js/composite";
+import { MultiChartPanel } from "@hpcc-js/composite";
 import * as DDL from "@hpcc-js/ddl-shim";
 import { Form, Input } from "@hpcc-js/form";
 import { Form as DBForm } from "./activities/databomb";
@@ -55,7 +55,7 @@ export class DDLImport {
                 viz.state().selection([row]);
             })
             ;
-        viz.widget().multiChart().chart(form);
+        viz.multiChartPanel().multiChart().chart(form);
     }
 
     line(ddlVisualization: DDL.ILineVisualization, viz: Element) {
@@ -74,7 +74,7 @@ export class DDLImport {
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
             ;
-        (viz.widget() as ChartPanel).chartType(ddlVisualization.properties.charttype || "COLUMN");
+        (viz.chartPanel() as MultiChartPanel).chartType(ddlVisualization.properties.charttype || "COLUMN");
     }
 
     table(ddlVisualization: DDL.ITableVisualization, viz: Element) {
@@ -93,7 +93,7 @@ export class DDLImport {
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
             ;
-        (viz.widget() as ChartPanel).chartType((ddlVisualization.properties && ddlVisualization.properties.charttype) ? ddlVisualization.properties.charttype : "TABLE");
+        (viz.chartPanel() as MultiChartPanel).chartType((ddlVisualization.properties && ddlVisualization.properties.charttype) ? ddlVisualization.properties.charttype : "TABLE");
     }
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
@@ -109,8 +109,8 @@ export class DDLImport {
             }
         });
         this._vizzies[ddlVisualization.id] = viz;
-        const w = viz.widget();
-        if (w instanceof ChartPanel) {
+        const w = viz.chartPanel();
+        if (w instanceof MultiChartPanel) {
             w.title(ddlVisualization.title);
         }
         const projectFields: ComputedField[] = [];

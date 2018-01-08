@@ -1,5 +1,6 @@
 
-import { ChartPanel } from "@hpcc-js/composite";
+import { Column } from "@hpcc-js/chart";
+import { ChartPanel } from "@hpcc-js/layout";
 import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
@@ -9,21 +10,24 @@ const ec = new ElementContainer();
 const ds_3 = new WUResult().url("http://52.51.90.23:8010").wuid("W20171220-053645").resultName("Result 1");
 
 //  Visualization Widgets (View) ---
+
 const viz_3 = new ChartPanel()
     .id("viz_3")
     .title("element_3")
-    .chartType("BUBBLE")
-    .chartTypeProperties({})
-    ;
+    .widget(new Column()
+        .orientation("vertical")
+        .yAxisHidden(true)
+        .paletteID("Set3")
+    );
 
 //  Dashboard Elements  (Controller) ---
 const element_3 = new Element(ec)
     .id("element_3")
     .pipeline([
         ds_3,
-        new GroupBy().fieldIDs(["gender"]).aggregates([{ fieldID: "rowCount", type: "count" }])
+        new GroupBy().fieldIDs(["state"]).aggregates([{ fieldID: "ccc", type: "count" }])
     ])
-    .widget(viz_3)
+    .chartPanel(viz_3)
     .on("selectionChanged", () => {
 
     }, true)

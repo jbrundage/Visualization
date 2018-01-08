@@ -23,6 +23,7 @@
     "@hpcc-js/dgrid-shim": "^0.0.50",
     "@hpcc-js/form": "^0.0.58",
     "@hpcc-js/graph": "^0.0.57",
+    "@hpcc-js/layout": "^0.0.56",
     "@hpcc-js/map": "^0.0.61",
     "@hpcc-js/marshaller": "^0.0.68",
     "@hpcc-js/other": "^0.0.56",

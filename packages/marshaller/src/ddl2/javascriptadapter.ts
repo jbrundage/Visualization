@@ -1,4 +1,4 @@
-import { PropertyExt } from "@hpcc-js/common";
+import { ClassMeta, PropertyExt } from "@hpcc-js/common";
 import { Activity, stringify } from "./activities/activity";
 import { Databomb, Form } from "./activities/databomb";
 import { DSPicker } from "./activities/dspicker";
@@ -21,6 +21,14 @@ export function createProps(pe: PropertyExt): { [key: string]: any } {
         }
     }
     return retVal;
+}
+
+interface WidgetMeta extends ClassMeta {
+    js: string;
+}
+
+function joinWithPrefix(arr: string[], joinStr: string, postFix: string = ""): string {
+    return arr.length ? `${joinStr}${arr.join(joinStr)}${postFix}` : "";
 }
 
 export class JavaScriptAdapter {
@@ -65,15 +73,42 @@ export class JavaScriptAdapter {
         const dsID = activity.id();
         const details = activity.details();
         if (details instanceof WUResult) {
-            return `const ${dsID} = new WUResult().url("${details.url()}").wuid("${details.wuid()}").resultName("${details.resultName()}");`;
+            return `
+const ${dsID} = new WUResult()
+    .url("${details.url()}")
+    .wuid("${details.wuid()}")
+    .resultName("${details.resultName()}")
+    ;
+`.trim();
         } else if (details instanceof LogicalFile) {
-            return `const ${dsID} = new LogicalFile().url("${details.url()}").logicalFile("${details.logicalFile()}");`;
+            return `
+const ${dsID} = new LogicalFile()
+    .url("${details.url()}")
+    .logicalFile("${details.logicalFile()}")
+    ;
+`.trim();
         } else if (details instanceof RoxieRequest) {
-            return `const ${dsID} = new RoxieRequest(ec).url("${details.url()}").querySet("${details.querySet()}").queryID("${details.queryID()}").resultName("${details.resultName()}").requestFields(${stringify(details.requestFields())});`;
+            return `
+const ${dsID} = new RoxieRequest(ec)
+    .url("${details.url()}")
+    .querySet("${details.querySet()}")
+    .queryID("${details.queryID()}")
+    .resultName("${details.resultName()}")
+    .requestFields(${stringify(details.requestFields())})
+    ;
+`.trim();
         } else if (details instanceof Databomb) {
-            return `const ${dsID} = new Databomb().payload(${stringify(details.payload())});`;
+            return `
+const ${dsID} = new Databomb()
+    .payload(${stringify(details.payload())})
+    ;
+`.trim();
         } else if (details instanceof Form) {
-            return `const ${dsID} = new Form().payload(${JSON.stringify(details.payload())});`;
+            return `
+const ${dsID} = new Form()
+    .payload(${JSON.stringify(details.payload())})
+    ;
+`.trim();
         }
 
         return `const ${dsID} = TODO-writeDSActivity: ${details.classID()}`;
@@ -109,18 +144,32 @@ export class JavaScriptAdapter {
         return dataSources;
     }
 
-    writeWidget(element: Element) {
-        const chartPanel = element.widget();
-        const props = createProps(chartPanel.chart());
-        const vizID = chartPanel.id();
-        return `
+    private writeWidgetProps(pe: PropertyExt): string[] {
+        const retVal: string[] = [];
+        for (const meta of pe.publishedProperties()) {
+            if ((pe as any)[meta.id + "_modified"]() && meta.id !== "fields") {
+                retVal.push(`.${meta.id}(${JSON.stringify((pe as any)[meta.id]())})`);
+            }
+        }
+        return retVal;
+    }
+
+    private writeWidget(element: Element): WidgetMeta {
+        const multiChartPanel = element.multiChartPanel();
+        const chart = multiChartPanel.chart();
+        const meta = chart.classMeta();
+        const props = this.writeWidgetProps(chart);
+        const vizID = multiChartPanel.id();
+        return {
+            ...chart.classMeta(),
+            js: `
 const ${vizID} = new ChartPanel()
     .id("${vizID}")
-    .title("${element.widget().title()}")
-    .chartType("${element.widget().chartType()}")
-    .chartTypeProperties(${stringify(props)})
+    .title("${element.chartPanel().title()}")
+    .widget(new ${meta.className}()${joinWithPrefix(props, "\n        ", "\n    ")})
     ;
-`;
+`.trim()
+        };
     }
 
     writeElement(element: Element) {
@@ -138,14 +187,14 @@ const ${vizID} = new ChartPanel()
         for (const filteredViz of this._elementContainer.filteredBy(element)) {
             updates.push(`${filteredViz.id()}.refresh();`);
         }
-        const vizID = element.widget().id();
+        const vizID = element.chartPanel().id();
         return `
 const ${element.id()} = new Element(ec)
     .id("${element.id()}")
     .pipeline([
         ${activities.join(",\n        ")}
     ])
-    .widget(${vizID})
+    .chartPanel(${vizID})
     .on("selectionChanged", () => {
         ${updates.join("\n        ")}
     }, true)
@@ -162,12 +211,30 @@ ec.append(${element.id()});
         return retVal;
     }
 
-    writeWidgets(): string {
-        let retVal = "";
+    writeWidgets(): { widgetImports: string, widgetDefs: string } {
+        const widgetImport: { [moduleID: string]: { [classID: string]: boolean } } = {};
+        const jsDef: string[] = [];
         for (const element of this._elementContainer.elements()) {
-            retVal += this.writeWidget(element);
+            const widgetMeta = this.writeWidget(element);
+            if (!widgetImport[widgetMeta.moduleName]) {
+                widgetImport[widgetMeta.moduleName] = {};
+            }
+            widgetImport[widgetMeta.moduleName][widgetMeta.className] = true;
+            jsDef.push(widgetMeta.js);
         }
-        return retVal;
+        const importJS: string[] = [];
+        for (const moduleID in widgetImport) {
+            const classIDs: string[] = [];
+            for (const classID in widgetImport[moduleID]) {
+                classIDs.push(classID);
+            }
+            classIDs.sort();
+            importJS.push(`import { ${classIDs.join(", ")} } from "${moduleID}";`);
+        }
+        return {
+            widgetImports: importJS.join("\n"),
+            widgetDefs: jsDef.join("\n\n")
+        };
     }
 
     writeElements(): string {
@@ -179,8 +246,11 @@ ec.append(${element.id()});
     }
 
     createJavaScript(): string {
+        const widgets = this.writeWidgets();
+
         return `
-import { ChartPanel } from "@hpcc-js/composite";
+${widgets.widgetImports}
+import { ChartPanel } from "@hpcc-js/layout";
 import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
@@ -190,7 +260,7 @@ const ec = new ElementContainer();
 ${this.writeDatasources().join("\n").trim()}
 
 //  Visualization Widgets (View) ---
-${this.writeWidgets().trim()}
+${widgets.widgetDefs}
 
 //  Dashboard Elements  (Controller) ---
 ${this.writeElements().trim()}

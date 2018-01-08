@@ -199,7 +199,7 @@ export class App {
             this.loadPreview(activity);
         } else if (viz && (this._currViz !== viz || this._currActivity !== activity)) {
             this.loadDataProps(viz.view());
-            this.loadWidgetProps(viz.widget());
+            this.loadWidgetProps(viz.multiChartPanel());
             this.loadStateProps(viz.state());
             this.loadPreview(viz.view()!.last()!);
         }

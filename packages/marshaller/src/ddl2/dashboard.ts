@@ -1,5 +1,5 @@
 import { d3SelectionType, Widget } from "@hpcc-js/common";
-import { ChartPanel } from "@hpcc-js/composite";
+import { MultiChartPanel } from "@hpcc-js/composite";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { DockPanel } from "@hpcc-js/phosphor";
 import { compare } from "@hpcc-js/util";
@@ -37,11 +37,11 @@ export class Dashboard extends DockPanel {
         return {
             ddl: ddlAdapter.write(),
             widgets: this.widgets().map(_cp => {
-                const cp: ChartPanel = _cp as ChartPanel;
+                const cp: MultiChartPanel = _cp as MultiChartPanel;
                 return {
                     id: cp.id(),
                     type: cp.chartType(),
-                    props: createProps((cp as ChartPanel).chart())
+                    props: createProps((cp as MultiChartPanel).chart())
                 };
             }),
             layout: this.layout()
@@ -53,7 +53,7 @@ export class Dashboard extends DockPanel {
         ddlAdapter.read(_.ddl);
         this.syncWidgets();
         for (const w of _.widgets) {
-            this._ec.element(w.id).widget()
+            this._ec.element(w.id).multiChartPanel()
                 .chartType(w.type)
                 .chartTypeProperties(w.props)
                 ;
@@ -69,7 +69,7 @@ export class Dashboard extends DockPanel {
 
     syncWidgets() {
         const previous = this.widgets();
-        const diff = compare(previous, this._ec.elements().map(viz => viz.widget()));
+        const diff = compare(previous, this._ec.elements().map(viz => viz.chartPanel()));
         for (const w of diff.removed) {
             this.removeWidget(w);
         }
