@@ -5,7 +5,6 @@
   "scripts": {
     "clean": "rimraf lib* && rimraf dist && rimraf build",
     "compile-es6": "tsc --module es6 --outDir ./lib-es6",
-    "compile-umd": "tsc --module umd --outDir ./lib-umd",
     "bundle": "webpack",
     "bundle2": "rollup -c",
     "build": "npm run compile-es6 && npm run bundle"

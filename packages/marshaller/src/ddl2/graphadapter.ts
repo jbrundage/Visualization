@@ -1,7 +1,7 @@
 import { Surface, Widget } from "@hpcc-js/common";
 import { Edge, IGraphData, Lineage, Vertex } from "@hpcc-js/graph";
 import { Activity } from "./activities/activity";
-import { DSPicker } from "./activities/dspicker";
+import { DSPicker, isDatasource } from "./activities/dspicker";
 import { HipiePipeline } from "./activities/hipiepipeline";
 import { RoxieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
@@ -79,35 +79,25 @@ export class GraphAdapter {
         return retVal;
     }
 
-    roxieServiceID(dsDetails: RoxieRequest) {
-        return `${dsDetails.url()}/${dsDetails.querySet()}/${dsDetails.queryID()}`;
-    }
-
-    createDatasource(sourceID: string, viz: Element, view: HipiePipeline, data: any): string {
+    createDatasource(viz: Element, view: HipiePipeline, data: any): string {
         const ds = view.dataSource();
-        const dsDetails = ds.details();
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
         if (dsDetails instanceof WUResult) {
             const surfaceID = `${dsDetails.url()}/${dsDetails.wuid()}`;
             const surface: Surface = this.createSurface(surfaceID, `${dsDetails.wuid()}`, { viz, view });
 
             const id = `${surfaceID}/${dsDetails.resultName()}`;
             const vertex: Vertex = this.createVertex(id, dsDetails.resultName(), data);
-            if (sourceID) {
-                this.createEdge(sourceID, id);
-            }
             this.hierarchy.push({ parent: surface, child: vertex });
             return id;
         } else if (dsDetails instanceof RoxieRequest) {
-            const surfaceID = `${dsDetails.url()}/${dsDetails.querySet()}`;
+            const surfaceID = dsDetails.roxieServiceID(); // `${dsDetails.url()}/${dsDetails.querySet()}`;
             const surface: Surface = this.createSurface(surfaceID, dsDetails.querySet(), { viz, view });
-            const roxieID = this.roxieServiceID(dsDetails);
+            const roxieID = surfaceID;
             this.hierarchy.push({
                 parent: surface,
                 child: this.createVertex(roxieID, dsDetails.queryID(), data)
             });
-            if (sourceID) {
-                this.createEdge(sourceID, roxieID);
-            }
             const roxieResultID = `${surfaceID}/${dsDetails.resultName()}`;
             this.hierarchy.push({
                 parent: surface,
@@ -118,9 +108,6 @@ export class GraphAdapter {
         } else {
             const id = ds.hash();
             this.createVertex(id, ds.label(), data);
-            if (sourceID) {
-                this.createEdge(sourceID, id);
-            }
             return id;
         }
     }
@@ -143,8 +130,8 @@ export class GraphAdapter {
             const view = viz.view();
             let prevID = "";
             for (const activity of view.activities()) {
-                if (activity instanceof DSPicker) {
-                    prevID = this.createDatasource(prevID, viz, view, { viz: undefined, activity });
+                if (isDatasource(activity)) {
+                    prevID = this.createDatasource(viz, view, { viz: undefined, activity });
                 } else {
                     prevID = this.createActivity(prevID, viz, view, activity);
                 }
@@ -155,7 +142,10 @@ export class GraphAdapter {
         for (const viz of this._elementContainer.elements()) {
             const view = viz.view();
             for (const updateInfo of view.updatedByGraph()) {
-                this.createEdge(lastID[this._elementContainer.element(updateInfo.from).view().id()], updateInfo.to instanceof DSPicker ? this.roxieServiceID(updateInfo.to.details() as RoxieRequest) : updateInfo.to.id())
+                if (updateInfo.to instanceof DSPicker) {
+                    updateInfo.to = updateInfo.to.details();
+                }
+                this.createEdge(lastID[this._elementContainer.element(updateInfo.from).view().id()], updateInfo.to instanceof RoxieRequest ? `${updateInfo.to.roxieServiceID()}/${updateInfo.to.resultName()}` : updateInfo.to.id())
                     .weight(10)
                     .strokeDasharray("1,5")
                     .text("updates")

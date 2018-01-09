@@ -8,6 +8,16 @@ import { HipieRequest, RoxieRequest } from "./roxie";
 import { sampleData } from "./sampledata";
 import { WUResult } from "./wuresult";
 
+export function isDatasource(activity: Activity) {
+    return activity instanceof DSPicker ||
+        activity instanceof Databomb ||
+        activity instanceof Form ||
+        activity instanceof LogicalFile ||
+        activity instanceof RoxieRequest ||
+        activity instanceof HipieRequest ||
+        activity instanceof WUResult;
+}
+
 let dsPickerID = 0;
 export class DSPicker extends ActivitySelection {
     private _view: HipiePipeline;

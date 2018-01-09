@@ -23,8 +23,8 @@ export class DDLAdapter {
         this._elementContainer = dashboard;
     }
 
-    writeDatasource(ds, refs: ReferencedFields): DDL2.DatasourceType {
-        const dsDetails = ds.details();
+    writeDatasource(ds: Activity, refs: ReferencedFields): DDL2.DatasourceType {
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
         if (dsDetails instanceof WUResult) {
             const ddl: DDL2.IWUResult = {
                 type: "wuresult",
@@ -79,12 +79,14 @@ export class DDLAdapter {
         return undefined;
     }
 
-    readDatasource(_ddlDS: DDL2.DatasourceType, ds: DSPicker): this {
-        ds
-            .id(_ddlDS.id)
-            .type(_ddlDS.type)
-            ;
-        const dsDetails = ds.details();
+    readDatasource(_ddlDS: DDL2.DatasourceType, ds: Activity): this {
+        if (ds instanceof DSPicker) {
+            ds
+                .id(_ddlDS.id)
+                .type(_ddlDS.type)
+                ;
+        }
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
         if (dsDetails instanceof WUResult) {
             const ddlDS = _ddlDS as DDL2.IWUResult;
             dsDetails
@@ -200,8 +202,8 @@ export class DDLAdapter {
         return Limit.fromDDL(ddlLimit);
     }
 
-    writeDatasourceRef(ds: DSPicker, refs: ReferencedFields): DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
-        const dsDetails = ds.details();
+    writeDatasourceRef(ds: Activity, refs: ReferencedFields): DDL2.IRoxieServiceRef | DDL2.IDatasourceRef {
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
         if (dsDetails instanceof RoxieRequest) {
             return {
                 id: this._dsDedup[ds.hash()].id,
@@ -220,13 +222,13 @@ export class DDLAdapter {
         }
     }
 
-    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: DSPicker, elementContainer: ElementContainer): this {
+    readDatasourceRef(ddlDSRef: DDL2.IRoxieServiceRef | DDL2.IDatasourceRef, ds: Activity, elementContainer: ElementContainer): this {
         const ddlDS = this._dsDedup[ddlDSRef.id];
         this.readDatasource(ddlDS, ds);
-        const dsDetails = ds.details();
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
         if (dsDetails instanceof RoxieRequest && DDL2.isIRoxieServiceRef(ddlDSRef)) {
             dsDetails.request(ddlDSRef.request.map(rf => {
-                return new Param(dsDetails)
+                return new Param(this._elementContainer)
                     .source(rf.source)
                     .remoteField(rf.remoteFieldID)
                     .localField(rf.localFieldID)
@@ -265,7 +267,7 @@ export class DDLAdapter {
                 activities: this.writeActivities(view)
             };
             const ddlDatasource = this._dsDedup[ds.hash()];
-            const dsDetails = ds.details();
+            const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
             const fields = this.writeFields(dsDetails.localFields().filter(field => refs[dsDetails.id()] && refs[dsDetails.id()].indexOf(field.id) >= 0));
             for (const field of fields) {
                 if (ddlDatasource.fields.filter(ddlField => ddlField.id === field.id).length === 0) {

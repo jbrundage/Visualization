@@ -23,6 +23,12 @@
             "type": "chrome",
             "request": "launch",
             "url": "http://127.0.0.1:8080/brundajx/DASH2/demos/dashy/index_1.php",
+            "runtimeArgs": [
+                "--allow-file-access-from-files",
+                "--allow-cross-origin-auth-prompt",
+                "--allow-insecure-localhost",
+                "--allow-running-insecure-content"
+            ],
             "webRoot": "${workspaceRoot}/../../",
             "sourceMapPathOverrides": {
                 "http://127.0.0.1:8080/brundajx/DASH2/*": "${webRoot}/*"

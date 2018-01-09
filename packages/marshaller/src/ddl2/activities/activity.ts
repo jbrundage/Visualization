@@ -128,30 +128,19 @@ export class ActivityArray extends Activity {
     activities(): Activity[];
     activities(_: Activity[]): this;
     activities(_?: Activity[]): Activity[] | this {
-        if (_ === undefined) return this._activities;
+        if (!arguments.length) return this._activities;
         this._activities = _;
+        let prevActivity: Activity;
+        for (const activity of this._activities) {
+            activity.sourceActivity(prevActivity);
+            prevActivity = activity;
+        }
         return this;
     }
 }
 ActivityArray.prototype._class += " ActivityArray";
 
 export class ActivityPipeline extends ActivityArray {
-
-    activities(): Activity[];
-    activities(_: Activity[]): this;
-    activities(_?: Activity[]): Activity[] | this {
-        const retVal = super.activities.apply(this, arguments);
-        if (arguments.length) {
-            let prevActivity: Activity;
-            for (const activity of this.activities()) {
-                if (prevActivity) {
-                    activity.sourceActivity(prevActivity);
-                }
-                prevActivity = activity;
-            }
-        }
-        return retVal;
-    }
 
     first(): Activity {
         const retVal = this.activities();
@@ -240,6 +229,7 @@ export class ActivityPipeline extends ActivityArray {
     resolveFields(refs: ReferencedFields, fieldIDs: string[]) {
         this.last().resolveFields(refs, fieldIDs);
     }
+
     exec(): Promise<void> {
         return this.last().exec();
     }

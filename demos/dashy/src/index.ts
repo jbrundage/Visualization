@@ -1,6 +1,6 @@
 ﻿import { DDLEditor, JSEditor, JSONEditor } from "@hpcc-js/codemirror";
 import { PropertyExt, Widget } from "@hpcc-js/common";
-import { hookSend, IOptions, ResponseType, SendFunc } from "@hpcc-js/comms";
+import { Connection, hookSend, IOptions, ResponseType, SendFunc, serializeRequest } from "@hpcc-js/comms";
 import { IDDL } from "@hpcc-js/ddl-shim";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
@@ -11,7 +11,17 @@ import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-
 import { ddl } from "./sampleddl";
 
 const origSend = hookSend((opts: IOptions, action: string, request: any, responseType: ResponseType): Promise<any> => {
-    return origSend(opts, action, request, responseType).then(response => {
+    if (opts.baseUrl === "https://webmiscdev.risk.regn.net") {
+        return origSend(opts, action, request, responseType);
+    }
+    let newUrl = "";
+    if (opts.baseUrl.split("").reverse()[0] === "/" || action[0] === "/") {
+        newUrl = btoa(`${opts.baseUrl}${action}?${serializeRequest(request)}`);
+    } else {
+        newUrl = btoa(`${opts.baseUrl}/${action}?${serializeRequest(request)}`);
+    }
+    const connection = new Connection({ baseUrl: "https://webmiscdev.risk.regn.net", type: "get" });
+    return connection.send("brundajx/DASH2/demos/dashy/bis_proxy.php", { encoded: newUrl }, responseType).then(response => {
         return response;
     }).catch(e => {
         throw e;
@@ -248,11 +258,13 @@ export class App {
 
     loadGraph(refresh: boolean = false) {
         this._graph
-            .layout("Hierarchy")
             .data({ ...this._graphAdapter.createGraph(), merge: false })
             ;
         if (refresh && this._dockPanel.isVisible(this._graph as any)) {
-            this._graph.lazyRender();
+            this._graph
+                .layout("Hierarchy")
+                .lazyRender()
+                ;
         }
     }
 

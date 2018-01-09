@@ -1,10 +1,10 @@
 import { MultiChartPanel } from "@hpcc-js/composite";
 import * as DDL from "@hpcc-js/ddl-shim";
 import { Form, Input } from "@hpcc-js/form";
-import { Form as DBForm } from "./activities/databomb";
+import { Databomb, Form as DBForm } from "./activities/databomb";
 import { AggregateField, GroupByColumn } from "./activities/groupby";
 import { ComputedField } from "./activities/project";
-import { HipieRequest } from "./activities/roxie";
+import { HipieRequest, RoxieRequest } from "./activities/roxie";
 import { WUResult } from "./activities/wuresult";
 import { Element, ElementContainer } from "./model";
 
@@ -34,7 +34,7 @@ export class DDLImport {
     }
 
     form(ddlVisualization: DDL.IVisualization, viz: Element) {
-        viz.view().dataSource().type("form");
+        const dbForm = new DBForm();
         const payload: any = {};
         const inputs: Input[] = [];
         for (const field of ddlVisualization.fields) {
@@ -48,13 +48,16 @@ export class DDLImport {
                 .value(defaultVal) // TODO Hippie support for multiple default values (checkbox only)
             );
         }
-        (viz.view().dataSource().details() as DBForm).payload(payload);
+        dbForm.payload(payload);
+
         const form = new Form()
             .inputs(inputs)
             .on("click", function (row: object) {
                 viz.state().selection([row]);
             })
             ;
+
+        viz.view().dataSource(dbForm);
         viz.multiChartPanel().multiChart().chart(form);
     }
 
@@ -196,7 +199,13 @@ export class DDLImport {
                         localField: key
                     });
                 }
-                otherViz.view().filters().appendFilter(viz, mappings);
+                const otherView = otherViz.view();
+                const otherDataSource = otherView.dataSource();
+                if (otherDataSource instanceof RoxieRequest) {
+                    otherDataSource.appendParam(viz, mappings);
+                } else {
+                    otherView.filters().appendFilter(viz, mappings);
+                }
             }
         }
     }
@@ -215,24 +224,25 @@ export class DDLImport {
     }
 
     datasource(ddlDS: DDL.IDatasource) {
-        this._datasources[ddlDS.id] = ddlDS;
         for (const ddlOP of ddlDS.outputs) {
             for (const ddlNotify of ddlOP.notify) {
-                const vizDS = this._vizzies[ddlNotify].view().dataSource();
+                const view = this._vizzies[ddlNotify].view();
                 if (ddlDS.WUID) {
-                    vizDS.type("wuresult");
-                    (vizDS.details() as WUResult)
+                    const wuResult = new WUResult()
                         .fullUrl(this._url)
                         .resultName(ddlOP.from)
                         ;
+                    view.dataSource(wuResult);
                 } else if (ddlDS.databomb) {
-                    vizDS.type("databomb");
+                    const databomb = new Databomb()
+                        ;
+                    view.dataSource(databomb);
                 } else {
-                    vizDS.type("hipieservice");
-                    (vizDS.details() as HipieRequest)
+                    const hipieRequest = new HipieRequest(this._owner)
                         .fullUrl(ddlDS.URL)
                         .resultName(ddlOP.from)
                         ;
+                    view.dataSource(hipieRequest);
                 }
             }
         }
