@@ -233,7 +233,10 @@ export class RoxieRequest extends Activity {
         const localFieldIDs: string[] = [];
         for (const param of this.validParams()) {
             const filterSource = param.sourceViz().view();
-            localFieldIDs.push(param.localField());
+            if (!refs.inputs[this.id()]) {
+                refs.inputs[this.id()] = [];
+            }
+            refs.inputs[this.id()].push(param.localField());
             filterSource.resolveFields(refs, [param.remoteField()]);
         }
         super.resolveFields(refs, localFieldIDs);
@@ -324,3 +327,4 @@ export class HipieRequest extends RoxieRequest {
         return request;
     }
 }
+HipieRequest.prototype._class += " HipieRequest";

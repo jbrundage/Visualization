@@ -138,6 +138,12 @@ export class WUResult extends ESPResult {
         return new Result({ baseUrl: this.url() }, this.wuid(), this.resultName());
     }
 
+    sourceHash(): string {
+        return super.hash({
+            wuid: this.wuid()
+        });
+    }
+
     hash(more: object): string {
         return super.hash({
             wuid: this.wuid(),

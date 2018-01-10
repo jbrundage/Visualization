@@ -30,7 +30,10 @@ export function schemaRow2IField(row: any): IField {
     };
 }
 
-export type ReferencedFields = { [activityID: string]: string[] };
+export type ReferencedFields = {
+    inputs: { [activityID: string]: string[] },
+    outputs: { [activityID: string]: string[] }
+};
 
 export abstract class Activity extends PropertyExt {
     private _sourceActivity: Activity;
@@ -91,11 +94,11 @@ export abstract class Activity extends PropertyExt {
         for (const fieldID of fieldIDs) {
             const fieldOrigin = this.fieldOrigin(fieldID);
             if (fieldOrigin) {
-                if (!refs[fieldOrigin.id()]) {
-                    refs[fieldOrigin.id()] = [];
+                if (!refs.outputs[fieldOrigin.id()]) {
+                    refs.outputs[fieldOrigin.id()] = [];
                 }
-                if (refs[fieldOrigin.id()].indexOf(fieldID) < 0) {
-                    refs[fieldOrigin.id()].push(fieldID);
+                if (refs.outputs[fieldOrigin.id()].indexOf(fieldID) < 0) {
+                    refs.outputs[fieldOrigin.id()].push(fieldID);
                 }
             }
         }
@@ -130,17 +133,25 @@ export class ActivityArray extends Activity {
     activities(_?: Activity[]): Activity[] | this {
         if (!arguments.length) return this._activities;
         this._activities = _;
-        let prevActivity: Activity;
-        for (const activity of this._activities) {
-            activity.sourceActivity(prevActivity);
-            prevActivity = activity;
-        }
         return this;
     }
 }
 ActivityArray.prototype._class += " ActivityArray";
 
 export class ActivityPipeline extends ActivityArray {
+
+    activities(): Activity[];
+    activities(_: Activity[]): this;
+    activities(_?: Activity[]): Activity[] | this {
+        if (!arguments.length) return super.activities();
+        super.activities(_);
+        let prevActivity: Activity;
+        for (const activity of _) {
+            activity.sourceActivity(prevActivity);
+            prevActivity = activity;
+        }
+        return this;
+    }
 
     first(): Activity {
         const retVal = this.activities();

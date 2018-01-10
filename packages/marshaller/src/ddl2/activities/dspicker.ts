@@ -22,7 +22,7 @@ let dsPickerID = 0;
 export class DSPicker extends ActivitySelection {
     private _view: HipiePipeline;
 
-    @publish("wuresult", "set", "Type", ["wuresult", "logicalfile", "form", "databomb", "roxieservice", "hipieservice"])
+    @publish("wuresult", "set", "Type", ["wuresult", "logicalfile", "form", "databomb", "hipie", "roxie"])
     _type: DDL2.IDatasourceType;
     type(_?: DDL2.IDatasourceType): DDL2.IDatasourceType | this {
         if (!arguments.length) return this._type;
@@ -34,16 +34,16 @@ export class DSPicker extends ActivitySelection {
             case "logicalfile":
                 this.selection(this.activities()[1]);
                 break;
-            case "form":
-                this.selection(this.activities()[4]);
-                break;
-            case "databomb":
-                this.selection(this.activities()[3]);
-                break;
-            case "roxieservice":
+            case "hipie":
                 this.selection(this.activities()[2]);
                 break;
-            case "hipieservice":
+            case "roxie":
+                this.selection(this.activities()[3]);
+                break;
+            case "databomb":
+                this.selection(this.activities()[4]);
+                break;
+            case "form":
                 this.selection(this.activities()[5]);
                 break;
         }
@@ -66,6 +66,8 @@ export class DSPicker extends ActivitySelection {
             new LogicalFile()
                 .url("http://52.51.90.23:8010")
                 .logicalFile("progguide::exampledata::peopleaccts")
+            ,
+            new HipieRequest(this._view._elementContainer)
             ,
             new RoxieRequest(this._view._elementContainer)
                 .url("http://52.51.90.23:8010")

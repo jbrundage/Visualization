@@ -248,3 +248,7 @@ export class DDLImport {
         }
     }
 }
+
+export function doImport(ec: ElementContainer, url: string, ddl: string) {
+    new DDLImport(ec, url, JSON.parse(ddl));
+}

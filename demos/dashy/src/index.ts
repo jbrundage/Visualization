@@ -4,29 +4,34 @@ import { Connection, hookSend, IOptions, ResponseType, SendFunc, serializeReques
 import { IDDL } from "@hpcc-js/ddl-shim";
 import { DatasourceTable } from "@hpcc-js/dgrid";
 import { Graph } from "@hpcc-js/graph";
-import { Activity, Dashboard, DatasourceAdapt, Element, ElementContainer, GraphAdapter, JavaScriptAdapter } from "@hpcc-js/marshaller";
+import { Activity, Dashboard, DatasourceAdapt, Element, ElementContainer, GraphAdapter, JavaScriptAdapter, upgrade } from "@hpcc-js/marshaller";
 import { PropertyEditor } from "@hpcc-js/other";
 import { DockPanel, SplitPanel } from "@hpcc-js/phosphor";
 import { CommandPalette, CommandRegistry, ContextMenu } from "@hpcc-js/phosphor-shim";
 import { ddl } from "./sampleddl";
 
-const origSend = hookSend((opts: IOptions, action: string, request: any, responseType: ResponseType): Promise<any> => {
-    if (opts.baseUrl === "https://webmiscdev.risk.regn.net") {
-        return origSend(opts, action, request, responseType);
-    }
-    let newUrl = "";
-    if (opts.baseUrl.split("").reverse()[0] === "/" || action[0] === "/") {
-        newUrl = btoa(`${opts.baseUrl}${action}?${serializeRequest(request)}`);
-    } else {
-        newUrl = btoa(`${opts.baseUrl}/${action}?${serializeRequest(request)}`);
-    }
-    const connection = new Connection({ baseUrl: "https://webmiscdev.risk.regn.net", type: "get" });
-    return connection.send("brundajx/DASH2/demos/dashy/bis_proxy.php", { encoded: newUrl }, responseType).then(response => {
-        return response;
-    }).catch(e => {
-        throw e;
+export function doHook() {
+    const origSend = hookSend((opts: IOptions, action: string, request: any, responseType: ResponseType): Promise<any> => {
+        if (opts.baseUrl === "https://webmiscdev.risk.regn.net") {
+            return origSend(opts, action, request, responseType);
+        }
+        let newUrl = "";
+        if (opts.baseUrl.split("").reverse()[0] === "/" || action[0] === "/") {
+            newUrl = btoa(`${opts.baseUrl}${action}?${serializeRequest(request)}`);
+        } else {
+            newUrl = btoa(`${opts.baseUrl}/${action}?${serializeRequest(request)}`);
+        }
+        const connection = new Connection({ baseUrl: "https://webmiscdev.risk.regn.net", type: "get" });
+        return connection.send("brundajx/DASH2/demos/dashy/bis_proxy.php", { encoded: newUrl }, responseType).then(response => {
+            return response;
+        }).catch(e => {
+            throw e;
+        });
     });
-});
+}
+//doHook();
+
+// const test = upgrade("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", JSON.stringify(ddl));
 
 class Mutex {
     private _locking: Promise<any>;
@@ -304,8 +309,9 @@ export class App {
     loadClone() {
         this._cloneEC.clear();
         this._clone.restore(this._dashboard.save());
-        this._cloneEC.refresh();
-        this._clone.lazyRender();
+        this._clone.render(w => {
+            this._cloneEC.refresh();
+        });
     }
 
     initMenu() {
