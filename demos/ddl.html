@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - DDL Helper</title>
+
+    <script src="https://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+    <script src="../src/loader.js"></script>
+    <script>
+        require(["src/marshaller/HTML"], function (marsh) { window.g_marsh = marsh; });
+        function ddl_changed(elm) {
+            window.g_marshaller = new g_marsh().target('placeholder').ddlUrl(elm.value).render();
+        }
+    </script>
+</head>
+
+<body>
+    <fieldset>
+        <legend>Paste DDL Here:</legend>
+        <textarea id="ddl_json" onchange="ddl_changed(this)"></textarea>
+    </fieldset>
+    <fieldset>
+        <legend>Marshaller Output:</legend>
+        <div id="placeholder" style="width:800px;height:500px;"></div>
+    </fieldset>
+</body>
+
+</html>
