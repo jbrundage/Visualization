@@ -183,8 +183,8 @@ export class App {
         this._elementContainer.refresh();
     }
 
-    importV1DDL(target: string, ddl: IDDL) {
-        this._elementContainer.importV1DDL(target, ddl);
+    importV1DDL(target: string, ddl: IDDL, seri: object) {
+        this._elementContainer.importV1DDL(target, ddl, seri);
         this.loadDashboard();
         this._elementContainer.refresh();
     }
@@ -327,7 +327,7 @@ export class App {
         commands.addCommand("dash_add_ddl", {
             label: "Add DDL",
             execute: () => {
-                this.importV1DDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
+                this.importV1DDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl, {});
             }
         });
 

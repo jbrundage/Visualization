@@ -225,9 +225,55 @@ export class ElementContainer extends PropertyExt {
         return this;
     }
 
-    importV1DDL(url: string, ddlObj: IDDL) {
+    importV1DDL(url: string, ddlObj: IDDL, seri?: object) {
         const ddl = new DDLImport(this, url, ddlObj);
+        if (seri) {
+            const props = this.normalizePersist(seri);
+            for (const element of this.elements()) {
+                const mcp = element.multiChartPanel();
+                const mc = mcp.multiChart();
+                const _props = props[mcp.id()];
+                let _chartType;
+                for (const n in mc._allChartTypesMap) {
+                    _chartType = mc._allChartTypesMap[n].widgetClass === `${_props.package}_${_props.object}` ? mc._allChartTypesMap[n].id : _chartType;
+                }
+                _chartType = _chartType === "TABLE_LEGACY" ? "TABLE" : _chartType;
+                if (_chartType) {
+                    mcp
+                        .chartType(_chartType)
+                        .chartTypeDefaults(_props.widget)
+                        ;
+                }
+            }
+        }
         ddl;
+    }
+
+    normalizePersist(seri: any): { [key: string]: { [key: string]: any } } {
+        const ret = {};
+        seri.__properties.content.map((n) => {
+            const _is_MegaChart = !!n.__properties.widget.__properties.chart;
+            const _cell = n;
+            const _panel = n.__properties.widget;
+            const _widget = _is_MegaChart ? n.__properties.widget.__properties.chart : n.__properties.widget.__properties.widget;
+            const _id = n.__properties.widget.__id ? n.__properties.widget.__id : n.__properties.widget.__properties.widget.__id;
+            ret[_id] = {
+                id: _id,
+                package: _widget.__class.split("_")[0],
+                object: _widget.__class.split("_")[1],
+                cell: _get_params(_cell, ["chart", "widget", "fields"]),
+                panel: _get_params(_panel, ["chart", "widget", "fields"]),
+                widget: _get_params(_widget, ["fields"]),
+            };
+        });
+        return ret;
+        function _get_params(_o, exclude_list) {
+            const ret = {};
+            Object.keys(_o.__properties)
+                .filter(n => exclude_list.indexOf(n) === -1)
+                .forEach(n => ret[n] = _o.__properties[n]);
+            return ret;
+        }
     }
 
     async refresh(): Promise<this> {
