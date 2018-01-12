@@ -82,16 +82,14 @@ export class DDLImport {
 
     table(ddlVisualization: DDL.ITableVisualization, viz: Element) {
         const mappingFields: ComputedField[] = [];
-        try {
-            ddlVisualization.source.mappings.value.forEach((value, idx) => {
-                mappingFields.push(new ComputedField(viz.view().project())
-                    .label(value.toLowerCase())
-                    .type("=")
-                    .column1(value.toLowerCase())
-                );
-            });
-        } catch (e) {
-        }
+        ddlVisualization.source.mappings.value.forEach((value, idx) => {
+            mappingFields.push(new ComputedField(viz.view().project())
+                .label(ddlVisualization.label[idx])
+                .type("=")
+                .column1(value.toLowerCase())
+            );
+        });
+
         viz.view().mappings()
             .trim(mappingFields.length > 0)
             .computedFields(mappingFields)
@@ -101,7 +99,10 @@ export class DDLImport {
 
     visualizationPre(ddlVisualization: DDL.IAnyVisualization) {
         this._visualizations[ddlVisualization.id] = ddlVisualization;
-        const viz = new Element(this._owner).title(ddlVisualization.title);
+        const viz = new Element(this._owner)
+            .id(ddlVisualization.id)
+            .title(ddlVisualization.title)
+            ;
         viz.state().monitorProperty("selection", (id, newVal, oldVal) => {
             for (const filteredViz of this._owner.filteredBy(viz)) {
                 filteredViz.refresh().then(() => {

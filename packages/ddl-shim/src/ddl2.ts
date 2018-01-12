@@ -132,7 +132,7 @@ export interface ICalculated {
     fieldID: string;
     type: ICalculatedType;
     param1: string;
-    param2: string;
+    param2: string | undefined;
 }
 
 export interface IScale {

@@ -217,15 +217,21 @@ export class Project extends Activity {
         super.resolveInFields(refs, fieldIDs);
     }
 
+    projectRow(row: any): any {
+        const retVal = this.trim() ? {} : { ...row };
+        for (const cf of this.computedFields()) {
+            if (cf.label()) {
+                retVal[cf.label()] = cf.compute(row);
+            }
+        }
+        return retVal;
+    }
+
     pullData(): object[] {
         const data = super.pullData();
-        return data.map((row: any) => {
-            const retVal = this.trim() ? {} : { ...row };
-            for (const cf of this.computedFields()) {
-                if (cf.label()) {
-                    retVal[cf.label()] = cf.compute(row);
-                }
-            }
+        return data.map((row, idx) => {
+            const retVal = this.projectRow(row);
+            retVal.__lparam = row;
             return retVal;
         });
     }

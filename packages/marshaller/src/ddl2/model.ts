@@ -56,8 +56,8 @@ export class Element extends PropertyExt {
         if (!arguments.length) return this._widget;
         this._widget = _;
         this._widget
-            .on("click", (row: object, col: string, sel: boolean) => {
-                this.state().selection(sel ? [row] : []);
+            .on("click", (row: any, col: string, sel: boolean) => {
+                this.state().selection(sel ? [row.__lparam ? row.__lparam : row] : []);
             })
             ;
         return this;
@@ -130,6 +130,9 @@ export class Element extends PropertyExt {
             const retVal = [];
             for (const column of columns) {
                 retVal.push(row[column]);
+            }
+            if (row.__lparam) {
+                retVal.push(row.__lparam);
             }
             return retVal;
         });
@@ -228,6 +231,7 @@ export class ElementContainer extends PropertyExt {
     importV1DDL(url: string, ddlObj: IDDL, seri?: object) {
         const ddl = new DDLImport(this, url, ddlObj);
         if (seri) {
+            // try {
             const props = this.normalizePersist(seri);
             for (const element of this.elements()) {
                 const mcp = element.multiChartPanel();
@@ -241,10 +245,11 @@ export class ElementContainer extends PropertyExt {
                 if (_chartType) {
                     mcp
                         .chartType(_chartType)
-                        .chartTypeDefaults(_props.widget)
+                        .chartTypeProperties(_props.widget)
                         ;
                 }
             }
+            // } catch (e) { }
         }
         ddl;
     }

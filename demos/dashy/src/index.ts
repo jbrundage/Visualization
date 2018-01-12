@@ -29,7 +29,9 @@ export function doHook() {
         });
     });
 }
-//doHook();
+if (window.location.origin.indexOf("http") === 0) {
+    doHook();
+}
 
 // const test = upgrade("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", JSON.stringify(ddl));
 

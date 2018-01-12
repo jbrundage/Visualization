@@ -1,13 +1,13 @@
 import { ClassMeta, PropertyExt } from "@hpcc-js/common";
 import { Activity, stringify } from "./activities/activity";
 import { Databomb, Form } from "./activities/databomb";
-import { DSPicker } from "./activities/dspicker";
+import { DSPicker, isDatasource } from "./activities/dspicker";
 import { Filters } from "./activities/filter";
 import { GroupBy } from "./activities/groupby";
 import { Limit } from "./activities/limit";
 import { LogicalFile } from "./activities/logicalfile";
 import { Project } from "./activities/project";
-import { RoxieRequest } from "./activities/roxie";
+import { HipieRequest, RoxieRequest } from "./activities/roxie";
 import { Sort } from "./activities/sort";
 import { WUResult } from "./activities/wuresult";
 import { Dashboard } from "./dashboard";
@@ -69,49 +69,69 @@ export class JavaScriptAdapter {
         return retVal;
     }
 
-    writeDSActivity(activity: DSPicker): string {
-        const dsID = activity.id();
-        const details = activity.details();
-        if (details instanceof WUResult) {
+    writeDSActivity(ds: Activity): string {
+        const dsDetails = ds instanceof DSPicker ? ds.details() : ds;
+        if (dsDetails instanceof WUResult) {
             return `
-const ${dsID} = new WUResult()
-    .url("${details.url()}")
-    .wuid("${details.wuid()}")
-    .resultName("${details.resultName()}")
+const ds_${ds.id()} = new WUResult()
+    .url("${dsDetails.url()}")
+    .wuid("${dsDetails.wuid()}")
+    .resultName("${dsDetails.resultName()}")
     ;
 `.trim();
-        } else if (details instanceof LogicalFile) {
+        } else if (dsDetails instanceof LogicalFile) {
             return `
-const ${dsID} = new LogicalFile()
-    .url("${details.url()}")
-    .logicalFile("${details.logicalFile()}")
+const ds_${ds.id()} = new LogicalFile()
+    .url("${dsDetails.url()}")
+    .logicalFile("${dsDetails.logicalFile()}")
     ;
 `.trim();
-        } else if (details instanceof RoxieRequest) {
+        } else if (dsDetails instanceof HipieRequest) {
             return `
-const ${dsID} = new RoxieRequest(ec)
-    .url("${details.url()}")
-    .querySet("${details.querySet()}")
-    .queryID("${details.queryID()}")
-    .resultName("${details.resultName()}")
-    .requestFields(${stringify(details.requestFields())})
+const ds_${ds.id()} = new HipieRequest(ec)
+    .url("${dsDetails.url()}")
+    .querySet("${dsDetails.querySet()}")
+    .queryID("${dsDetails.queryID()}")
+    .resultName("${dsDetails.resultName()}")
+    .requestFields(${stringify(dsDetails.requestFields())})
     ;
 `.trim();
-        } else if (details instanceof Databomb) {
+        } else if (dsDetails instanceof RoxieRequest) {
             return `
-const ${dsID} = new Databomb()
-    .payload(${stringify(details.payload())})
+const ds_${ds.id()} = new RoxieRequest(ec)
+    .url("${dsDetails.url()}")
+    .querySet("${dsDetails.querySet()}")
+    .queryID("${dsDetails.queryID()}")
+    .resultName("${dsDetails.resultName()}")
+    .requestFields(${stringify(dsDetails.requestFields())})
     ;
 `.trim();
-        } else if (details instanceof Form) {
+        } else if (dsDetails instanceof Databomb) {
             return `
-const ${dsID} = new Form()
-    .payload(${JSON.stringify(details.payload())})
+const ds_${ds.id()} = new Databomb()
+    .payload(${stringify(dsDetails.payload())})
+    ;
+`.trim();
+        } else if (dsDetails instanceof Form) {
+            return `
+const ds_${ds.id()} = new Form()
+    .payload(${JSON.stringify(dsDetails.payload())})
     ;
 `.trim();
         }
+        return `
+const ds_${ds.id()} = TODO-writeDSActivity: ${dsDetails.classID()}
+`.trim();
+    }
 
-        return `const ${dsID} = TODO-writeDSActivity: ${details.classID()}`;
+    writeDatasource(element: Element): string[] {
+        const dataSources: string[] = [];
+        const ds = element.view().dataSource();
+        if (!this._dsDedup[ds.hash()]) {
+            this._dsDedup[ds.hash()] = ds;
+            dataSources.push(this.writeDSActivity(ds));
+        }
+        return dataSources;
     }
 
     writeActivity(activity: Activity): string {
@@ -122,26 +142,11 @@ const ${dsID} = new Form()
         } else if (activity instanceof Filters) {
             return `new Filters(ec).conditions(${stringify(activity.conditions())})`;
         } else if (activity instanceof Project) {
-            return `new Project().transformations(${stringify(activity.transformations())})`;
+            return `new Project().trim(${activity.trim()}).transformations(${stringify(activity.transformations())})`;
         } else if (activity instanceof Limit) {
             return `new Limit().rows(${activity.rows()})`;
         }
         return `TODO-writeActivity: ${activity.classID()}`;
-    }
-
-    writeDatasource(element: Element): string[] {
-        const dataSources: string[] = [];
-        for (const activity of element.view().activities()) {
-            if (activity.exists()) {
-                if (activity instanceof DSPicker) {
-                    if (!this._dsDedup[activity.hash()]) {
-                        this._dsDedup[activity.hash()] = activity;
-                        dataSources.push(this.writeDSActivity(activity));
-                    }
-                }
-            }
-        }
-        return dataSources;
     }
 
     private writeWidgetProps(pe: PropertyExt): string[] {
@@ -163,7 +168,7 @@ const ${dsID} = new Form()
         return {
             ...chart.classMeta(),
             js: `
-const ${vizID} = new ChartPanel()
+const cp_${vizID} = new ChartPanel()
     .id("${vizID}")
     .title("${element.chartPanel().title()}")
     .widget(new ${meta.className}()${joinWithPrefix(props, "\n        ", "\n    ")})
@@ -176,8 +181,8 @@ const ${vizID} = new ChartPanel()
         const activities: string[] = [];
         for (const activity of element.view().activities()) {
             if (activity.exists()) {
-                if (activity instanceof DSPicker) {
-                    activities.push(this._dsDedup[activity.hash()].id());
+                if (isDatasource(activity)) {
+                    activities.push(`ds_${this._dsDedup[activity.hash()].id()}`);
                 } else {
                     activities.push(this.writeActivity(activity));
                 }
@@ -185,21 +190,21 @@ const ${vizID} = new ChartPanel()
         }
         const updates: string[] = [];
         for (const filteredViz of this._elementContainer.filteredBy(element)) {
-            updates.push(`${filteredViz.id()}.refresh();`);
+            updates.push(`elem_${filteredViz.id()}.refresh();`);
         }
         const vizID = element.chartPanel().id();
         return `
-const ${element.id()} = new Element(ec)
+const elem_${element.id()} = new Element(ec)
     .id("${element.id()}")
     .pipeline([
         ${activities.join(",\n        ")}
     ])
-    .chartPanel(${vizID})
+    .chartPanel(cp_${vizID})
     .on("selectionChanged", () => {
         ${updates.join("\n        ")}
     }, true)
     ;
-ec.append(${element.id()});
+ec.append(elem_${element.id()});
 `;
     }
 
@@ -251,7 +256,7 @@ ec.append(${element.id()});
         return `
 ${widgets.widgetImports}
 import { ChartPanel } from "@hpcc-js/layout";
-import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
+import { Dashboard, Databomb, Element, ElementContainer, Filters, Form, GroupBy, HipieRequest, Limit, LogicalFile, Project, RoxieRequest, Sort, WUResult } from "@hpcc-js/marshaller";
 
 //  Dashboard Element Container (Model)  ---
 const ec = new ElementContainer();
