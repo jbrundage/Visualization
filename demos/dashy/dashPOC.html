@@ -32,8 +32,8 @@
     <script>
         var app = null;
         if (require) {
-            require(["lib-umd/dashPOC"], dashPOC => {
-                app = dashPOC.init();
+            require(["lib-umd/dashPOC", "lib-umd/dashComms"], dashPOC => {
+                app = dashPOC.dashboard;
                 doResize();
             });
         }

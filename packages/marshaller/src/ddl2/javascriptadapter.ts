@@ -273,7 +273,7 @@ ${this.writeElements().trim()}
 ec.refresh();
 
 //  Dashboard (optional) ---
-const dashboard = new Dashboard(ec)
+export const dashboard = new Dashboard(ec)
     .target("placeholder")
     .render(w => {
         (w as Dashboard).layout(${stringify(this._dashboard.layout())});
