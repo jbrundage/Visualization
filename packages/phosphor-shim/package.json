@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor-shim",
-  "version": "0.0.51",
+  "version": "0.0.53",
   "description": "hpcc-js - Phosphor shim",
   "main": "build/phosphor-shim.js",
   "module": "build/phosphor-shim.es6",
@@ -21,7 +21,6 @@
     "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "dependencies": {},
   "devDependencies": {
     "@phosphor/algorithm": "1.1.2",
     "@phosphor/messaging": "1.2.2",

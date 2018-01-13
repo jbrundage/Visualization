@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/chart",
-  "version": "0.0.58",
+  "version": "0.0.60",
   "description": "hpcc-js - Viz Chart",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -24,12 +24,13 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.56",
-    "@hpcc-js/common": "^0.0.56",
+    "@hpcc-js/api": "^0.0.58",
+    "@hpcc-js/common": "^0.0.58",
     "@hpcc-js/d3-bullet": "^1.0.2",
-    "@hpcc-js/util": "^0.0.54"
+    "@hpcc-js/util": "^0.0.56"
   },
   "devDependencies": {
+    "concurrently": "3.5.0",
     "d3-array": "1.2.1",
     "d3-axis": "1.0.8",
     "d3-brush": "1.0.4",
@@ -43,14 +44,13 @@
     "d3-shape": "1.2.0",
     "d3-time-format": "2.1.0",
     "d3-transition": "1.1.0",
-    "tslib": "1.8.0",
-    "concurrently": "3.5.0",
     "rimraf": "2.6.2",
     "rollup": "0.52.1",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
     "rollup-plugin-postcss": "0.5.5",
+    "tslib": "1.8.0",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",

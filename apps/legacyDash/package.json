@@ -6,6 +6,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@hpcc-js/marshaller": "0.0.68"
+    "@hpcc-js/marshaller": "0.0.70"
   }
 }

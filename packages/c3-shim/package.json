@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/c3-shim",
-  "version": "0.0.41",
+  "version": "0.0.43",
   "description": "hpcc-js - c3 shim",
   "main": "build/c3-shim.js",
   "files": [
@@ -10,7 +10,6 @@
     "clean": "rimraf build",
     "build": "webpack"
   },
-  "dependencies": {},
   "devDependencies": {
     "c3": "0.4.13",
     "css-loader": "0.26.1",

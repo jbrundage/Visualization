@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/graph",
-  "version": "0.0.57",
+  "version": "0.0.59",
   "description": "hpcc-js - Viz Graph",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -24,10 +24,11 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.56",
-    "@hpcc-js/common": "^0.0.56"
+    "@hpcc-js/api": "^0.0.58",
+    "@hpcc-js/common": "^0.0.58"
   },
   "devDependencies": {
+    "concurrently": "3.5.0",
     "d3-array": "1.2.1",
     "d3-drag": "1.2.1",
     "d3-force": "1.0.6",
@@ -35,11 +36,10 @@
     "d3-selection": "1.1.0",
     "d3-shape": "1.2.0",
     "dagre": "0.7.4",
-    "tslib": "1.8.0",
-    "concurrently": "3.5.0",
     "rimraf": "2.6.2",
     "rollup": "0.52.1",
     "rollup-plugin-postcss": "0.5.5",
+    "tslib": "1.8.0",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
     "typescript": "2.6.1",
