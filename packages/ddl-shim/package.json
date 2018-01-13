@@ -22,12 +22,11 @@
     "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "ajv": "4.11.3",
     "reflect-metadata": "0.1.10",
-    "tslib": "1.8.0"
-  },
-  "devDependencies": {
+    "tslib": "1.8.0",
     "@types/node": "8.0.51",
     "extract-text-webpack-plugin": "2.1.0",
     "rimraf": "2.6.2",

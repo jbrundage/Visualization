@@ -25,16 +25,16 @@
   },
   "dependencies": {
     "@hpcc-js/api": "^0.0.56",
-    "@hpcc-js/common": "^0.0.56",
+    "@hpcc-js/common": "^0.0.56"
+  },
+  "devDependencies": {
     "amcharts3": "amcharts/amcharts3#3.18.0",
     "d3-array": "1.2.1",
     "d3-format": "1.2.0",
     "d3-scale": "1.0.6",
     "d3-selection": "1.1.0",
     "d3-time-format": "2.1.0",
-    "tslib": "1.8.0"
-  },
-  "devDependencies": {
+    "tslib": "1.8.0",
     "concurrently": "3.5.0",
     "rimraf": "2.6.2",
     "rollup": "0.52.1",

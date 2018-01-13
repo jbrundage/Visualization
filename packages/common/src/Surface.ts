@@ -156,7 +156,6 @@ export class Surface extends SVGWidget {
             width = titleTextWidth;
         }
 
-
         const topMargin = titleRegionHeight <= titleTextHeight ? 0 : (titleRegionHeight - titleTextHeight) / 2;
         const leftMargin = topMargin;
 

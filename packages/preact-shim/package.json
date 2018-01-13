@@ -23,10 +23,9 @@
     "lint": "tslint --project . src/**/*.ts",
     "docs": "typedoc --options tdoptions.json ."
   },
-  "dependencies": {
-    "preact": "8.2.1"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "preact": "8.2.1",
     "rimraf": "2.6.2",
     "rollup": "0.52.1",
     "rollup-plugin-alias": "1.4.0",

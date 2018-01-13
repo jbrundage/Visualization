@@ -28,16 +28,16 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.54",
+    "@hpcc-js/util": "^0.0.54"
+  },
+  "devDependencies": {
     "d3-request": "1.0.5",
     "d3-time-format": "2.1.0",
     "request": "2.81.0",
     "safe-buffer": "5.0.1",
     "tmp": "0.0.33",
     "tslib": "1.8.0",
-    "xmldom": "0.1.27"
-  },
-  "devDependencies": {
+    "xmldom": "0.1.27",
     "@types/d3-request": "1.0.2",
     "@types/node": "8.0.51",
     "@types/request": "0.0.41",
