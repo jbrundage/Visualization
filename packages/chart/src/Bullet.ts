@@ -1,5 +1,5 @@
 import { HTMLWidget, publish, Utility } from "@hpcc-js/common";
-import { bullet as d3Bullet } from "@hpcc-js/d3-bullet";
+import { bullet as d3Bullet } from "d3v4-bullet";
 import { select as d3Select } from "d3-selection";
 
 import "../src/Bullet.css";
