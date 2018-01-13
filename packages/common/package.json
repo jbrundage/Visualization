@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/common",
-  "version": "0.0.58",
+  "version": "0.0.59",
   "description": "hpcc-js - Viz Common",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -26,7 +26,7 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.56"
+    "@hpcc-js/util": "^0.0.57"
   },
   "devDependencies": {
     "colorbrewer": "1.0.0",
