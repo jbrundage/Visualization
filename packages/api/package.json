@@ -31,7 +31,7 @@
     "d3-format": "1.2.0",
     "d3-tip": "GordonSmith/d3-tip#vJSNEXT",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "rollup-plugin-postcss": "0.5.5",
     "tslib": "1.8.0",
     "tslint": "5.8.0",

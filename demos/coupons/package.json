@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "webpack": "3.10.0"
   },
   "author": "",

@@ -13,7 +13,7 @@ module.exports = {
         libraryTarget: "umd",
         library: "@hpcc-js/dgrid-shim",
         pathinfo: true,
-        filename: "dgrid-shim.js"
+        filename: "index.js"
     },
     module: {
         loaders: [

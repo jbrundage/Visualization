@@ -40,7 +40,7 @@
     "material-design-lite": "1.2.1",
     "pure-css": "1.0.4",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "typescript": "2.6.1",
     "webpack": "3.10.0"
   }

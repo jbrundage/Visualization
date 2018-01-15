@@ -41,7 +41,7 @@
     "d3-tile": "0.0.4",
     "google-maps": "3.2.1",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "rollup-plugin-postcss": "0.5.5",
     "topojson": "3.0.2",
     "tslib": "1.8.0",

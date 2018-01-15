@@ -32,7 +32,7 @@
     "d3-selection": "1.1.0",
     "grid-list": "0.4.0",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",

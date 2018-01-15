@@ -214,6 +214,7 @@ export interface IView {
 
 //  DDL  ======================================================================
 export interface Schema {
+    version: "0.0.18";
     datasources: DatasourceType[];
     dataviews: IView[];
 }

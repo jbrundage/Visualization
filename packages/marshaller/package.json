@@ -42,7 +42,7 @@
     "d3-array": "1.2.1",
     "d3-collection": "1.0.4",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "rollup-plugin-postcss": "0.5.5",
     "tslib": "1.8.0",
     "tslint": "5.8.0",

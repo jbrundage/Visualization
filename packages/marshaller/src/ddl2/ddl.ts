@@ -389,7 +389,8 @@ export class DDLAdapter {
 
     write(): DDL2.Schema {
         this._dsDedup.clear();
-        const retVal = {
+        const retVal: DDL2.Schema = {
+            version: "0.0.18",
             datasources: this.writeDatasources(),
             dataviews: this.writeDDLViews()
         };

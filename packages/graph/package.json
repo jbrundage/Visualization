@@ -37,7 +37,7 @@
     "d3-shape": "1.2.0",
     "dagre": "0.7.4",
     "rimraf": "2.6.2",
-    "rollup": "0.52.1",
+    "rollup": "0.54.0",
     "rollup-plugin-postcss": "0.5.5",
     "tslib": "1.8.0",
     "tslint": "5.8.0",
