@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/google",
-  "version": "0.0.59",
+  "version": "0.0.61",
   "description": "hpcc-js - Viz Google",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -24,8 +24,8 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/api": "^0.0.59",
-    "@hpcc-js/common": "^0.0.59"
+    "@hpcc-js/api": "^0.0.61",
+    "@hpcc-js/common": "^0.0.61"
   },
   "devDependencies": {
     "concurrently": "3.5.0",

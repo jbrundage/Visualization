@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@hpcc-js/demo-docsPlayground",
-  "version": "0.0.41",
+  "version": "0.0.43",
   "scripts": {
     "clean": "rimraf lib* && rimraf dist && rimraf build",
     "compile-es6": "tsc --module es6 --outDir ./lib-es6",
@@ -10,10 +10,10 @@
     "build": "npm run compile-es6 && npm run bundle"
   },
   "dependencies": {
-    "@hpcc-js/codemirror": "^0.0.71",
-    "@hpcc-js/comms": "^0.0.63",
-    "@hpcc-js/dgrid": "^0.0.69",
-    "@hpcc-js/dgrid-shim": "^0.0.53",
+    "@hpcc-js/codemirror": "^0.0.73",
+    "@hpcc-js/comms": "^0.0.65",
+    "@hpcc-js/dgrid": "^0.0.71",
+    "@hpcc-js/dgrid-shim": "^0.0.55",
     "d3-selection": "1.1.0",
     "tslib": "1.8.0"
   },
