@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "hpcc-js - Viz Phosphor",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -29,7 +29,7 @@
     "@hpcc-js/util": "^0.0.59"
   },
   "devDependencies": {
-    "@hpcc-js/phosphor-shim": "^0.0.56",
+    "@hpcc-js/phosphor-shim": "^0.0.57",
     "concurrently": "3.5.0",
     "d3-selection": "1.1.0",
     "rimraf": "2.6.2",

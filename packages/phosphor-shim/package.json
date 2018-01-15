@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/phosphor-shim",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "description": "hpcc-js - Phosphor shim",
   "main": "build/index.js",
   "module": "build/index.es6",
