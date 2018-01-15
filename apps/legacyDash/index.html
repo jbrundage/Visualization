@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./style/index.css">
-    <script src="../../packages/loader/build/index.js"></script>
+    <script src="./node_modules/@hpcc-js/loader/build/index.js"></script>
     <script>
-        const hpccRequire = window["@hpcc-js/loader"].dev("../../packages", {}, false);
+        const hpccRequire = window["@hpcc-js/loader"].bundle("./node_modules/@hpcc-js", {}, false);
     </script>
 </head>
 

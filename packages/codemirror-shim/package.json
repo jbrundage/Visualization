@@ -2,8 +2,8 @@
   "name": "@hpcc-js/codemirror-shim",
   "version": "0.0.54",
   "description": "hpcc-js - codemirror shim",
-  "main": "build/codemirror-shim.js",
-  "module": "build/codemirror-shim.es6",
+  "main": "build/index.js",
+  "module": "build/index.es6",
   "types": "types/index.d.ts",
   "files": [
     "build/*",

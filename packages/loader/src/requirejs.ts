@@ -124,7 +124,7 @@ function local(devMode: boolean, additionalPaths: { [key: string]: string }, min
     };
     const rjsPackages: any = [];
     shims.forEach(shim => {
-        paths[`@hpcc-js/${shim}`] = `${config.libUrl}/${shim}/build/${shim === "dgrid-shim" ? "index" : shim}`;
+        paths[`@hpcc-js/${shim}`] = `${config.libUrl}/${shim}/build/index`;
     });
     packages.forEach(pckg => {
         paths[`@hpcc-js/${pckg}`] = `${config.libUrl}/${pckg}`;

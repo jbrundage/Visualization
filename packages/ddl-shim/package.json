@@ -2,8 +2,8 @@
   "name": "@hpcc-js/ddl-shim",
   "version": "0.0.28",
   "description": "hpcc-js DDL parser",
-  "main": "build/ddl-shim.js",
-  "unpkg": "build/ddl-shim.min.js",
+  "main": "build/index.js",
+  "unpkg": "build/index.min.js",
   "types": "types/index.d.ts",
   "files": [
     "build/*",

@@ -39,7 +39,7 @@ export default {
         }),
         commonjs({
             namedExports: {
-                "../c3-shim/build/c3-shim.js": ["generate"]
+                "../c3-shim/build/index.js": ["generate"]
             }
         }),
         alias({
