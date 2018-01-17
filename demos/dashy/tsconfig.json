@@ -14,6 +14,7 @@
         "experimentalDecorators": true,
         "downlevelIteration": true,
         "skipLibCheck": true,
+        "noImplicitThis": true,
         "lib": [
             "dom",
             "es5",

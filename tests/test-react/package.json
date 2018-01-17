@@ -1,10 +1,10 @@
 {
   "private": true,
   "name": "@hpcc-js/xxxx-react",
-  "version": "0.0.46",
+  "version": "0.0.48",
   "dependencies": {
-    "@hpcc-js/common": "^0.0.62",
-    "@hpcc-js/react": "^0.0.62",
+    "@hpcc-js/common": "^0.0.64",
+    "@hpcc-js/react": "^0.0.64",
     "@hpcc-js/sample-data": "^0.0.31",
     "chai": "4.0.0",
     "es6-promise": "4.1.1",

@@ -61,9 +61,9 @@ export function serializeRequest(obj: any, prefix: string = ""): string {
                 obj[key].forEach((row: any, i: number) => {
                     if (typeof row === "object") {
                         includeItemCount = true;
-                        str.push(this.serialize(row, prefix + encodeURIComponent(`${key}.${i}`)));
+                        str.push(serializeRequest(row, prefix + encodeURIComponent(`${key}.${i}`)));
                     } else {
-                        str.push(prefix + encodeURIComponent(`${key}_i${i}`) + "=" + this.serialize(row));
+                        str.push(prefix + encodeURIComponent(`${key}_i${i}`) + "=" + serializeRequest(row));
                     }
                 });
                 if (includeItemCount) {
@@ -71,10 +71,10 @@ export function serializeRequest(obj: any, prefix: string = ""): string {
                 }
             } else if (typeof obj[key] === "object") {
                 if (obj[key] && obj[key]["Item"] instanceof Array) {  // Specific to ws_machine.GetTargetClusterInfo?
-                    str.push(this.serialize(obj[key]["Item"], prefix + encodeURIComponent(key)));
+                    str.push(serializeRequest(obj[key]["Item"], prefix + encodeURIComponent(key)));
                     str.push(prefix + encodeURIComponent(`${key}.itemcount`) + "=" + obj[key]["Item"].length);
                 } else {
-                    str.push(this.serialize(obj[key], prefix + encodeURIComponent(key)));
+                    str.push(serializeRequest(obj[key], prefix + encodeURIComponent(key)));
                 }
             } else {
                 str.push(prefix + encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));

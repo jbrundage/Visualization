@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/comms",
-  "version": "0.0.66",
+  "version": "0.0.69",
   "description": "hpcc-js - Communications",
   "main": "build/index.node.js",
   "module": "build/index.es6",
@@ -29,7 +29,12 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/util": "^0.0.60"
+    "@hpcc-js/util": "^0.0.62",
+    "request": "2.81.0",
+    "safe-buffer": "5.1.1",
+    "semver": "5.5.0",
+    "tmp": "0.0.33",
+    "xmldom": "0.1.27"
   },
   "devDependencies": {
     "@types/d3-request": "1.0.2",
@@ -39,14 +44,11 @@
     "concurrently": "3.5.0",
     "d3-request": "1.0.5",
     "d3-time-format": "2.1.0",
-    "request": "2.81.0",
     "rimraf": "2.6.2",
     "rollup": "0.54.0",
     "rollup-plugin-alias": "1.4.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.0",
-    "safe-buffer": "5.0.1",
-    "tmp": "0.0.33",
     "tslib": "1.8.0",
     "tslint": "5.8.0",
     "typedoc": "0.7.1",
