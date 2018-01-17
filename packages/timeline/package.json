@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/timeline",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "hpcc-js - Viz Timeline",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -24,8 +24,8 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.63",
-    "@hpcc-js/common": "^0.0.61"
+    "@hpcc-js/chart": "^0.0.64",
+    "@hpcc-js/common": "^0.0.62"
   },
   "devDependencies": {
     "concurrently": "3.5.0",

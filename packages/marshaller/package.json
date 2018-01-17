@@ -1,6 +1,6 @@
 {
   "name": "@hpcc-js/marshaller",
-  "version": "0.0.74",
+  "version": "0.0.75",
   "description": "hpcc-js - Viz Marshaller",
   "main": "build/index.js",
   "module": "build/index.es6",
@@ -24,17 +24,17 @@
     "docs": "typedoc --options tdoptions.json ."
   },
   "dependencies": {
-    "@hpcc-js/chart": "^0.0.63",
-    "@hpcc-js/common": "^0.0.61",
-    "@hpcc-js/comms": "^0.0.65",
-    "@hpcc-js/composite": "^0.0.66",
-    "@hpcc-js/dgrid": "^0.0.71",
-    "@hpcc-js/form": "^0.0.63",
-    "@hpcc-js/graph": "^0.0.62",
-    "@hpcc-js/layout": "^0.0.61",
-    "@hpcc-js/other": "^0.0.61",
-    "@hpcc-js/phosphor": "^0.0.64",
-    "@hpcc-js/util": "^0.0.59"
+    "@hpcc-js/chart": "^0.0.64",
+    "@hpcc-js/common": "^0.0.62",
+    "@hpcc-js/comms": "^0.0.66",
+    "@hpcc-js/composite": "^0.0.67",
+    "@hpcc-js/dgrid": "^0.0.72",
+    "@hpcc-js/form": "^0.0.64",
+    "@hpcc-js/graph": "^0.0.63",
+    "@hpcc-js/layout": "^0.0.62",
+    "@hpcc-js/other": "^0.0.62",
+    "@hpcc-js/phosphor": "^0.0.65",
+    "@hpcc-js/util": "^0.0.60"
   },
   "devDependencies": {
     "@hpcc-js/ddl-shim": "^0.0.29",
