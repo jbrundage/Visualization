@@ -1,14 +1,16 @@
 {
   "name": "@hpcc-js/util",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "description": "hpcc-js - Utilities",
   "main": "build/index.js",
   "module": "build/index.es6",
   "unpkg": "build/index.min.js",
   "types": "types/index.d.ts",
   "files": [
-    "build/*",
-    "lib/*"
+    "types/*",
+    "lib-es6/*",
+    "src/*.css",
+    "build/*"
   ],
   "scripts": {
     "clean": "rimraf lib* && rimraf types && rimraf build",
