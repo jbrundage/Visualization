@@ -7,6 +7,11 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(false);
     private _buttonDownload: Button = new Button(this, "fa-download");
+    private _buttonClose: Button = new Button(this, "fa-close");
+    private _buttonMinimize: Button = new Button(this, "fa-minimize");
+    private _buttonMaximize: Button = new Button(this, "fa-maximize");
+    private _buttonPrint: Button = new Button(this, "fa-print");
+    private _buttonFlyout: Button = new Button(this, "fa-filter");
 
     private _titleBar = new TitleBar();
 
@@ -44,11 +49,30 @@ export class ChartPanel extends Border2 implements IClickHandler {
         };
         return this;
     }
+    @publish(false, "boolean", "desc")
+    showButtonClose: publish<this, boolean>;
+    @publish(false, "boolean", "desc")
+    showButtonMinimize: publish<this, boolean>;
+    @publish(false, "boolean", "desc")
+    showButtonMaximize: publish<this, boolean>;
+    @publish(false, "boolean", "desc")
+    showButtonPrint: publish<this, boolean>;
+    @publish(false, "boolean", "desc")
+    showButtonFlyout: publish<this, boolean>;
 
     constructor() {
         super();
         this._tag = "div";
-        this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
+        this._titleBar.buttons([
+            this._buttonDownload, 
+            this._buttonClose,
+            this._buttonMinimize,
+            this._buttonMaximize,
+            this._buttonPrint,
+            this._buttonFlyout,
+            new Spacer(this), 
+            this._toggleLegend
+        ]);
     }
 
     columns(): string[];
