@@ -40,6 +40,9 @@ export abstract class Widget extends PropertyExt {
     protected _visible;
     protected _display;
 
+    protected _old_position;
+    protected _old_bbox;
+
     protected _target: null | HTMLElement | SVGElement;
     protected _placeholderElement;
     protected _parentWidget;
@@ -180,6 +183,29 @@ export abstract class Widget extends PropertyExt {
             retVal.__lparam = row[this.columns().length];
         }
         return retVal;
+    }
+
+    maximize(selector: string) {
+        const boundingElement = this.element().node().closest(selector);
+        const boundingRect = boundingElement.getBoundingClientRect();
+        console.log(boundingRect);
+        this._old_position = this.element().style("position");
+        this._old_bbox = this.getBBox();
+
+        this.element().style("position", "fixed");
+        this.element().style("left", boundingRect.x + "px");
+        this.element().style("top", boundingRect.y + "px");
+        this.element().style("height", boundingRect.height + "px");
+        this.element().style("width", boundingRect.width + "px");
+        this.size({
+            width: boundingRect.width,
+            height: boundingRect.height
+        });
+        this.pos({
+            x: boundingRect.x,
+            y: boundingRect.y
+        });
+        this.resize();
     }
 
     pos(): IPos;

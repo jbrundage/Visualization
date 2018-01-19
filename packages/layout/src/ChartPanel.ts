@@ -1,17 +1,67 @@
-import { publish, publishProxy, Utility, Widget } from "@hpcc-js/common";
+import { publish, publishProxy, TextBox as Text, Utility, Widget } from "@hpcc-js/common";
 import { Border2 } from "./Border2";
 import { Legend } from "./Legend";
-import { Button, IClickHandler, Item, Spacer, TitleBar, ToggleButton } from "./TitleBar";
+import { Modal } from "./Modal";
+import { Button, IClickHandler, Item, TitleBar, ToggleButton } from "./TitleBar";
 
 export class ChartPanel extends Border2 implements IClickHandler {
 
-    private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(false);
-    private _buttonDownload: Button = new Button(this, "fa-download");
-
     private _titleBar = new TitleBar();
+    private _modal = new Modal();
 
     private _legend = new Legend(this);
-
+    @publish([
+        {
+            icon: "fa-filter",
+            type: "ToggleButton",
+            selected: false,
+            on(cp, d) {
+                const txt = new Text().text("Description of this ChartPanel");
+                this._modal._widget = txt;
+                this._modal.show(true).render(n => {
+                    n.resize().render();
+                });
+            },
+            off(cp, d) {
+                const txt = new Text().text("Description of this ChartPanel");
+                this._modal._widget = txt;
+                this._modal.show(false).render();
+            },
+        },
+        {
+            icon: "fa-info-circle",
+            type: "ToggleButton",
+            selected: false,
+            click(cp, d) {
+                this.downloadCSV();
+            }
+        },
+        {
+            icon: "fa-list-ul",
+            type: "ToggleButton",
+            selected: false,
+            on(d) {
+                this._legend.visible(true);
+                this.render();
+            },
+            off(d) {
+                this._legend.visible(false);
+                this.render();
+            },
+            update(d) {
+                if (this._prevChartDataFamily !== "ND") {
+                    this._prevChartDataFamily = "ND";
+                    switch (this._prevChartDataFamily) {
+                        case "any":
+                            d.ref.selected(false);
+                            this._legend.visible(false);
+                            break;
+                    }
+                }
+            }
+        },
+    ], "array", "Buttons")
+    button_json: any;
     @publishProxy("_titleBar", undefined, undefined, { reset: true })
     title: publish<this, string>;
     @publish(null, "widget", "Multi Chart")
@@ -48,9 +98,17 @@ export class ChartPanel extends Border2 implements IClickHandler {
     constructor() {
         super();
         this._tag = "div";
-        this._titleBar.buttons([this._buttonDownload, new Spacer(this), this._toggleLegend]);
+        this._titleBar.buttons(this.button_json().map(n => {
+            switch (n.type) {
+                case "Button":
+                    n.ref = new Button(this, n.icon);
+                    return n.ref;
+                case "ToggleButton":
+                    n.ref = new ToggleButton(this, n.icon).selected(!!n.selected);
+                    return n.ref;
+            }
+        }));
     }
-
     columns(): string[];
     columns(_: string[], asDefault?: boolean): this;
     columns(_?: string[], asDefault?: boolean): string[] | this {
@@ -77,6 +135,8 @@ export class ChartPanel extends Border2 implements IClickHandler {
         this.center(this._widget);
         this.right(this._legend);
 
+        this._modal.target(this._target).relativeTargetId(this.id());
+
         this._legend
             .targetWidget(this._widget)
             .orientation("vertical")
@@ -91,15 +151,11 @@ export class ChartPanel extends Border2 implements IClickHandler {
             .columns(this._legend.filteredColumns())
             .data(this._legend.filteredData())
             ;
-        if (this._prevChartDataFamily !== "ND") { // this._widget.getChartDataFamily()) {
-            this._prevChartDataFamily = "ND"; // this._widget.getChartDataFamily();
-            switch (this._prevChartDataFamily) {
-                case "any":
-                    this._toggleLegend.selected(false);
-                    this._legend.visible(false);
-                    break;
+        this.button_json().forEach(n => {
+            if (n.update) {
+                n.update.call(this, n);
             }
-        }
+        });
         this._legend.dataFamily("ND"); // this._widget.getChartDataFamily());
         super.update(domNode, element);
     }
@@ -110,19 +166,26 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     // IClickHandler  ---
     titleBarClick(src: Item, d, idx: number, groups): void {
-        switch (src) {
-            case this._buttonDownload:
-                this.downloadCSV();
-                break;
-            case this._toggleLegend:
-                if (this._toggleLegend.selected()) {
-                    this._legend.visible(true);
-                } else {
-                    this._legend.visible(false);
+        const clicked_button_arr = this.button_json().filter(n => n.ref === src);
+        const args = arguments;
+        clicked_button_arr.forEach(n => {
+            if (src instanceof Button && n.click) {
+                n.click.apply(this, args);
+            } else if (src instanceof ToggleButton) {
+                if (n.click) {
+                    n.click.apply(this, args);
                 }
-                this.render();
-                break;
-        }
+                if (src.selected()) {
+                    if (n.on) {
+                        n.on.apply(this, args);
+                    }
+                } else {
+                    if (n.off) {
+                        n.off.apply(this, args);
+                    }
+                }
+            }
+        });
     }
 
     //  Event Handlers  ---

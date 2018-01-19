@@ -1,6 +1,5 @@
 import { HTMLWidget, publish, Utility } from "@hpcc-js/common";
 import { select as d3Select } from "d3-selection";
-import { bullet as d3Bullet } from "d3v4-bullet";
 
 import "../src/Bullet.css";
 
@@ -112,19 +111,19 @@ export class Bullet extends HTMLWidget {
         titleWidth; //  Gap between title and bullet bar.
 
         //  Bullet Chart ---
-        const chart = d3Bullet()
-            .width(width - titleWidth - 6)
-            .height(height)
-            ;
+        // const chart = d3Bullet()
+        //     .width(width - titleWidth - 6)
+        //     .height(height)
+        //     ;
         svgUpdate
             .attr("width", width)
             .attr("height", height + margin.top + margin.bottom)
             .style("margin-left", `${margin.left}px`)
             ;
-        svgUpdate.select(".bulletBar")
-            .attr("transform", "translate(" + (titleWidth + 6) + "," + margin.top + ")")
-            .call(chart)
-            ;
+        // svgUpdate.select(".bulletBar")
+        //     .attr("transform", "translate(" + (titleWidth + 6) + "," + margin.top + ")")
+        //     .call(chart)
+        //     ;
 
         svg.exit().remove();
     }
