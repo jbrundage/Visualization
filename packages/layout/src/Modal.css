@@ -7,8 +7,10 @@
 }
 .layout_Modal-body {
     width: 100%;
-    height: calc( 100% - 30px );
     background-color: #ffffff;
+}
+.layout_Modal-title {
+    position: absolute;
 }
 .layout_Modal-body > div{
     display: inline-block;

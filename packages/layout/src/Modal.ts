@@ -12,6 +12,7 @@ export class Modal extends HTMLWidget {
     private _modal: d3SelectionType;
     private _modalHeader: d3SelectionType;
     private _modalBody: d3SelectionType;
+    private _close: any;
 
     constructor() {
         super();
@@ -19,7 +20,10 @@ export class Modal extends HTMLWidget {
     }
 
     closeModal() {
-        this.exit();
+        if (typeof this._close === "function") {
+            this._close();
+        }
+        this.show(false).render();
     }
 
     getRelativeTarget() {
@@ -79,27 +83,41 @@ export class Modal extends HTMLWidget {
             .classed("layout_Modal-fadeClickable", this.enableClickFadeToClose())
             .classed("layout_Modal-fade-hidden", !this.showFade())
             ;
-        const _pad = parseInt(this.headerPadding());
-        this._modal = element.append("div").classed("layout_Modal-content", true);
+        const header_h = this.titleFontSize() * 2;
+        this._modal = element.append("div")
+            .classed("layout_Modal-content", true)
+            ;
         this._modalHeader = this._modal.append("div")
             .classed("layout_Modal-header", true)
-            .style("padding", this.headerPadding())
             .style("color", this.titleFontColor())
-            .style("font-size", this.titleFontSize())
+            .style("font-size", this.titleFontSize() + "px")
+            .style("height", header_h + "px")
             ;
         this._modalBody = this._modal.append("div")
             .classed("layout_Modal-body", true)
+            .style("height", `calc( 100% - ${header_h}px )`)
             ;
-        this._modalBody.node().style.padding = this.bodyPadding();
+        this._modalHeader.append("div")
+            .classed("layout_Modal-title", true)
+            .style("line-height", this.titleFontSize() + "px")
+            .style("top", (this.titleFontSize() / 2) + "px")
+            .style("left", (this.titleFontSize() / 2) + "px")
+            .text(this.title())
+            ;
 
-        this._modalHeader.append("div").classed("layout_Modal-title", true).text(this.title());
+        this._modalHeaderAnnotations = this._modalHeader.append("div")
+            .classed("layout_Modal-annotations", true)
+            ;
+        this._modalHeaderCloseButton = this._modalHeaderAnnotations.append("div")
+            .classed("layout_Modal-closeButton", true)
+            .html("<i class=\"fa fa-close\"></i>")
+            ;
 
-        this._modalHeaderAnnotations = this._modalHeader.append("div").classed("layout_Modal-annotations", true);
-        this._modalHeaderCloseButton = this._modalHeaderAnnotations.append("div").classed("layout_Modal-closeButton", true).html("<i class=\"fa fa-close\"></i>");
-
-        const _anno_bbox = this._modalHeaderAnnotations.node().getBoundingClientRect();
-        this._modalHeaderAnnotations.node().style.right = _pad - (_anno_bbox.width / 2) + "px";
-        this._modalHeaderAnnotations.node().style.top = _pad - (_anno_bbox.height / 2) + "px";
+        this._modalHeaderAnnotations
+            .style("line-height", this.titleFontSize() + "px")
+            .style("right", (this.titleFontSize() / 2) + "px")
+            .style("top", (this.titleFontSize() / 2) + "px")
+            ;
         this._modalHeaderCloseButton.on("click", function () {
             context.closeModal();
         });
@@ -109,13 +127,27 @@ export class Modal extends HTMLWidget {
             }
         });
 
-        this._widget.target(this._modalBody.node()).resize().render();
         this.setModalSizeLimits();
     }
 
     update(domNode, element) {
         super.update(domNode, element);
-
+        if (this.show()) {
+            if (!this._widget.target()) {
+                this._widget.target(this._modalBody.node());
+            }
+            this._widget
+                .render(n => {
+                    n.resize().render();
+                })
+                ;
+        } else {
+            this._widget
+                .target(null)
+                .render()
+                ;
+        }
+        this.element().style("display", this.show() ? null : "none");
         this._fade.classed("layout_Modal-fade-hidden", !this.showFade());
         this._relativeTarget = this.getRelativeTarget();
 
@@ -131,15 +163,36 @@ export class Modal extends HTMLWidget {
 
 Modal.prototype._class += " layout_Modal";
 
-Modal.prototype.publishProxy("html", "_html");
+export interface Modal {
+    show(): boolean;
+    show(_: boolean): this;
+    showFade(): boolean;
+    showFade(_: boolean): this;
+    enableClickFadeToClose(): boolean;
+    enableClickFadeToClose(_: boolean): this;
+    title(): string;
+    title(_: string): this;
+    titleFontSize(): number;
+    titleFontSize(_: number): this;
+    titleFontColor(): string;
+    titleFontColor(_: string): this;
+    minWidth(): string;
+    minWidth(_: string): this;
+    minHeight(): string;
+    minHeight(_: string): this;
+    maxWidth(): string;
+    maxWidth(_: string): this;
+    maxHeight(): string;
+    maxHeight(_: string): this;
+    widget(): Widget;
+    widget(_: Widget): this;
+}
 
 Modal.prototype.publish("title", null, "string", "title");
-Modal.prototype.publish("titleFontSize", "18px", "string", "titleFontSize");
+Modal.prototype.publish("widget", null, "widget", "widget");
+Modal.prototype.publish("titleFontSize", 18, "number", "titleFontSize (in pixels)");
 Modal.prototype.publish("titleFontColor", "#ffffff", "html-color", "titleFontColor");
 Modal.prototype.publish("relativeTargetId", null, "string", "relativeTargetId");
-
-Modal.prototype.publish("headerPadding", "15px", "string", "headerPadding");
-Modal.prototype.publish("bodyPadding", "15px", "string", "bodyPadding");
 
 Modal.prototype.publish("show", true, "boolean", "show");
 Modal.prototype.publish("showFade", true, "boolean", "showFade");
