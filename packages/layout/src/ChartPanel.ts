@@ -8,7 +8,7 @@ export class ChartPanel extends Border2 implements IClickHandler {
     private _toggleLegend: ToggleButton = new ToggleButton(this, "fa-info").selected(false);
     private _buttonDownload: Button = new Button(this, "fa-download");
 
-    private _titleBar = new TitleBar();
+    private _titleBar: TitleBar = new TitleBar();
 
     private _legend = new Legend(this);
 
@@ -72,6 +72,9 @@ export class ChartPanel extends Border2 implements IClickHandler {
 
     enter(domNode, element) {
         super.enter(domNode, element);
+
+        this._progressBar = element.append("div").classed("progress-bar", true);
+        this._progress = this._progressBar.append("div").classed("progress", true);
 
         this.top(this._titleBar);
         this.center(this._widget);

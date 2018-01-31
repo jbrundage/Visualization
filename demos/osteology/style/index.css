@@ -1,0 +1,54 @@
+﻿*{
+    box-sizing: border-box;
+}
+#widget-thumbs-wrapper{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 240px;
+    z-index: 200;
+    border-bottom: 1px solid #333;
+}
+#content-wrapper{
+    position: fixed;
+    top: 248px;
+    left: 8px;
+    bottom: 8px;
+    right: 8px;
+    border: 0px solid black;
+    z-index: 100;
+}
+
+#empty-content{
+    height: 100%;
+    width: 100%;
+}
+#empty-content::before{
+    content: "Drag a widget here...";
+    padding: 8px;
+    display: block;
+}
+
+.widget-thumb{
+    height: 120px;
+    width: 120px;
+    position: relative;
+    display: block;
+    float: left;
+    margin: 4px 0px 0px 4px;
+    padding: 4px;
+    border: 1px solid black;
+    z-index: 10000;
+    background-color: #FFFFFF;
+}
+.thumb-preview{
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: calc(100% - 20px);
+}
+.other_Html > .htmlWrapper{
+    height: 100%;
+    width: 100%;
+}

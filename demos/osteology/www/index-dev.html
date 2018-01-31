@@ -1,0 +1,78 @@
+﻿<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Dev - Dermatology Test</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- -->
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="../style/index.css">
+    <script src="../../../packages/loader/build/index.js"></script>
+    <script src="../src/main.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.dev({ "test": "../tests" });
+    </script>
+    <!--
+        <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
+        <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+        <link rel="stylesheet" href="https://rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+        <script src="https://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+        <script src="../src/loader.js"></script>
+    -->
+    <!--
+        <link rel="stylesheet" href="../../../node_modules/material-design-lite/material.min.css">
+        <script src="../../../node_modules/material-design-lite/material.min.js"></script>
+        <link rel="stylesheet" href="../../../node_modules/pure-css/lib/menus.css">
+        <script src="../../../node_modules/requirejs/require.js"></script>
+        <script src="../src/loader.js"></script>
+    -->
+    <!--
+        <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
+        <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+        <link rel="stylesheet" href="https://rawgit.com/yahoo/pure-release/v0.6.0/pure-min.css">
+        <script src="../dist-amd/hpcc-viz.js"></script>
+    -->
+    <link href="../style/index.css" rel="stylesheet">
+
+    <script>
+        var hpccsystems = {
+            require: require
+        };
+        var app = null;
+        $(function () {
+
+            hpccsystems.require(
+                ["test/Factory", "test/DataFactory"],
+                function (testFactory, dataFactory) {
+                    legacyRequire(["src/other/Html", "src/phosphor/DockPanel"], function (Html, DockPanel) {
+
+                        window.g_tf = testFactory;
+                        window.g_DockPanel = DockPanel;
+
+                        $('#widget-thumbs-wrapper').html(get_widget_thumbs_html(testFactory));
+                        init_widget_thumbs(testFactory);
+
+
+                        $('#content-wrapper').html(get_output_html());
+                        init_draggables('.widget-thumb');
+                        init_droppables('#empty-content');
+                        init_widget_thumb_scaling();
+                    });
+                }
+            );
+        });
+    </script>
+</head>
+
+<body>
+    <div id="widget-thumbs-wrapper"></div>
+    <div id="content-wrapper"></div>
+</body>
+
+</html>
