@@ -1,6 +1,7 @@
-import { PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
+import { Database, PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { MultiChart, MultiChartPanel } from "@hpcc-js/composite";
 import { DDL1 } from "@hpcc-js/ddl-shim";
+import { IField } from "@hpcc-js/dgrid";
 import { ChartPanel } from "@hpcc-js/layout";
 import { find } from "@hpcc-js/util";
 import { Activity, rowID } from "./activities/activity";
@@ -105,6 +106,7 @@ export class Element extends PropertyExt {
 
     chartType(): string {
         return this._MultiChartPanel.chartType();
+        // this.chart().classID();
     }
 
     chart(): Widget {
@@ -132,23 +134,47 @@ export class Element extends PropertyExt {
         return this.state();
     }
 
-    async refresh() {
-        const view = this.hipiePipeline();
-        await view.refreshMeta();
-        const columns = view.mappings().outFields().map(field => field.label);
-        // const fields = view.outFields().map(field => new Field());
-        await view.mappings().exec();
-        const data = view.mappings().outData();
-        const mappedData = data.map((row: any) => {
+    toFields(fields: IField[]): Database.Field[] {
+        const retVal: Database.Field[] = [];
+        for (const field of fields) {
+            const f = new Database.Field()
+                .id(field.id)
+                .label(field.label)
+                ;
+            if (field.children) {
+                f.children(this.toFields(field.children));
+            }
+            retVal.push(f);
+        }
+        return retVal;
+    }
+
+    toData(fields: Database.Field[], data) {
+        return data.map((row: any) => {
             const retVal = [];
-            for (const column of columns) {
-                retVal.push(row[column]);
+            for (const field of fields) {
+                if (field.type() === "nested") {
+                    retVal.push(this.toData(field.children() as Database.Field[], row[field.id()].Row || row[field.id()]));
+                } else {
+                    retVal.push(row[field.label()]);
+                }
             }
             return retVal;
         });
+    }
 
+    async refresh() {
+        this.chartPanel().startProgress();
+        const view = this.hipiePipeline();
+        await view.refreshMeta();
+        const fields = this.toFields(view.mappings().outFields());
+        await view.mappings().exec();
+        const data = view.mappings().outData();
+        const mappedData = this.toData(fields, data);
+
+        this.chartPanel().finishProgress();
         this.chartPanel()
-            .columns(columns)
+            .fields(fields)
             .data(mappedData)
             .lazyRender()
             ;

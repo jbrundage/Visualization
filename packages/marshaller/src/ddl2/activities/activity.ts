@@ -174,23 +174,27 @@ export abstract class Activity extends PropertyExt {
     inData(): ReadonlyArray<object> {
         return this._sourceActivity ? this._sourceActivity.outData() || [] : [];
     }
+
     computeData(): ReadonlyArray<object> {
         return this.inData();
     }
+
     outData(): ReadonlyArray<object> {
         if (this._calcRowNum) {
             return this.computeData().map((row, idx) => {
                 return {
                     ...row,
-                    ROW_ID: idx
+                    [ROW_ID]: idx
                 };
             });
         }
         return this.computeData();
     }
+
     inRow(idx: number) {
         return this.inData().filter(row => row[ROW_ID] === idx)[0];
     }
+
     outRow(idx: number) {
         return this.outData().filter(row => row[ROW_ID] === idx)[0];
     }

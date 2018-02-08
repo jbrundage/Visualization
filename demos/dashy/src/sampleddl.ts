@@ -143,7 +143,7 @@ export const ddl: DDL1.DDLSchema = {
                     ],
                     id: "b",
                     properties: {
-                        charttype: "AM_BAR"
+                        charttype: "BAR"
                     },
                     source: {
                         id: "Ins122_dsOutput1",
@@ -184,7 +184,7 @@ export const ddl: DDL1.DDLSchema = {
                     ],
                     id: "c",
                     properties: {
-                        charttype: "AM_COLUMN"
+                        charttype: "COLUMN"
                     },
                     source: {
                         id: "Ins122_dsOutput1",
