@@ -126,12 +126,15 @@ export class Field extends PropertyExt {
         return retVal;
     }
 
-    children(_?: Array<string | INestedColumn>, asDefault?: boolean): Field[] | this {
+    children(_?: Array<string | INestedColumn | Field>, asDefault?: boolean): Field[] | this {
         if (_ === void 0) return this._children;
         this.type("nested");
         const fieldsArr = this._children;
-        this._children = _.map((field: string | INestedColumn, idx): Field => {
-            if (typeof field === "string") {
+        this._children = _.map((field: string | INestedColumn | Field, idx): Field => {
+            if (field instanceof Field) {
+                fieldsArr[idx] = field;
+                return field;
+            } else if (typeof field === "string") {
                 if (asDefault) {
                     return (fieldsArr[idx] || new Field()).label_default(field);
                 } else {
