@@ -82,7 +82,7 @@
                     callback(new ChartPanel()
                         .widget(new Column())
                         .title("Hello and Welcome!")
-                        .description("Sample description for the chart being displayed...")
+                        // .description("Sample description for the chart being displayed...")
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
                     );
@@ -106,9 +106,27 @@
                 legacyRequire(["test/DataFactory", "src/composite/MultiChartPanel"], function (DataFactory, MultiChartPanel) {
                     callback(new MultiChartPanel()
                         .title("Hello and Welcome!")
-                        .description("Sample description for the chart being displayed...")
+                        // .description("Sample description for the chart being displayed...")
                         .columns(DataFactory.ND.subjects.columns)
                         .data(DataFactory.ND.subjects.data)
+                    );
+                });
+            },
+            progress_bar: function (callback) {
+                legacyRequire(["test/DataFactory", "src/composite/MultiChartPanel", "src/other/Html"], function (DataFactory, MultiChartPanel, Html) {
+                    callback(new MultiChartPanel()
+                        .title("")
+                        .widget(new Html()
+                            .html(
+                            '<div id="that_example_div" style="display:inline-block;position:relative;height:100px;line-height:100px;width:320px;border:1px solid black;">That</div><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.startMyProgress();">ChartPanel.startMyProgress()</button><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.finishMyProgress();">ChartPanel.finishMyProgress()</button><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.exitMyProgress();">ChartPanel.exitMyProgress()</button><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.startThatProgress(document.getElementById(&apos;that_example_div&apos;));">ChartPanel.startThatProgress(HTMLElement)</button><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.finishThatProgress(document.getElementById(&apos;that_example_div&apos;));">ChartPanel.finishThatProgress(HTMLElement)</button><br/>' +
+                            '<button style="font-size: 14px;margin-top:8px;width:320px" onclick="app._main.exitProgress(document.getElementById(&apos;that_example_div&apos;));">ChartPanel.exitProgress(HTMLElement)</button><br/>'
+                            )
+                        )
                     );
                 });
             },
