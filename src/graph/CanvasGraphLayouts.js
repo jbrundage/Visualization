@@ -319,6 +319,68 @@
         });
         return g;
     }
+    function myGraphData(data) {
+        return {
+            "edge": function(link_idx){
+                return {
+                    "weight": 1,
+                    "_id": link_idx
+                }
+            },
+            "node": function(node_idx){
+                return {
+                    "getBBox": function(){
+                        return {
+                            "width": data.nodes[node_idx].width,
+                            "height": data.nodes[node_idx].height
+                        };
+                    }
+                };
+            },
+            "parent": function(node_idx){
+                try{
+                    return data.nodes[node_idx].parent_arr[0];
+                } catch (e) {
+                    return null;
+                }
+            },
+            "eachEdge": function(fn){
+                data.links.forEach(function(link,link_idx){
+                    fn(link_idx,link.source.id,link.target.id);
+                },this);
+            },
+            "eachNode": function(fn){
+                data.nodes.forEach(function(node,node_idx){
+                    fn(node_idx,link.source.id,link.target.id);
+                },this);
+            }
+        }
+        var g = new dagre.graphlib.Graph({
+            multigraph: true,
+            compound: true,
+            directed: true
+        });
+        g.setGraph({
+            rankdir: this.hierarchyRankDirection(),
+            nodesep: this.hierarchyNodeSeparation(),
+            edgesep: this.hierarchyEdgeSeparation(),
+            ranksep: this.hierarchyRankSeparation()
+        });
+        g.setDefaultEdgeLabel(function () {
+            return {};
+        });
+        data.nodes.forEach(function (u) {
+            console.info("u.width:", u.width);
+            g.setNode(u.index, {
+                width: u.width,
+                height: u.height
+            });
+        });
+        data.links.forEach(function (u) {
+            g.setEdge(u.source.index, u.target.index);
+        });
+        return g;
+    }
 
     return {
         layouts: layouts

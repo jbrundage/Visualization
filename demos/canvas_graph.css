@@ -1,0 +1,23 @@
+#controls,#debug,#placeholder{
+    position: fixed;
+    border: 1px solid black;
+}
+#controls{
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    height: 40px;
+}
+#debug{
+    top: 50px;
+    left: 5px;
+    bottom: 5px;
+    width: 100px;
+    
+}
+#placeholder{
+    top: 50px;
+    left: 110px;
+    right: 5px;
+    bottom: 5px;
+}

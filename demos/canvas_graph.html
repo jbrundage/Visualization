@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>HPCC Systems - CanvasGraph Test</title>
+
+    <script src="https://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
+    <script src="../src/loader.js"></script>
+    <script src="random_graph_data.js"></script>
+    <link href="./canvas_graph.css" rel="stylesheet">
+
+    <script>
+        require.config({
+            paths: {
+                "test": "../test"
+            }
+        });
+    </script>
+</head>
+
+<body onresize="doResize()">
+    <!-- Always shows a header, even in smaller screens. -->
+    <div id="controls">
+        
+    </div>
+    <div id="debug">
+        
+    </div>
+    <div id="placeholder">
+        
+    </div>
+    <script>
+        require(['src/graph/CanvasGraph'],CanvasGraph=>{
+            window.g_data = random_graph_data(10);
+            window.g_w = new CanvasGraph().target('placeholder').data(g_data).render();
+        });
+    </script>
+</body>
+
+</html>

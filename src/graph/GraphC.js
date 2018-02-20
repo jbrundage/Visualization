@@ -1,13 +1,13 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/SVGWidget", "../common/Palette", "../api/IGraph", "./Vertex", "./Edge", "./GraphData", "./GraphLayouts", "../common/Utility", "css!./Graph"], factory);
+        define(["d3", "../common/CanvasWidget", "../common/Palette", "../api/IGraph", "./CanvasVertex", "./CanvasEdge", "./GraphData", "./GraphLayouts", "../common/Utility", "css!./GraphC"], factory);
     } else {
-        root.graph_Graph = factory(root.d3, root.common_SVGWidget, root.common_Palette, root.api_IGraph, root.graph_Vertex, root.graph_Edge, root.graph_GraphData, root.graph_GraphLayouts, root.common_Utility);
+        root.graph_Graph = factory(root.d3, root.common_CanvasWidget, root.common_Palette, root.api_IGraph, root.graph_CanvasVertex, root.graph_CanvasEdge, root.graph_GraphData, root.graph_GraphLayouts, root.common_Utility);
     }
-}(this, function (d3, SVGWidget, Palette, IGraph, Vertex, Edge, GraphData, GraphLayouts, Utility) {
-    function Graph() {
-        SVGWidget.call(this);
+}(this, function (d3, CanvasWidget, Palette, IGraph, CanvasVertex, CanvasEdge, GraphData, GraphLayouts, Utility) {
+    function GraphC() {
+        CanvasWidget.call(this);
         IGraph.call(this);
 
         this.graphData = new GraphData();
@@ -16,47 +16,89 @@
             opacity: 0.33,
             edge: "1.25px"
         };
-        this.log = [];
         this._selection = new Utility.Selection();
+        this.log = [];
+        this._translate = {x:0,y:0};
+        this._scale = {k:1};
     }
-    Graph.prototype = Object.create(SVGWidget.prototype);
-    Graph.prototype.constructor = Graph;
-    Graph.prototype._class += " graph_Graph";
-    Graph.prototype.implements(IGraph.prototype);
+    GraphC.prototype = Object.create(CanvasWidget.prototype);
+    GraphC.prototype.constructor = GraphC;
+    GraphC.prototype._class += " graph_GraphC";
+    GraphC.prototype.implements(IGraph.prototype);
     
-    Graph.prototype.Vertex = Vertex;
-    Graph.prototype.Edge = Edge;
+    GraphC.prototype.Vertex = CanvasVertex;
+    GraphC.prototype.Edge = CanvasEdge;
 
-    Graph.prototype.publish("allowDragging", true, "boolean", "Allow Dragging of Vertices", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("layout", "Circle", "set", "Default Layout", ["Circle", "ForceDirected", "ForceDirected2", "Hierarchy", "None"], { tags: ["Basic"] });
-    Graph.prototype.publish("scale", "100%", "set", "Zoom Level", ["all", "width", "selection", "100%", "90%", "75%", "50%", "25%", "10%"], { tags: ["Basic"] });
-    Graph.prototype.publish("applyScaleOnLayout", false, "boolean", "Shrink to fit on Layout", null, { tags: ["Basic"] });
-    Graph.prototype.publish("highlightOnMouseOverVertex", false, "boolean", "Highlight Vertex on Mouse Over", null, { tags: ["Basic"] });
-    Graph.prototype.publish("highlightOnMouseOverEdge", false, "boolean", "Highlight Edge on Mouse Over", null, { tags: ["Basic"] });
-    Graph.prototype.publish("transitionDuration", 250, "number", "Transition Duration", null, { tags: ["Intermediate"] });
-    Graph.prototype.publish("showEdges", true, "boolean", "Show Edges", null, { tags: ["Intermediate"] });
-    Graph.prototype.publish("snapToGrid", 0, "number", "Snap to Grid", null, { tags: ["Private"] });
+    GraphC.prototype.publish("allowDragging", true, "boolean", "Allow Dragging of Vertices", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("layout", "Circle", "set", "Default Layout", ["Circle", "ForceDirected", "ForceDirected2", "Hierarchy", "None"], { tags: ["Basic"] });
+    GraphC.prototype.publish("scale", "100%", "set", "Zoom Level", ["all", "width", "selection", "100%", "90%", "75%", "50%", "25%", "10%"], { tags: ["Basic"] });
+    GraphC.prototype.publish("applyScaleOnLayout", false, "boolean", "Shrink to fit on Layout", null, { tags: ["Basic"] });
+    GraphC.prototype.publish("highlightOnMouseOverVertex", false, "boolean", "Highlight Vertex on Mouse Over", null, { tags: ["Basic"] });
+    GraphC.prototype.publish("highlightOnMouseOverEdge", false, "boolean", "Highlight Edge on Mouse Over", null, { tags: ["Basic"] });
+    GraphC.prototype.publish("transitionDuration", 250, "number", "Transition Duration", null, { tags: ["Intermediate"] });
+    GraphC.prototype.publish("showEdges", true, "boolean", "Show Edges", null, { tags: ["Intermediate"] });
+    GraphC.prototype.publish("snapToGrid", 0, "number", "Snap to Grid", null, { tags: ["Private"] });
 
-    Graph.prototype.publish("hierarchyRankDirection", "TB", "set", "Direction for Rank Nodes", ["TB", "BT", "LR", "RL"], { tags: ["Advanced"] });
-    Graph.prototype.publish("hierarchyNodeSeparation", 50, "number", "Number of pixels that separate nodes horizontally in the layout", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("hierarchyEdgeSeparation", 10, "number", "Number of pixels that separate edges horizontally in the layout", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("hierarchyRankSeparation", 50, "number", "Number of pixels between each rank in the layout", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("hierarchyRankDirection", "TB", "set", "Direction for Rank Nodes", ["TB", "BT", "LR", "RL"], { tags: ["Advanced"] });
+    GraphC.prototype.publish("hierarchyNodeSeparation", 50, "number", "Number of pixels that separate nodes horizontally in the layout", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("hierarchyEdgeSeparation", 10, "number", "Number of pixels that separate edges horizontally in the layout", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("hierarchyRankSeparation", 50, "number", "Number of pixels between each rank in the layout", null, { tags: ["Advanced"] });
 
-    Graph.prototype.publish("forceDirectedLinkDistance", 300, "number", "Target distance between linked nodes", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedLinkStrength", 1, "number", "Strength (rigidity) of links", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedFriction", 0.9, "number", "Friction coefficient", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedCharge", -25, "number", "Charge strength ", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedChargeDistance", 10000, "number", "Maximum distance over which charge forces are applied", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedTheta", 0.8, "number", "Barnes–Hut approximation criterion", null, { tags: ["Advanced"] });
-    Graph.prototype.publish("forceDirectedGravity", 0.1, "number", "Gravitational strength", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedLinkDistance", 300, "number", "Target distance between linked nodes", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedLinkStrength", 1, "number", "Strength (rigidity) of links", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedFriction", 0.9, "number", "Friction coefficient", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedCharge", -25, "number", "Charge strength ", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedChargeDistance", 10000, "number", "Maximum distance over which charge forces are applied", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedTheta", 0.8, "number", "Barnes–Hut approximation criterion", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedGravity", 0.1, "number", "Gravitational strength", null, { tags: ["Advanced"] });
 
+    GraphC.prototype.draw = function () {
+        if(this.element().node() === null)return;
+        this.clearCanvas();
+        this.drawLinks();
+        this.drawNodes();
+    }
+    GraphC.prototype.drawNodes = function () {
+        var context = this;
+        this.graphData.nodeValues().forEach(function(n){
+            n.drawSelf(context.ctx,context.element().node());
+        });
+    }
+    GraphC.prototype.drawLinks = function () {
+        var context = this;
+        this.graphData.edgeValues().forEach(function(n){
+            context.ctx.beginPath();
+            context.ctx.strokeStyle = "#777";
+            context.ctx.moveTo(n._sourceVertex.x(),n._sourceVertex.y());
+            context.ctx.lineTo(n._targetVertex.x(),n._targetVertex.y());
+            context.ctx.stroke();
+            context.ctx.closePath();
+        });
+    }
+    GraphC.prototype.clearCanvas = function (_x,_y,_w,_h) {
+        var context = this;
+        if(typeof _x !== "undefined"){
+            context.ctx.clearRect(_x,_y,_w,_h);
+        } else {
+            var _canvas = context.element().node();
+            var x_trans = this._translate.x;
+            var y_trans = this._translate.y;
+            var k_scale = this._scale.k;
+            var w = _canvas.width/k_scale;
+            var h = _canvas.height/k_scale;
+            var x = x_trans;
+            var y = y_trans;
+            //console.log(-x,-y,w,h);
+            context.ctx.clearRect(-x*10,-y*10,w*10,h*10);
+        }
+    }
     //  Properties  ---
-    Graph.prototype.getOffsetPos = function () {
+    GraphC.prototype.getOffsetPos = function () {
         return { x: 0, y: 0 };
     };
 
-    Graph.prototype.size = function (_) {
-        var retVal = SVGWidget.prototype.size.apply(this, arguments);
+    GraphC.prototype.size = function (_) {
+        var retVal = CanvasWidget.prototype.size.apply(this, arguments);
         if (arguments.length && this._svgZoom) {
             this._svgZoom
                 .attr("x", -this._size.width / 2)
@@ -68,12 +110,12 @@
         return retVal;
     };
 
-    Graph.prototype.clear = function () {
+    GraphC.prototype.clear = function () {
         this.data({ vertices: [], edges: [], hierarchy: [], merge: false });
     };
 
-    Graph.prototype.data = function (_) {
-        var retVal = SVGWidget.prototype.data.apply(this, arguments);
+    GraphC.prototype.data = function (_) {
+        var retVal = CanvasWidget.prototype.data.apply(this, arguments);
         if (arguments.length) {
             if (!this.data().merge) {
                 this.graphData = new GraphData();
@@ -105,17 +147,21 @@
                 var dupEdgeCount = ++dupMap[item._sourceVertex._id][item._targetVertex._id];
                 item.arcDepth(16 * dupEdgeCount);
             });
+            if(this.ctx){
+                this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+            }
+            this.draw();
         }
         return retVal;
     };
 
-    Graph.prototype.selection = function (_) {
+    GraphC.prototype.selection = function (_) {
         if (!arguments.length) return this._selection.get();
         this._selection.set(_);
         return this;
     };
 
-    Graph.prototype.setZoom = function (translation, scale, transitionDuration) {
+    GraphC.prototype.setZoom = function (translation, scale, transitionDuration) {
         if (this.zoom) {
             this.zoom.translate(translation);
             this.zoom.scale(scale);
@@ -123,31 +169,36 @@
         }
     };
 
-    Graph.prototype.applyZoom = function (transitionDuration) {
+    GraphC.prototype.applyZoom = function (transitionDuration) {
         if (d3.event && d3.event.sourceEvent && d3.event.sourceEvent.ctrlKey && (d3.event.sourceEvent.type === "wheel" || d3.event.sourceEvent.type === "mousewheel" || d3.event.sourceEvent.type === "DOMMouseScroll")) {
             if (d3.event.sourceEvent.wheelDelta) {
                 this.zoom.translate([this.prevTranslate[0], this.prevTranslate[1] + d3.event.sourceEvent.wheelDelta]);
                 this.zoom.scale(this.prevScale);
             }
         }
-        (transitionDuration ? this.svg.transition().duration(transitionDuration) : this.svg)
-            .attr("transform", "translate(" + this.zoom.translate() + ")scale(" + this.zoom.scale() + ")")
-        ;
+        var _translate = this.zoom.translate();
+        var _scale = this.zoom.scale();
+
         this.log = [];
-        this.log.push(this.zoom.translate()[0] + ' = translate x');
-        this.log.push(this.zoom.translate()[1] + ' = translate y');
-        this.log.push(this.zoom.scale() + ' = scale');
+        this.log.push('translate x = ' + _translate[0]);
+        this.log.push('translate y = ' + _translate[1]);
+        this.log.push('scale = ' + _scale);
+
+        this._translate.x = _translate[0];
+        this._translate.y = _translate[1];
+        this._scale.k = _scale;
+        this.ctx.translate(_translate[0],_translate[1]);
+        this.ctx.scale(_scale,_scale);
+        
         this.prevTranslate = this.zoom.translate();
         if (this.prevScale !== this.zoom.scale()) {
-            this._fixIEMarkers();
             this.prevScale = this.zoom.scale();
         }
-        this.brush.x(d3.scale.identity().domain([(-this.prevTranslate[0] - this._size.width / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[0] + this._size.width / 2) * 1 / this.zoom.scale()]));
-        this.brush.y(d3.scale.identity().domain([(-this.prevTranslate[1] - this._size.height / 2) * 1 / this.zoom.scale(), (-this.prevTranslate[1] + this._size.height / 2) * 1 / this.zoom.scale()]));
+
     };
 
-    Graph.prototype.enter = function (domNode, element) {
-        SVGWidget.prototype.enter.apply(this, arguments);
+    GraphC.prototype.enter = function (domNode, element) {
+        CanvasWidget.prototype.enter.apply(this, arguments);
         var context = this;
 
         //  Zoom  ---
@@ -188,7 +239,7 @@
                     default:
                         break;
                 }
-                context._svgBrush.call(context.brush.clear());
+                //context._svgBrush.call(context.brush.clear());
             })
             .on("zoom", function (d) {
                 switch (context._zoomMode) {
@@ -306,30 +357,16 @@
             .on("dragend", dragend)
             .on("drag", drag)
         ;
-        //  SVG  ---
-        this._svgZoom = element.append("rect")
-            .attr("class", "zoom")
-            .attr("x", -this._size.width / 2)
-            .attr("y", -this._size.height / 2)
+        element
             .attr("width", this._size.width)
             .attr("height", this._size.height)
-        ;
-
-        this.defs = element.append("defs");
-        this.addMarkers();
+            ;
+        this.ctx = domNode.getContext('2d');
 
         element.call(this.zoom);
-
-        this.svg = element.append("g");
-        this._svgBrush = this.svg.append("g").attr("class", "selectionBrush").call(this.brush);
-        this._svgBrush.select(".background").style("cursor", null);
-        context._svgBrush.call(context.brush.clear());
-        this.svgC = this.svg.append("g").attr("id", this._id + "C");
-        this.svgE = this.svg.append("g").attr("id", this._id + "E");
-        this.svgV = this.svg.append("g").attr("id", this._id + "V");
     };
 
-    Graph.prototype.getBounds = function (items, layoutEngine) {
+    GraphC.prototype.getBounds = function (items, layoutEngine) {
         var vBounds = [[null, null], [null, null]];
         items.forEach(function (item) {
             var pos = layoutEngine ? layoutEngine.nodePos(item._id) : { x: item.x(), y: item.y(), width: item.width(), height: item.height() };
@@ -355,15 +392,15 @@
         return vBounds;
     };
 
-    Graph.prototype.getVertexBounds = function (layoutEngine) {
+    GraphC.prototype.getVertexBounds = function (layoutEngine) {
         return this.getBounds(this.graphData.nodeValues(), layoutEngine);
     };
 
-    Graph.prototype.getSelectionBounds = function (layoutEngine) {
+    GraphC.prototype.getSelectionBounds = function (layoutEngine) {
         return this.getBounds(this._selection.get(), layoutEngine);
     };
 
-    Graph.prototype.shrinkToFit = function (bounds, transitionDuration) {
+    GraphC.prototype.shrinkToFit = function (bounds, transitionDuration) {
         var width = this.width();
         var height = this.height();
 
@@ -379,16 +416,16 @@
         this.setZoom(translate, scale, transitionDuration);
     };
 
-    Graph.prototype._origScale = Graph.prototype.scale;
-    Graph.prototype.scale = function (_, transitionDuration) {
-        var retVal = Graph.prototype._origScale.apply(this, arguments);
+    GraphC.prototype._origScale = GraphC.prototype.scale;
+    GraphC.prototype.scale = function (_, transitionDuration) {
+        var retVal = GraphC.prototype._origScale.apply(this, arguments);
         if (arguments.length) {
             this.zoomTo(_, transitionDuration);
         }
         return retVal;
     };
 
-    Graph.prototype.zoomTo = function (level, transitionDuration) {
+    GraphC.prototype.zoomTo = function (level, transitionDuration) {
         switch (level) {
             case "all":
                 this.shrinkToFit(this.getVertexBounds(), transitionDuration);
@@ -413,16 +450,16 @@
         }
     };
 
-    Graph.prototype.centerOn = function (bounds, transitionDuration) {
+    GraphC.prototype.centerOn = function (bounds, transitionDuration) {
         var x = (bounds[0][0] + bounds[1][0]) / 2,
             y = (bounds[0][1] + bounds[1][1]) / 2;
         var translate = [x, y];
         this.setZoom(translate, 1, transitionDuration);
     };
 
-    Graph.prototype._origLayout = Graph.prototype.layout;
-    Graph.prototype.layout = function (_, transitionDuration) {
-        var retVal = Graph.prototype._origLayout.apply(this, arguments);
+    GraphC.prototype._origLayout = GraphC.prototype.layout;
+    GraphC.prototype.layout = function (_, transitionDuration) {
+        var retVal = GraphC.prototype._origLayout.apply(this, arguments);
         if (arguments.length) {
             if (this._renderCount) {
                 if (this.forceLayout) {
@@ -461,6 +498,7 @@
                             var vBounds = context.getVertexBounds(layoutEngine);
                             context.shrinkToFit(vBounds);
                         }
+                        context.draw();
                     });
                     this.forceLayout.force.start();
                 } else if (layoutEngine) {
@@ -488,7 +526,6 @@
                         var vBounds = context.getVertexBounds(layoutEngine);
                         context.shrinkToFit(vBounds, transitionDuration);
                     }
-                    this._fixIEMarkers();
                     setTimeout(function () {
                         context._dragging = false;
                     }, transitionDuration ? transitionDuration + 50 : 50);  //  Prevents highlighting during morph  ---
@@ -499,174 +536,25 @@
     };
 
     //  Render  ---
-    Graph.prototype.update = function (domNode, element) {
-        SVGWidget.prototype.update.apply(this, arguments);
+    GraphC.prototype.update = function (domNode, element) {
+        CanvasWidget.prototype.update.apply(this, arguments);
+        console.log('CANVAS (before)',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
         var context = this;
-        console.log('SVG',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
-        //  Create  ---
-        var vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
-        vertexElements.enter().append("g")
-            .attr("class", "graphVertex")
-            .style("opacity", 1e-6)
-             //  TODO:  Events need to be optional  ---
-            .on("click.selectionBag", function (d) {
-                context._selection.click(d, d3.event);
-            })
-            .on("click", function (d) {
-                var vertexElement = d3.select(this).select(".graph_Vertex");
-                var selected = false;
-                if (!vertexElement.empty()) {
-                    selected = vertexElement.classed("selected");
-                }
-                context.vertex_click(context.rowToObj(d.data()), "", selected, {
-                    vertex:  d
-                });
-            })
-            .on("dblclick", function (d) {
-                var vertexElement = d3.select(this).select(".graph_Vertex");
-                var selected = false;
-                if (!vertexElement.empty()) {
-                    selected = vertexElement.classed("selected");
-                }
-                context.vertex_dblclick(context.rowToObj(d.data()), "", selected, {
-                    vertex:  d
-                });
-            })
-            .on("mouseover", function (d) {
-                if (context._dragging)
-                    return;
-                context.vertex_mouseover(d3.select(this), d);
-            })
-            .on("mouseout", function (d) {
-                if (context._dragging)
-                    return;
-                context.vertex_mouseout(d3.select(this), d);
-            })
-            .each(createV)
-            .transition()
-            .duration(750)
-            .style("opacity", 1)
-        ;
-        function createV(d) {
-            d
-                .target(this)
-                .render()
-            ;
-            d.element()
-                .call(context.drag)
-            ;
-            if (d.dispatch) {
-                d.dispatch.on("sizestart", function (d, loc) {
-                    d.allowResize(context.allowDragging());
-                    if (context.allowDragging()) {
-                        context._dragging = true;
-                    }
-                });
-                d.dispatch.on("size", function (d, loc) {
-                    context.refreshIncidentEdges(d, false);
-                });
-                d.dispatch.on("sizeend", function (d, loc) {
-                    context._dragging = false;
-                    if (context.snapToGrid()) {
-                        var snapLoc = d.calcSnap(context.snapToGrid());
-                        d
-                            .pos(snapLoc[0])
-                            .size(snapLoc[1])
-                            .render()
-                        ;
-                        context.refreshIncidentEdges(d, false);
-                    }
-                });
-            }
-        }
-
-        var edgeElements = this.svgE.selectAll("#" + this._id + "E > .graphEdge").data(this.showEdges() ? this.graphData.edgeValues() : [], function (d) { return d.id(); });
-        edgeElements.enter().append("g")
-            .attr("class", "graphEdge")
-            .style("opacity", 1e-6)
-            .on("click.selectionBag", function (d) {
-                context._selection.click(d, d3.event);
-            })
-            .on("click", function (d) {
-                var edgeElement = d3.select(this).select(".graph_Edge");
-                var selected = false;
-                if (!edgeElement.empty()) {
-                    selected = edgeElement.classed("selected");
-                }
-                context.edge_click(context.rowToObj(d.data()), "", selected, {
-                    edge: d
-                });
-            })
-            .on("dblclick", function (d) {
-                var edgeElement = d3.select(this).select(".graph_Edge");
-                var selected = false;
-                if (!edgeElement.empty()) {
-                    selected = edgeElement.classed("selected");
-                }
-                context.edge_dblclick(context.rowToObj(d.data()), "", selected, {
-                    edge: d
-                });
-            })
-            .on("mouseover", function (d) {
-                if (context._dragging)
-                    return;
-                context.edge_mouseover(d3.select(this), d);
-            })
-            .on("mouseout", function (d) {
-                if (context._dragging)
-                    return;
-                context.edge_mouseout(d3.select(this), d);
-            })
-            .each(createE)
-            .transition()
-            .duration(750)
-            .style("opacity", 1)
-        ;
-        function createE(d) {
-            d
-                .target(this)
-                .render()
-            ;
-        }
-
-        //  Update  ---
-        vertexElements
-            .each(updateV)
-        ;
-        function updateV(d) {
-            d
-                .render()
-            ;
-        }
-
-        edgeElements
-            .each(updateE)
-        ;
-        function updateE(d) {
-            d
-                .render()
-            ;
-        }
-
-        //  Exit  ---
-        vertexElements.exit()
-            .each(function (d) { d.target(null); })
-            .remove()
-        ;
-        edgeElements.exit()
-            .each(function (d) { d.target(null); })
-            .remove()
-        ;
 
         if (!this._renderCount) {
             this._renderCount++;
-            this.setZoom([0, 0], 1);
+            this.setZoom([this._size.width/2, this._size.height/2], 1);
             this.layout(this.layout());
         }
+        this.clearCanvas();
+        this.drawLinks();
+        this.drawNodes();
+        
+        console.log('CANVAS (after)',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
     };
 
     //  Methods  ---
-    Graph.prototype.getLayoutEngine = function () {
+    GraphC.prototype.getLayoutEngine = function () {
         switch (this.layout()) {
             case "Circle":
                 return new GraphLayouts.Circle(this.graphData, this._size.width, this._size.height);
@@ -702,7 +590,7 @@
         return null;//new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
     };
 
-    Graph.prototype.getNeighborMap = function (vertex) {
+    GraphC.prototype.getNeighborMap = function (vertex) {
         var vertices = {};
         var edges = {};
 
@@ -726,7 +614,7 @@
         };
     };
 
-    Graph.prototype.highlightVerticies = function (vertexMap) {
+    GraphC.prototype.highlightVerticies = function (vertexMap) {
         var context = this;
         var vertexElements = this.svgV.selectAll(".graphVertex");
         vertexElements
@@ -749,7 +637,7 @@
         return this;
     };
 
-    Graph.prototype.highlightEdges = function (edgeMap) {
+    GraphC.prototype.highlightEdges = function (edgeMap) {
         var context = this;
         var edgeElements = this.svgE.selectAll(".graphEdge");
         edgeElements
@@ -770,7 +658,7 @@
         return this;
     };
 
-    Graph.prototype.highlightVertex = function (element, d) {
+    GraphC.prototype.highlightVertex = function (element, d) {
         if (this.highlightOnMouseOverVertex()) {
             if (d) {
                 var highlight = this.getNeighborMap(d);
@@ -784,7 +672,7 @@
         }
     };
 
-    Graph.prototype.highlightEdge = function (element, d) {
+    GraphC.prototype.highlightEdge = function (element, d) {
         if (this.highlightOnMouseOverEdge()) {
             if (d) {
                 var vertices = {};
@@ -801,7 +689,7 @@
         }
     };
 
-    Graph.prototype.refreshIncidentEdges = function (d, skipPushMarkers) {
+    GraphC.prototype.refreshIncidentEdges = function (d, skipPushMarkers) {
         var context = this;
         this.graphData.nodeEdges(d.id()).forEach(function (id) {
             var edge = context.graphData.edge(id);
@@ -812,97 +700,34 @@
     };
 
     //  Events  ---
-    Graph.prototype.graph_selection = function (selection) {
+    GraphC.prototype.graph_selection = function (selection) {
     };
 
-    Graph.prototype.vertex_click = function (row, col, sel, more) {
+    GraphC.prototype.vertex_click = function (row, col, sel, more) {
         if (more && more.vertex) {
             more.vertex._parentElement.node().parentNode.appendChild(more.vertex._parentElement.node());
         }
         IGraph.prototype.vertex_click.apply(this, arguments);
     };
 
-    Graph.prototype.vertex_dblclick = function (row, col, sel, more) {
+    GraphC.prototype.vertex_dblclick = function (row, col, sel, more) {
     };
 
-    Graph.prototype.vertex_mouseover = function (element, d) {
+    GraphC.prototype.vertex_mouseover = function (element, d) {
         this.highlightVertex(element, d);
     };
 
-    Graph.prototype.vertex_mouseout = function (d, self) {
+    GraphC.prototype.vertex_mouseout = function (d, self) {
         this.highlightVertex(null, null);
     };
 
-    Graph.prototype.edge_mouseover = function (element, d) {
+    GraphC.prototype.edge_mouseover = function (element, d) {
         this.highlightEdge(element, d);
     };
 
-    Graph.prototype.edge_mouseout = function (d, self) {
+    GraphC.prototype.edge_mouseout = function (d, self) {
         this.highlightEdge(null, null);
     };
 
-    Graph.prototype.addMarkers = function (clearFirst) {
-        if (clearFirst) {
-            this.defs.select("#" + this._id + "_arrowHead").remove();
-            this.defs.select("#" + this._id + "_circleFoot").remove();
-            this.defs.select("#" + this._id + "_circleHead").remove();
-            this.defs.select("#" + this._id + "_glow").remove();
-        }
-        this.defs.append("marker")
-            .attr("class", "marker")
-            .attr("id", this._id + "_arrowHead")
-            .attr("viewBox", "0 0 10 10")
-            .attr("refX", 10)
-            .attr("refY", 5)
-            .attr("markerWidth", 8)
-            .attr("markerHeight", 8)
-            .attr("markerUnits", "strokeWidth")
-            .attr("orient", "auto")
-            .append("polyline")
-                .attr("points", "0,0 10,5 0,10 1,5")
-        ;
-        this.defs.append("marker")
-            .attr("class", "marker")
-            .attr("id",  this._id + "_circleFoot")
-            .attr("viewBox", "0 0 10 10")
-            .attr("refX", 1)
-            .attr("refY", 5)
-            .attr("markerWidth", 7)
-            .attr("markerHeight", 7)
-            .attr("markerUnits", "strokeWidth")
-            .attr("orient", "auto")
-            .append("circle")
-                .attr("cx", 5)
-                .attr("cy", 5)
-                .attr("r", 4)
-        ;
-        this.defs.append("marker")
-            .attr("class", "marker")
-            .attr("id", this._id + "_circleHead")
-            .attr("viewBox", "0 0 10 10")
-            .attr("refX", 9)
-            .attr("refY", 5)
-            .attr("markerWidth", 7)
-            .attr("markerHeight", 7)
-            .attr("markerUnits", "strokeWidth")
-            .attr("orient", "auto")
-            .append("circle")
-                .attr("cx", 5)
-                .attr("cy", 5)
-                .attr("r", 4)
-            ;
-        this.defs.append("filter")
-            .attr("id", this._id + "_glow")
-            .attr("width", "130%")
-            .attr("height", "130%")    
-            .html(
-                '<feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"></feOffset>' +
-                '<feColorMatrix result="matrixOut" in="offOut" type="matrix" values="0.2 0 0 0 0 0 0.2 0 0 1 0 0 0.2 0 0 0 0 0 1 0" />' +
-                '<feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="3"></feGaussianBlur>' +
-                '<feBlend in="SourceGraphic" in2="blurOut" mode="normal"></feBlend>'
-            )
-            ;
-    };
-
-    return Graph;
+    return GraphC;
 }));

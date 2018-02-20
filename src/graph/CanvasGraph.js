@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3v4", "../common/CanvasWidget", "./CanvasGraphLayouts", "../common/Palette", "./Vertex", "./Edge"], factory);
+        define(["d3", "../common/CanvasWidget", "./GraphLayouts", "../common/Palette", "./Vertex", "./Edge"], factory);
     } else {
-        root.graph_CanvasGraph = factory(root.d3v4, root.common_CanvasWidget, root.graph_CanvasGraphLayouts, root.common_Palette, root.graph_Vertex, root.graph_Edge);
+        root.graph_CanvasGraph = factory(root.d3, root.common_CanvasWidget, root.graph_GraphLayouts, root.common_Palette, root.graph_Vertex, root.graph_Edge);
     }
-}(this, function (d3v4, CanvasWidget, CanvasGraphLayouts, Palette, Vertex, Edge) {
+}(this, function (d3, CanvasWidget, GraphLayouts, Palette, Vertex, Edge) {
     function CanvasGraph() {
         this._fixed_positions = {};
         this._cached_text_measurements = {};
@@ -41,11 +41,6 @@
     CanvasGraph.prototype.publish("showEdges", true, "boolean", "Show Edges", null, { tags: ["Intermediate"] });
     CanvasGraph.prototype.publish("snapToGrid", 0, "number", "Snap to Grid", null, { tags: ["Private"] });
 
-    //    CanvasGraph.prototype.publish("hierarchyRankDirection", "TB", "set", "Direction for Rank Nodes", ["TB", "BT", "LR", "RL"], { tags: ["Advanced"] });
-    //    CanvasGraph.prototype.publish("hierarchyNodeSeparation", 50, "number", "Number of pixels that separate nodes horizontally in the layout", null, { tags: ["Advanced"] });
-    //    CanvasGraph.prototype.publish("hierarchyEdgeSeparation", 10, "number", "Number of pixels that separate edges horizontally in the layout", null, { tags: ["Advanced"] });
-    //    CanvasGraph.prototype.publish("hierarchyRankSeparation", 50, "number", "Number of pixels between each rank in the layout", null, { tags: ["Advanced"] });
-
     CanvasGraph.prototype.publish("forceDirectedLinkDistance", 300, "number", "Target distance between linked nodes", null, { tags: ["Advanced"] });
     CanvasGraph.prototype.publish("forceDirectedLinkStrength", 1, "number", "Strength (rigidity) of links", null, { tags: ["Advanced"] });
     CanvasGraph.prototype.publish("forceDirectedFriction", 0.9, "number", "Friction coefficient", null, { tags: ["Advanced"] });
@@ -66,7 +61,7 @@
     CanvasGraph.prototype.publish("geocache_grid_row_count", 10, "number", "geocache_grid_row_count", null, { tags: ["Basic"] });
 
     /* LAYOUT params */
-    CanvasGraph.prototype.publish("layout", "Hierarchy", "set", "layout", Object.keys(CanvasGraphLayouts.layouts), { tags: ["Basic"] });
+    CanvasGraph.prototype.publish("layout", "Hierarchy", "set", "layout", Object.keys(GraphLayouts), { tags: ["Basic"] });
     CanvasGraph.prototype.publish("charge_max_distance", null, "number", "charge_max_distance", null, { tags: ["Basic"] });
     CanvasGraph.prototype.publish("charge_min_distance", null, "number", "charge_min_distance", null, { tags: ["Basic"] });
     CanvasGraph.prototype.publish("xy_force", [], "array", "xy_force", null, { tags: ["Basic"] });
@@ -371,15 +366,10 @@
         }
         this.data().links = links;
     };
-    //    var requirejs_load = requirejs.load;
-    //    requirejs.load = function (context, moduleId, url) {
-    //        window.location.origin + 
-    //        return load(context, moduleId, url);
-    //    };
 
     CanvasGraph.prototype.enter = function (domNode, element) {
         CanvasWidget.prototype.enter.apply(this, arguments);
-
+        var context = this;
         if (!this.data() || (this.data() instanceof Array && !this.data().length)) {
             this.data({ nodes: [], links: [] });
         }
@@ -389,8 +379,27 @@
         }
 
         this.fix_undefined_data_issue();
-        this.resize(this._size);
         this.canvas = domNode;
+        this.ctx = this.canvas.getContext('2d');
+        this.transform = {
+            "x": 0,
+            "y": 0,
+            "k": 1,
+            "invertX": function(x){
+                return (x - context.transform.x) / context.transform.k;
+            },
+            "invertY": function(y){
+                return (y - context.transform.y) / context.transform.k;
+            },
+            "applyX": function(x) {
+                return x * context.transform.k + context.transform.x;
+            },
+            "applyY": function(y) {
+                return y * context.transform.k + context.transform.y;
+            }
+        };
+        this.selection_rect = {};
+        this.resize(this._size);
 
         this.init_linkanalysis();
         this.init_linkanalysis_interactions();
@@ -451,10 +460,7 @@
         if (this.data().info) {
             this.data().info.layout_applied = false;
         }
-        this.simulation.stop();
-        this.simulation = d3v4.forceSimulation(this.simulation.nodes());
         this.apply_layout();
-        this.simulation.alpha(1).restart();
     }
 
     CanvasGraph.prototype.get_type_config = function (path, type) {
@@ -484,8 +490,7 @@
         if (!this.data().nodes || this.data().nodes.length === 0) return;
         _duration = _duration ? _duration : 0;
         if (!this.canvas) return;
-        var _zoom_by_force = CanvasGraphLayouts.layouts[this.layout()].zoom_by_force;
-        var edge_points = this.find_xy_edges(this.data().nodes, _zoom_by_force);
+        var edge_points = this.find_xy_edges(this.data().nodes);
         var axis_overlaps = this.find_axis_overlaps(edge_points);
 
         var overlap_x_is_larger = axis_overlaps.overlap_x > axis_overlaps.overlap_y;
@@ -519,50 +524,19 @@
         var _k = !isNaN(zi.k) && !this.disable_zoom() ? zi.k : 1;
         var _x = !this.disable_translate() ? zi.x : this.canvas.width / 2;
         var _y = !this.disable_translate() ? zi.y : this.canvas.height / 2;
-        this.x_transform = _x;
-        this.y_transform = _y;
-        this.k_transform = _k;
-        //        if (duration === 0) {
-        //            this.transform.x = _x;
-        //            this.transform.y = _y;
-        //            this.transform.k = _k;
-        //            this.draw();
-        //        } else {
-        var context = this;
-        d3v4.select(context.canvas).transition().duration(duration)
-            .call(
-            context.zoom.transform,
-            d3v4.zoomIdentity.translate(_x, _y).scale(_k)
-            //                    d3v4.zoomIdentity.translate(_x - this.transform.x,_y - this.transform.y).scale(_k)
-            )
-            .on("end", function () {
-                context.draw();
-            })
-            ;
-        //        }
+        this.x_transform = isNaN(_x) ? 0 : _x;
+        this.y_transform = isNaN(_y) ? 0 : _y;
+        this.k_transform = isNaN(_k) ? 1 : _k;
+        this.transform.x = isNaN(_x) ? 0 : _x;
+        this.transform.y = isNaN(_y) ? 0 : _y;
+        this.transform.k = isNaN(_k) ? 1 : _k;
     }
 
-    CanvasGraph.prototype.find_xy_edges = function (nodes, zoom_by_force) {
+    CanvasGraph.prototype.find_xy_edges = function (nodes) {
 
         var min_x, min_y, max_x, max_y;
         nodes.forEach(function (d) {
             if (!d.is_hidden) {
-                //                var _x = zoom_by_force ? d.force_x : d.x;
-                //                var _y = zoom_by_force ? d.force_y : d.y;
-                //                if(typeof(d.fx) !== "undefined")_x = d.fx;
-                //                if(typeof(d.fy) !== "undefined")_y = d.fy;
-                //                if (min_x > _x || typeof(min_x) === "undefined")
-                //                    min_x = _x;
-                //                if (min_y > _y || typeof(min_y) === "undefined")
-                //                    min_y = _y;
-                //                if (max_x < _x || typeof(max_x) === "undefined")
-                //                    max_x = _x;
-                //                if (max_y < _y || typeof(max_y) === "undefined")
-                //                    max_y = _y;
-                //                var _x = zoom_by_force ? d.force_x : d.x;
-                //                var _y = zoom_by_force ? d.force_y : d.y;
-                //                if(typeof(d.fx) !== "undefined")_x = d.fx;
-                //                if(typeof(d.fy) !== "undefined")_y = d.fy;
                 if (min_x > d.left_edge || typeof (min_x) === "undefined")
                     min_x = d.left_edge;
                 if (min_y > d.top_edge || typeof (min_y) === "undefined")
@@ -597,17 +571,13 @@
 
     CanvasGraph.prototype.draw = function () {
         this.draw_count++;
-        if (!this.simulation) return;
-        this._needs_redraw = this.simulation.alpha() > 0.001;
         this.ctx.save();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.translate(this.transform.x, this.transform.y);
+        this.ctx.scale(this.transform.k, this.transform.k);
+
         if (this.selection_rect.is_showing) {
-            this.ctx.translate(this.transform.x, this.transform.y);
-            this.ctx.scale(this.transform.k, this.transform.k);
             this.show_selection_rect();
-        } else {
-            this.ctx.translate(this.transform.x, this.transform.y);
-            this.ctx.scale(this.transform.k, this.transform.k);
         }
 
         if (typeof this.data().info !== "undefined") this.data().info.nothing_is_moving = true;
@@ -849,38 +819,17 @@
 
     CanvasGraph.prototype.apply_layout = function () {
         this.data().info.layout_applied = true;
-        if (typeof (CanvasGraphLayouts.layouts[this.layout()]) !== "undefined") {
-            var layout_obj = CanvasGraphLayouts.layouts[this.layout()];
-            if (!layout_obj.zoom_by_force) {
-                this.clear_fixed_positions(this.data());
-            }
-            this.extra_log = [
-                "Layout: " + this.layout(),
-                "xy strength: " + (typeof layout_obj.xy.strength === "function" ? "func" : layout_obj.xy.strength),
-                "link strength: " + (typeof layout_obj.link.strength === "function" ? "func" : layout_obj.link.strength),
-                "charge strength: " + (typeof layout_obj.manyBodyForce.strength === "function" ? "func" : layout_obj.manyBodyForce.strength),
-            ];
-            this.layout_pre_init(layout_obj);
-            if (typeof layout_obj.pre_init !== "undefined") layout_obj.pre_init.call(this, this.data());
-            if (typeof layout_obj.init !== "undefined") layout_obj.init.call(this, this.data());
-            if (typeof layout_obj.post_init !== "undefined") layout_obj.post_init.call(this, this.data());
-            this.layout_post_init(layout_obj);
-            if (layout_obj.zoom_by_force) {
-                this.simulation.nodes().forEach(function (n) {
-                    n.fx = n.force_x;
-                    n.fy = n.force_y;
-                })
-            }
-            if (!this._manually_zoomed) {
-                this.zoom_to_fit.call(this, 0);
-            }
+        var _layout = this.layout();
+        switch(_layout){
+            case 'Hierarchy':
+                this.data().nodes.forEach(function(n){
+                    n.x = 100;
+                    n.y = 100;
+                });
+                break;
         }
     }
     CanvasGraph.prototype.layout_pre_init = function (layout_obj) {
-        //        this.simulation.alphaDecay(0.001);
-        this.simulation.velocityDecay(0.01);
-        this.simulation.alphaDecay(layout_obj.decay.alpha);
-        this.simulation.velocityDecay(layout_obj.decay.velocity);
 
         this.set_link_forces(layout_obj);
         this.set_charge_forces(layout_obj);
@@ -901,9 +850,6 @@
             }, this);
             if (_force_obj) layout_obj.link = _force_obj['obj'];
         }
-        this.simulation.force("link", null);
-        this.linkForce.distance(layout_obj.link.distance).strength(layout_obj.link.strength);
-        this.simulation.force("link", this.linkForce);
     }
     CanvasGraph.prototype.set_charge_forces = function (layout_obj) {
         if (this.manybody_force().length > 0) {
@@ -915,13 +861,10 @@
             }
         }
         if (this.charge_max_distance() || this.charge_min_distance()) {
-            this.manyBodyForce = d3v4.forceManyBody();
+            this.manyBodyForce = d3.forceManyBody();
             if (this.charge_max_distance()) this.manyBodyForce.distanceMax(this.charge_max_distance());
             if (this.charge_min_distance()) this.manyBodyForce.distanceMin(this.charge_min_distance());
         }
-        this.simulation.force("charge", null);
-        this.manyBodyForce.strength(layout_obj.manyBodyForce.strength);
-        this.simulation.force("charge", this.manyBodyForce);
     }
     CanvasGraph.prototype.set_xy_forces = function (layout_obj) {
         if (this.xy_force().length > 0) {
@@ -930,16 +873,6 @@
             }, this);
             if (_force_obj) layout_obj.xy = _force_obj['obj'];
         }
-        this.simulation.force("x", null);
-        this.simulation.force("y", null);
-        delete this.forceX;
-        delete this.forceY;
-        this.forceX = d3v4.forceX();
-        this.forceY = d3v4.forceY();
-        this.forceX.x(layout_obj.xy.x).strength(layout_obj.xy.strength);
-        this.forceY.y(layout_obj.xy.y).strength(layout_obj.xy.strength);
-        this.simulation.force("x", this.forceX);
-        this.simulation.force("y", this.forceY);
     }
     CanvasGraph.prototype.resize = function () {
         var retVal = CanvasWidget.prototype.resize.apply(this, arguments);
@@ -1074,18 +1007,6 @@
                 node.group_y = group_xy[group_id].y;
             })
         }
-
-        //        var arr = [
-        //            {"name":"A","parent_arr":[],"child_arr":[1,2,3]},   //0
-        //            {"name":"B","parent_arr":[0],"child_arr":[]},       //1
-        //            {"name":"C","parent_arr":[0],"child_arr":[]},       //2
-        //            {"name":"D","parent_arr":[0],"child_arr":[]},       //3
-        //            {"name":"E","parent_arr":[1,2],"child_arr":[5]},    //4
-        //            {"name":"F","parent_arr":[4],"child_arr":[]},        //5
-        //            {"name":"G","parent_arr":[],"child_arr":[]},        //6
-        //            {"name":"H","parent_arr":[],"child_arr":[8]},        //7
-        //            {"name":"I","parent_arr":[7],"child_arr":[]},        //8
-        //        ];
         return data;
         function assign_group_id(node) {
             if (typeof node.group_id !== "undefined") return true;
@@ -1104,17 +1025,14 @@
             });
         }
         function get_group_id(_node_obj) {
-            //data.info.nodes_by_unique_identifier[data.nodes[6].parent_arr[0]]
             var ret = false;
             ret = _node_obj.group_id;
             if (ret) return ret;
             ret = get_group_id_by_arr(_node_obj.child_arr);
             if (ret) return ret;
-            //            ret = get_group_id_by_arr(_node_obj.parent_arr);
             return ret;
         }
         function get_group_id_by_arr(uid_arr) {
-            //__g.data().info.nodes_by_unique_identifier[__g.data().nodes[6].parent_arr[0]]
             var ret = false;
             uid_arr.forEach(function (_uid) {
                 ret = get_group_id(data.info.nodes_by_unique_identifier[_uid]);
@@ -1162,15 +1080,12 @@
 
     CanvasGraph.prototype.init_linkanalysis = function () {
         var context = this;
-        this.ctx = this.canvas.getContext("2d");
-        this.transform = d3v4.zoomIdentity;
-        this.selection_rect = {};
 
         var _rect = this.canvas.getBoundingClientRect();
         this.canvas.height = _rect.height;
         this.canvas.width = _rect.width;
 
-        d3v4.select(this.canvas).on("mousemove", function () {
+        d3.select(this.canvas).on("mousemove", function () {
             context._needs_redraw = true;
             context.canvas_mousemove.call(context);
         });
@@ -1178,44 +1093,9 @@
         this.transform.y = this.canvas.height / 2;
 
         this.data(this.format_data(this.data()));
-        this.simulation = d3v4.forceSimulation(this.data().nodes)
-            .alphaDecay(this.alphaDecay())
-            ;
-        this.linkForce = d3v4.forceLink(this.data().links)
-            //            .strength(function () {
-            //                return 0.001;
-            //            })
-            ;
-        this.manyBodyForce = d3v4.forceManyBody();
-        this.forceX = d3v4.forceX().x(function (n) {
-            return n.force_x ? n.force_x : 0;
-        });
-        this.forceY = d3v4.forceY().y(function (n) {
-            return n.force_y ? n.force_y : 0;
-        });
-        this.voronoi = d3v4.voronoi()
-            .x(function (d) {
-                return d.x;
-            })
-            .y(function (d) {
-                return d.y;
-            })
-            .extent([
-                [
-                    -1 * (this.canvas.width / 2),
-                    -1 * (this.canvas.height / 2)
-                ],
-                [
-                    (this.canvas.width / 2),
-                    (this.canvas.height / 2)
-                ]
-            ]);
         var context = this;
-        this.simulation
-            .force("charge", this.manyBodyForce)
-            .force("link", this.linkForce)
-            .force("x", this.forceX)
-            .force("y", this.forceY)
+        d3.layout.force().nodes(context.data().nodes).links(context.data().links)
+            .size([300, 300]).charge(-300).distance(80)
             .on("tick", function () {
                 if (typeof context.data().info === "undefined") {
                     context.data(context.format_data(context.data()));
@@ -1453,6 +1333,7 @@
         }
     }
     CanvasGraph.prototype.drawNode = function (d, i) {
+        console.log('called drawNode');
         var context = this;
         var _w = this.width();
         var _h = this.height();
@@ -1547,6 +1428,7 @@
         }
 
         function _update_edges() {
+            
             d.poly.forEach(function (points_arr) {
                 points_arr.forEach(function (point) {
                     if (point[0] < d.left_edge)
@@ -1574,20 +1456,19 @@
             function drawNodeIconText() {
                 context.ctx.strokeStyle = context.icon_stroke(d);
                 context.ctx.fillStyle = context.icon_fill(d);
-
+                console.log(d.x,_w);
                 var _x1 = d.x - (_w / 2) - 20;
                 var _y1 = d.y - (_h / 2);
                 context.ctx.rect(_x1, _y1, _w, _h);
                 //this.ctx.fillStyle = "#333";
                 if (context.icon_font() === "FontAwesome") {
+                    // console.log(_icon_txt, d.x - (d._icon_size.width / 2), d.y + (_icon_h / 2) - (_p / 2) - (_icon_h * 0.1));
                     context.ctx.fillText(_icon_txt, d.x - (d._icon_size.width / 2), d.y + (_icon_h / 2) - (_p / 2) - (_icon_h * 0.1));
                 } else {
                     context.ctx.fillText(_icon_txt, d.x - (d._icon_size.width / 2), d.y + (_icon_h / 2) - (_p / 2));
                 }
             }
             function drawNodeIconBackground() {
-                //                context.ctx.strokeStyle = typeof (context.default_container_stroke()) === "function" ? context.default_container_stroke(d) : context.default_container_stroke();
-                //                context.ctx.fillStyle = typeof (context.default_container_fill()) === "function" ? context.default_container_fill(d) : context.default_container_fill();
                 context.ctx.strokeStyle = context.container_stroke(d);
                 context.ctx.fillStyle = context.container_fill(d);
                 var _x1 = d.x - (_w / 2);
@@ -1616,9 +1497,7 @@
                 } else {
                     context.ctx.rect(_x1, _y1, _w, _h);
                 }
-                //context.ctx.fillStyle = "#fff";
                 context.ctx.fill();
-                //context.ctx.strokeStyle = "#333";
                 context.ctx.stroke();
                 context.ctx.closePath();
             }
@@ -1914,38 +1793,71 @@
             poly.push(point);
         }
     }
+    CanvasGraph.prototype.getLayoutEngine = function () {
+        switch (this.layout()) {
+            case "Circle":
+                return new GraphLayouts.Circle(this.graphData, this._size.width, this._size.height);
+            case "ForceDirected":
+                return new GraphLayouts.ForceDirected(this.graphData, this._size.width, this._size.height, {
+                    oneShot: true,
+                    linkDistance: this.forceDirectedLinkDistance(),
+                    linkStrength: this.forceDirectedLinkStrength(),
+                    friction: this.forceDirectedFriction(),
+                    charge: this.forceDirectedCharge(),
+                    chargeDistance: this.forceDirectedChargeDistance(),
+                    theta: this.forceDirectedTheta(),
+                    gravity: this.forceDirectedGravity()
+                });
+            case "ForceDirected2":
+                return new GraphLayouts.ForceDirected(this.graphData, this._size.width, this._size.height, {
+                    linkDistance: this.forceDirectedLinkDistance(),
+                    linkStrength: this.forceDirectedLinkStrength(),
+                    friction: this.forceDirectedFriction(),
+                    charge: this.forceDirectedCharge(),
+                    chargeDistance: this.forceDirectedChargeDistance(),
+                    theta: this.forceDirectedTheta(),
+                    gravity: this.forceDirectedGravity()
+                });
+            case "Hierarchy":
+                return new GraphLayouts.Hierarchy(this.graphData, this._size.width, this._size.height, {
+                    rankdir: this.hierarchyRankDirection(),
+                    nodesep: this.hierarchyNodeSeparation(),
+                    edgesep: this.hierarchyEdgeSeparation(),
+                    ranksep: this.hierarchyRankSeparation()
+                });
+        }
+        return null;//new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
+    };
     CanvasGraph.prototype.init_linkanalysis_interactions = function () {
         var context = this;
-        this.zoom = d3v4.zoom()
-            .on("start", function () {
+        this.zoom = d3.behavior.zoom()
+            .on("zoomstart", function () {
                 context.zoomstart.apply(this, arguments);
             })
             .on("zoom", function () {
                 context.zoomtick.apply(this, arguments);
             })
-            .on("end", function () {
+            .on("zoomend", function () {
                 context.zoomend.apply(this, arguments);
             })
             ;
-        d3v4.select(this.canvas)
+        d3.select(this.canvas)
             .call(
-            d3v4.drag()
-                .subject(function () {
-                    return context.dragsubject.apply(context, arguments);
-                })
-                .on("start", function () {
+            d3.behavior.drag()
+                .on("dragstart", function () {
+                    context.dragsubjects = context.dragsubject();
                     context.dragstarted.apply(this, arguments);
                 })
                 .on("drag", function () {
                     context.dragtick.apply(this, arguments);
                 })
-                .on("end", function () {
+                .on("dragend", function () {
                     context.dragended.apply(this, arguments);
                 })
             )
             .call(this.zoom)
             .on("click", function () {
-                var clicked_node = context.get_clicked_node.call(context, context.transform.invertX(d3v4.event.offsetX), context.transform.invertY(d3v4.event.offsetY));
+                var clicked_node = context.get_clicked_node.call(context, context.transform.invertX(d3.event.offsetX), context.transform.invertY(d3.event.offsetY));
                 if (clicked_node) {
                     var original_vertex = context.data().vertices[clicked_node.index];
                     if (typeof (clicked_node) === "undefined") return;
@@ -1953,7 +1865,7 @@
                     clicked_node.is_selected = !clicked_node.is_selected;
                     var is_selected = clicked_node.is_selected;
                     var vertex_obj = { vertex: original_vertex };
-                    if (context.enable_node_collapse() && d3v4.event.shiftKey && d3v4.event.ctrlKey) {
+                    if (context.enable_node_collapse() && d3.event.shiftKey && d3.event.ctrlKey) {
                         context.toggle_collapsed_node_state(clicked_node);
                         context.draw();
                     }
@@ -1961,7 +1873,7 @@
                 }
             })
             .on("dblclick", function () {
-                var clicked_node = context.get_clicked_node(context.transform.invertX(d3v4.event.offsetX), context.transform.invertY(d3v4.event.offsetY));
+                var clicked_node = context.get_clicked_node(context.transform.invertX(d3.event.offsetX), context.transform.invertY(d3.event.offsetY));
                 if (typeof (clicked_node) === "undefined")
                     return;
                 if (clicked_node) {
@@ -1976,7 +1888,7 @@
             })
             ;
         if (this.disable_dblclick_zoom()) {
-            d3v4.select(this.canvas).on("dblclick.zoom", null);
+            d3.select(this.canvas).on("dblclick.zoom", null);
         }
     }
     CanvasGraph.prototype.toggle_collapsed_node_state = function (node) {
@@ -2036,11 +1948,11 @@
         return ret;
     }
     CanvasGraph.prototype.zoomstart = function (context) {
-        context.transform = d3v4.event.transform;
-        if (d3v4.event.sourceEvent && d3v4.event.sourceEvent.ctrlKey) {
+        // context.transform = d3.event.transform;
+        if (d3.event.sourceEvent && d3.event.sourceEvent.ctrlKey) {
             context.selection_rect.is_showing = true;
-            context.selection_rect.offsetX = d3v4.event.sourceEvent.offsetX;
-            context.selection_rect.offsetY = d3v4.event.sourceEvent.offsetY;
+            context.selection_rect.offsetX = d3.event.sourceEvent.offsetX;
+            context.selection_rect.offsetY = d3.event.sourceEvent.offsetY;
             context.selection_rect.offsetLeft = this.offsetLeft;
             context.selection_rect.offsetTop = this.offsetTop;
             context.selection_rect.startX = context.transform.invertX(context.selection_rect.offsetX - context.selection_rect.offsetLeft);
@@ -2050,13 +1962,13 @@
         }
     }
     CanvasGraph.prototype.zoomtick = function (context) {
-        if (d3v4.event && d3v4.event.sourceEvent) {
+        if (d3.event && d3.event.sourceEvent) {
             var _prev_transform_x = context.transform.x;
             var _prev_transform_y = context.transform.y;
-            context.transform = d3v4.event.transform;
-            if (d3v4.event.sourceEvent.ctrlKey) {
-                context.selection_rect.offsetX = d3v4.event.sourceEvent.offsetX;
-                context.selection_rect.offsetY = d3v4.event.sourceEvent.offsetY;
+            // context.transform = d3.event.transform;
+            if (d3.event.sourceEvent.ctrlKey) {
+                context.selection_rect.offsetX = d3.event.sourceEvent.offsetX;
+                context.selection_rect.offsetY = d3.event.sourceEvent.offsetY;
                 context.transform.x = _prev_transform_x;
                 context.transform.y = _prev_transform_y;
             } else {
@@ -2078,8 +1990,8 @@
     }
 
     CanvasGraph.prototype.dragsubject = function () {
-        var x = this.transform.invertX(d3v4.event.sourceEvent.offsetX);
-        var y = this.transform.invertY(d3v4.event.sourceEvent.offsetY);
+        var x = this.transform.invertX(d3.event.sourceEvent.offsetX);
+        var y = this.transform.invertY(d3.event.sourceEvent.offsetY);
         var direct_hover;
         var ret_arr = [];
         for (var i = 0; i < this.data().nodes.length; i++) {
@@ -2098,12 +2010,12 @@
         if (direct_hover) {
             if (ret_arr.indexOf(direct_hover) === -1) ret_arr.push(direct_hover);
         }
-        return ret_arr.length > 0 ? ret_arr : undefined;
+        return ret_arr;
     }
     CanvasGraph.prototype.dragstarted = function (context) {
         context.selection_rect.is_showing = false;
-        if (!d3v4.event.active)
-            d3v4.event.subject.forEach(function (_subject) {
+        if (!d3.event.active)
+            context.dragsubjects.forEach(function (_subject) {
                 _subject.fx = _subject.x;
                 _subject.fy = _subject.y;
             });
@@ -2112,9 +2024,9 @@
         }
     }
     CanvasGraph.prototype.dragtick = function (context) {
-        d3v4.event.subject.forEach(function (_subject, i) {
-            _subject.x = (d3v4.event.dx * (1 / context.transform.k)) + _subject.fx;
-            _subject.y = (d3v4.event.dy * (1 / context.transform.k)) + _subject.fy;
+        context.dragsubjects.forEach(function (_subject, i) {
+            _subject.x = (d3.event.dx * (1 / context.transform.k)) + _subject.fx;
+            _subject.y = (d3.event.dy * (1 / context.transform.k)) + _subject.fy;
             _subject.fx = _subject.x;
             _subject.fy = _subject.y;
             context._fixed_positions[_subject.index] = {
@@ -2125,11 +2037,10 @@
         context.draw();
     }
     CanvasGraph.prototype.dragended = function (context) {
-        if (d3v4.event.sourceEvent && d3v4.event.sourceEvent.ctrlKey) {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.ctrlKey) {
         } else {
             context.clear_node_selections();
         }
-        context.simulation.alphaTarget(0).restart();
         context.draw();
     }
 
@@ -2160,17 +2071,18 @@
     }
 
     CanvasGraph.prototype.canvas_mousemove = function () {
+        
         var context = this;
         var i,
-            x = this.transform.invertX(d3v4.event.offsetX),
-            y = this.transform.invertY(d3v4.event.offsetY),
+            x = this.transform.invertX(d3.event.offsetX),
+            y = this.transform.invertY(d3.event.offsetY),
             group_hover_arr = [],
             direct_hover_arr = []
             ;
         for (i = this.data().nodes.length - 1; i >= 0; --i) {
             var node = this.data().nodes[i];
             var _is_inside_node_poly = this.inside_poly_array([x, y], node.poly, this.transform);
-
+            console.log('_is_inside_node_poly: '+_is_inside_node_poly);
             if (node.is_selected || _is_inside_node_poly) {
                 group_hover_arr.push(node.index);
                 if (_is_inside_node_poly) {
@@ -2185,9 +2097,8 @@
                 delete node.anno_tip_idx;
             }
         }
-        if (group_hover_arr) {
+        if (group_hover_arr && group_hover_arr.length > 0) {
             this.applyHoverEffect(group_hover_arr, direct_hover_arr);
-
         }
 
         function set_anno_tip_idx(node) {
@@ -2219,7 +2130,6 @@
     }
     CanvasGraph.prototype.reset = function () {
         this.data().info.layout_applied = false;
-        this.simulation.alpha(1).restart();
     }
 
     return CanvasGraph;

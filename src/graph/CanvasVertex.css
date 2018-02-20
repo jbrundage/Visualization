@@ -1,0 +1,7 @@
+.graph_CanvasVertex {
+    cursor: move;
+}
+
+.graph_CanvasVertex.selected .common_Shape {
+    stroke:red !important;
+}
