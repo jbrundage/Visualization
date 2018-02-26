@@ -1,23 +1,23 @@
-.graph_CanvasEdge {
+.graph_EdgeC {
     fill: none;
     stroke: #656565;
     stroke-width: 1.0px;
 }
 
-.graph_CanvasEdge .common_TextBox .common_Text {
+.graph_EdgeC .common_TextBox .common_Text {
     fill: black;
     stroke: none;
 }
 
-.graph_CanvasEdge .common_TextBox .common_Shape {
+.graph_EdgeC .common_TextBox .common_Shape {
     fill: white;
     stroke: none;
 }
 
-.graph_CanvasEdge.selected {
+.graph_EdgeC.selected {
     stroke:red !important;
 }
 
-.graph_CanvasEdge.selected .common_Text {
+.graph_EdgeC.selected .common_Text {
     fill:red !important;
 }

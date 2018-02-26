@@ -23,7 +23,7 @@
     Graph.prototype.constructor = Graph;
     Graph.prototype._class += " graph_Graph";
     Graph.prototype.implements(IGraph.prototype);
-    
+
     Graph.prototype.Vertex = Vertex;
     Graph.prototype.Edge = Edge;
 
@@ -63,7 +63,7 @@
                 .attr("y", -this._size.height / 2)
                 .attr("width", this._size.width)
                 .attr("height", this._size.height)
-            ;
+                ;
         }
         return retVal;
     };
@@ -132,11 +132,12 @@
         }
         (transitionDuration ? this.svg.transition().duration(transitionDuration) : this.svg)
             .attr("transform", "translate(" + this.zoom.translate() + ")scale(" + this.zoom.scale() + ")")
-        ;
-        this.log = [];
-        this.log.push(this.zoom.translate()[0] + ' = translate x');
-        this.log.push(this.zoom.translate()[1] + ' = translate y');
-        this.log.push(this.zoom.scale() + ' = scale');
+            ;
+
+        this.log['translate x'] = this.zoom.translate()[0];
+        this.log['translate y'] = this.zoom.translate()[1];
+        this.log['scale'] = this.zoom.scale();
+
         this.prevTranslate = this.zoom.translate();
         if (this.prevScale !== this.zoom.scale()) {
             this._fixIEMarkers();
@@ -170,12 +171,12 @@
                     case "selection":
                         element.select(".extent")
                             .style("visibility", null)
-                        ;
+                            ;
                         break;
                     default:
                         element.select(".extent")
                             .style("visibility", "hidden")
-                        ;
+                            ;
                         break;
                 }
             })
@@ -199,7 +200,7 @@
                         break;
                 }
             })
-        ;
+            ;
         this.brush = d3.svg.brush()
             .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
             .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
@@ -221,7 +222,7 @@
                                     context._selection.append(d);
                                 }
                             })
-                        ;
+                            ;
                         context.graph_selection(context.selection());
                         break;
                     default:
@@ -239,13 +240,13 @@
                                 return context._selection.isSelected(d) ||
                                     (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
                             })
-                        ;
+                            ;
                         break;
                     default:
                         break;
                 }
             })
-        ;
+            ;
 
         //  Drag  ---
         function dragstart(d) {
@@ -305,7 +306,7 @@
             .on("dragstart", dragstart)
             .on("dragend", dragend)
             .on("drag", drag)
-        ;
+            ;
         //  SVG  ---
         this._svgZoom = element.append("rect")
             .attr("class", "zoom")
@@ -313,7 +314,7 @@
             .attr("y", -this._size.height / 2)
             .attr("width", this._size.width)
             .attr("height", this._size.height)
-        ;
+            ;
 
         this.defs = element.append("defs");
         this.addMarkers();
@@ -448,14 +449,14 @@
                                 if (vertex) {
                                     vertex
                                         .move({ x: item.x, y: item.y })
-                                    ;
+                                        ;
                                 }
                             }
                         });
                         context.graphData.edgeValues().forEach(function (item) {
                             item
                                 .points([], false, false)
-                            ;
+                                ;
                         });
                         if (context.applyScaleOnLayout()) {
                             var vBounds = context.getVertexBounds(layoutEngine);
@@ -474,14 +475,14 @@
                                 .width(pos.width)
                                 .height(pos.height)
                                 .render()
-                            ;
+                                ;
                         }
                     });
                     context.graphData.edgeValues().forEach(function (item) {
                         var points = layoutEngine.edgePoints(item);
                         item
                             .points(points, transitionDuration)
-                        ;
+                            ;
                     });
 
                     if (context.applyScaleOnLayout()) {
@@ -502,13 +503,13 @@
     Graph.prototype.update = function (domNode, element) {
         SVGWidget.prototype.update.apply(this, arguments);
         var context = this;
-        console.log('SVG',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
+        console.log('SVG', JSON.stringify(this.graphData.nodeValues().map(n => [n.x(), n.y()])));
         //  Create  ---
         var vertexElements = this.svgV.selectAll("#" + this._id + "V > .graphVertex").data(this.graphData.nodeValues(), function (d) { return d.id(); });
         vertexElements.enter().append("g")
             .attr("class", "graphVertex")
             .style("opacity", 1e-6)
-             //  TODO:  Events need to be optional  ---
+            //  TODO:  Events need to be optional  ---
             .on("click.selectionBag", function (d) {
                 context._selection.click(d, d3.event);
             })
@@ -519,7 +520,7 @@
                     selected = vertexElement.classed("selected");
                 }
                 context.vertex_click(context.rowToObj(d.data()), "", selected, {
-                    vertex:  d
+                    vertex: d
                 });
             })
             .on("dblclick", function (d) {
@@ -529,7 +530,7 @@
                     selected = vertexElement.classed("selected");
                 }
                 context.vertex_dblclick(context.rowToObj(d.data()), "", selected, {
-                    vertex:  d
+                    vertex: d
                 });
             })
             .on("mouseover", function (d) {
@@ -546,15 +547,15 @@
             .transition()
             .duration(750)
             .style("opacity", 1)
-        ;
+            ;
         function createV(d) {
             d
                 .target(this)
                 .render()
-            ;
+                ;
             d.element()
                 .call(context.drag)
-            ;
+                ;
             if (d.dispatch) {
                 d.dispatch.on("sizestart", function (d, loc) {
                     d.allowResize(context.allowDragging());
@@ -573,7 +574,7 @@
                             .pos(snapLoc[0])
                             .size(snapLoc[1])
                             .render()
-                        ;
+                            ;
                         context.refreshIncidentEdges(d, false);
                     }
                 });
@@ -621,42 +622,42 @@
             .transition()
             .duration(750)
             .style("opacity", 1)
-        ;
+            ;
         function createE(d) {
             d
                 .target(this)
                 .render()
-            ;
+                ;
         }
 
         //  Update  ---
         vertexElements
             .each(updateV)
-        ;
+            ;
         function updateV(d) {
             d
                 .render()
-            ;
+                ;
         }
 
         edgeElements
             .each(updateE)
-        ;
+            ;
         function updateE(d) {
             d
                 .render()
-            ;
+                ;
         }
 
         //  Exit  ---
         vertexElements.exit()
             .each(function (d) { d.target(null); })
             .remove()
-        ;
+            ;
         edgeElements.exit()
             .each(function (d) { d.target(null); })
             .remove()
-        ;
+            ;
 
         if (!this._renderCount) {
             this._renderCount++;
@@ -745,7 +746,7 @@
                 }
                 return context.highlight.opacity;
             })
-        ;
+            ;
         return this;
     };
 
@@ -766,7 +767,7 @@
                 }
                 return context.highlight.opacity;
             })
-        ;
+            ;
         return this;
     };
 
@@ -807,7 +808,7 @@
             var edge = context.graphData.edge(id);
             edge
                 .points([], false, skipPushMarkers)
-            ;
+                ;
         });
     };
 
@@ -859,11 +860,11 @@
             .attr("markerUnits", "strokeWidth")
             .attr("orient", "auto")
             .append("polyline")
-                .attr("points", "0,0 10,5 0,10 1,5")
-        ;
+            .attr("points", "0,0 10,5 0,10 1,5")
+            ;
         this.defs.append("marker")
             .attr("class", "marker")
-            .attr("id",  this._id + "_circleFoot")
+            .attr("id", this._id + "_circleFoot")
             .attr("viewBox", "0 0 10 10")
             .attr("refX", 1)
             .attr("refY", 5)
@@ -872,10 +873,10 @@
             .attr("markerUnits", "strokeWidth")
             .attr("orient", "auto")
             .append("circle")
-                .attr("cx", 5)
-                .attr("cy", 5)
-                .attr("r", 4)
-        ;
+            .attr("cx", 5)
+            .attr("cy", 5)
+            .attr("r", 4)
+            ;
         this.defs.append("marker")
             .attr("class", "marker")
             .attr("id", this._id + "_circleHead")
@@ -887,14 +888,14 @@
             .attr("markerUnits", "strokeWidth")
             .attr("orient", "auto")
             .append("circle")
-                .attr("cx", 5)
-                .attr("cy", 5)
-                .attr("r", 4)
+            .attr("cx", 5)
+            .attr("cy", 5)
+            .attr("r", 4)
             ;
         this.defs.append("filter")
             .attr("id", this._id + "_glow")
             .attr("width", "130%")
-            .attr("height", "130%")    
+            .attr("height", "130%")
             .html(
                 '<feOffset result="offOut" in="SourceGraphic" dx="0" dy="0"></feOffset>' +
                 '<feColorMatrix result="matrixOut" in="offOut" type="matrix" values="0.2 0 0 0 0 0 0.2 0 0 1 0 0 0.2 0 0 0 0 0 1 0" />' +

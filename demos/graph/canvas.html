@@ -9,6 +9,7 @@
     <script src="http://rawgit.com/jrburke/requirejs/2.2.0/require.js"></script>
     <script src="../../src/loader.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/9.6.0/build.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script>
         require.config({
             paths: {
@@ -91,7 +92,7 @@
         function doRandom() {
             var rand_data = random_graph_data(g_params.n);
             window.g1.data(sample_data(rand_data, g_Vertex, g_Edge)).render();
-            window.g2.data(sample_data(rand_data, g_CanvasVertex, g_CanvasEdge)).render();
+            window.g2.data(sample_data(rand_data, g_VertexC, g_EdgeC)).render();
         }
 
         function doLayout(layout_type) {
@@ -105,12 +106,19 @@
         }
         setInterval(function () {
             try {
-                if (g1 && g1.log) document.getElementById('log1').innerText = `${g1.log.join('\n')}`;
-                if (g2 && g2.log) document.getElementById('log2').innerText = `${g2.log.join('\n')}`;
+                if (g1 && g1.log) document.getElementById('log1').innerText = `${_dump_log(g1.log, true)}`;
+                if (g2 && g2.log) document.getElementById('log2').innerText = `${_dump_log(g2.log)}`;
             } catch (e) {
                 console.error(e);
             }
-        }, 1000)
+        }, 1000);
+        function _dump_log(log_obj, invert) {
+            var ret = '';
+            for (var i in log_obj) {
+                ret += invert ? log_obj[i] + ' :' + i + '\n' : i + ': ' + log_obj[i] + '\n';
+            }
+            return ret;
+        }
     </script>
 </body>
 

@@ -28,10 +28,10 @@
             currStep += step;
         });
     }
-    Circle.prototype.nodePos = function(u) {
+    Circle.prototype.nodePos = function (u) {
         return this.pos[u];
     };
-    Circle.prototype.edgePoints = function(e) {
+    Circle.prototype.edgePoints = function (e) {
         return [];
     };
 
@@ -96,7 +96,7 @@
             .gravity(options.gravity)
             .nodes(this.vertices)
             .links(this.edges)
-        ;
+            ;
         if (options.oneShot) {
             this.force.start();
             var total = graphData.nodeCount();
@@ -116,13 +116,15 @@
 
     function Hierarchy(graphData, width, height, options) {
         var digraph = new dagre.graphlib.Graph({ multigraph: true, compound: true })
-              .setGraph(options)
-              .setDefaultNodeLabel(function () { return {}; })
-              .setDefaultEdgeLabel(function () { return {}; })
-        ;
+            .setGraph(options)
+            .setDefaultNodeLabel(function () { return {}; })
+            .setDefaultEdgeLabel(function () { return {}; })
+            ;
         graphData.eachNode(function (u) {
             var value = graphData.node(u);
             var clientSize = value.getBBox();
+            console.log('clientSize');
+            console.log(clientSize);
             digraph.setNode(u, {
                 width: clientSize.width,
                 height: clientSize.height

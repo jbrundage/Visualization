@@ -1,0 +1,7 @@
+.graph_VertexC {
+    cursor: move;
+}
+
+.graph_VertexC.selected .common_Shape {
+    stroke:red !important;
+}

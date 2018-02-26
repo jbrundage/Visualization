@@ -1,11 +1,11 @@
 ﻿"use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/CanvasWidget", "../common/Palette", "../api/IGraph", "./CanvasVertex", "./CanvasEdge", "./GraphData", "./GraphLayouts", "../common/Utility", "css!./GraphC"], factory);
+        define(["d3", "../common/CanvasWidget", "../common/Palette", "../api/IGraph", "./VertexC", "./EdgeC", "./GraphData", "./GraphLayouts", "../common/Utility", "css!./GraphC"], factory);
     } else {
-        root.graph_Graph = factory(root.d3, root.common_CanvasWidget, root.common_Palette, root.api_IGraph, root.graph_CanvasVertex, root.graph_CanvasEdge, root.graph_GraphData, root.graph_GraphLayouts, root.common_Utility);
+        root.graph_Graph = factory(root.d3, root.common_CanvasWidget, root.common_Palette, root.api_IGraph, root.graph_VertexC, root.graph_EdgeC, root.graph_GraphData, root.graph_GraphLayouts, root.common_Utility);
     }
-}(this, function (d3, CanvasWidget, Palette, IGraph, CanvasVertex, CanvasEdge, GraphData, GraphLayouts, Utility) {
+}(this, function (d3, CanvasWidget, Palette, IGraph, VertexC, EdgeC, GraphData, GraphLayouts, Utility) {
     function GraphC() {
         CanvasWidget.call(this);
         IGraph.call(this);
@@ -18,16 +18,16 @@
         };
         this._selection = new Utility.Selection();
         this.log = [];
-        this._translate = {x:0,y:0};
-        this._scale = {k:1};
+        this._translate = { x: 0, y: 0 };
+        this._scale = { k: 1 };
     }
     GraphC.prototype = Object.create(CanvasWidget.prototype);
     GraphC.prototype.constructor = GraphC;
     GraphC.prototype._class += " graph_GraphC";
     GraphC.prototype.implements(IGraph.prototype);
-    
-    GraphC.prototype.Vertex = CanvasVertex;
-    GraphC.prototype.Edge = CanvasEdge;
+
+    GraphC.prototype.Vertex = VertexC;
+    GraphC.prototype.Edge = EdgeC;
 
     GraphC.prototype.publish("allowDragging", true, "boolean", "Allow Dragging of Vertices", null, { tags: ["Advanced"] });
     GraphC.prototype.publish("layout", "Circle", "set", "Default Layout", ["Circle", "ForceDirected", "ForceDirected2", "Hierarchy", "None"], { tags: ["Basic"] });
@@ -53,43 +53,44 @@
     GraphC.prototype.publish("forceDirectedGravity", 0.1, "number", "Gravitational strength", null, { tags: ["Advanced"] });
 
     GraphC.prototype.draw = function () {
-        if(this.element().node() === null)return;
+        if (this.element().node() === null) return;
         this.clearCanvas();
         this.drawLinks();
         this.drawNodes();
     }
     GraphC.prototype.drawNodes = function () {
         var context = this;
-        this.graphData.nodeValues().forEach(function(n){
-            n.drawSelf(context.ctx,context.element().node());
+        this.graphData.nodeValues().forEach(function (n) {
+            n.drawSelf(context.ctx, context.element().node());
         });
     }
     GraphC.prototype.drawLinks = function () {
         var context = this;
-        this.graphData.edgeValues().forEach(function(n){
+        this.graphData.edgeValues().forEach(function (n) {
             context.ctx.beginPath();
             context.ctx.strokeStyle = "#777";
-            context.ctx.moveTo(n._sourceVertex.x(),n._sourceVertex.y());
-            context.ctx.lineTo(n._targetVertex.x(),n._targetVertex.y());
+            context.ctx.moveTo(n._sourceVertex.x(), n._sourceVertex.y());
+            context.ctx.lineTo(n._targetVertex.x(), n._targetVertex.y());
             context.ctx.stroke();
             context.ctx.closePath();
         });
     }
-    GraphC.prototype.clearCanvas = function (_x,_y,_w,_h) {
+    GraphC.prototype.clearCanvas = function (_x, _y, _w, _h) {
         var context = this;
-        if(typeof _x !== "undefined"){
-            context.ctx.clearRect(_x,_y,_w,_h);
+        if (typeof _x !== "undefined") {
+            context.ctx.clearRect(_x, _y, _w, _h);
         } else {
             var _canvas = context.element().node();
-            var x_trans = this._translate.x;
-            var y_trans = this._translate.y;
-            var k_scale = this._scale.k;
-            var w = _canvas.width/k_scale;
-            var h = _canvas.height/k_scale;
+            var x_trans = this.zoom.translate()[0];
+            var y_trans = this.zoom.translate()[1];
+            var k_scale = this.zoom.scale();
+            var w = _canvas.width / k_scale;
+            var h = _canvas.height / k_scale;
             var x = x_trans;
             var y = y_trans;
-            //console.log(-x,-y,w,h);
-            context.ctx.clearRect(-x*10,-y*10,w*10,h*10);
+            //TODO: figure out why this only clears bottom right occasionally context.ctx.clearRect(-x * 10, -y * 10, w * 10, h * 10);
+            // context.ctx.clearRect(-x * 10, -y * 10, w * 10, h * 10);
+            context.ctx.clearRect(-w * 10, -h * 10, w * 10 * 2, h * 10 * 2);
         }
     }
     //  Properties  ---
@@ -105,7 +106,7 @@
                 .attr("y", -this._size.height / 2)
                 .attr("width", this._size.width)
                 .attr("height", this._size.height)
-            ;
+                ;
         }
         return retVal;
     };
@@ -147,7 +148,7 @@
                 var dupEdgeCount = ++dupMap[item._sourceVertex._id][item._targetVertex._id];
                 item.arcDepth(16 * dupEdgeCount);
             });
-            if(this.ctx){
+            if (this.ctx) {
                 this.ctx.setTransform(1, 0, 0, 1, 0, 0);
             }
             this.draw();
@@ -176,20 +177,34 @@
                 this.zoom.scale(this.prevScale);
             }
         }
+
         var _translate = this.zoom.translate();
         var _scale = this.zoom.scale();
 
-        this.log = [];
-        this.log.push('translate x = ' + _translate[0]);
-        this.log.push('translate y = ' + _translate[1]);
-        this.log.push('scale = ' + _scale);
+        this.log['translate x'] = _translate[0];
+        this.log['translate y'] = _translate[1];
+        this.log['scale'] = _scale;
+        console.log('----------------------------------------------');
+        console.log('JSON.stringify(this.prevTranslate)');
+        console.log(JSON.stringify(this.prevTranslate));
+        console.log('this.prevScale');
+        console.log(this.prevScale);
+        console.log('JSON.stringify(_translate)');
+        console.log(JSON.stringify(_translate));
+        console.log('_scale');
+        console.log(_scale);
+        console.log('----------------------------------------------');
 
-        this._translate.x = _translate[0];
-        this._translate.y = _translate[1];
-        this._scale.k = _scale;
-        this.ctx.translate(_translate[0],_translate[1]);
-        this.ctx.scale(_scale,_scale);
-        
+        var is_setting_transform = !this.prevTranslate || (this.prevTranslate[0] !== _translate[0] && this.prevTranslate[1] !== _translate[1]);
+        var is_setting_scale = this.prevScale !== this.zoom.scale();
+
+        if (is_setting_transform || is_setting_scale) {
+            // this.ctx.setTransform(_scale, 0, 0, _scale, _translate[0], _translate[1]);
+            this.ctx.setTransform(1, 0, 0, 1, this._size.width / 2, this._size.height / 2);
+            this.ctx.translate(_translate[0], _translate[1]);
+            this.ctx.scale(_scale, _scale);
+        }
+
         this.prevTranslate = this.zoom.translate();
         if (this.prevScale !== this.zoom.scale()) {
             this.prevScale = this.zoom.scale();
@@ -221,12 +236,12 @@
                     case "selection":
                         element.select(".extent")
                             .style("visibility", null)
-                        ;
+                            ;
                         break;
                     default:
                         element.select(".extent")
                             .style("visibility", "hidden")
-                        ;
+                            ;
                         break;
                 }
             })
@@ -250,7 +265,7 @@
                         break;
                 }
             })
-        ;
+            ;
         this.brush = d3.svg.brush()
             .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
             .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
@@ -272,7 +287,7 @@
                                     context._selection.append(d);
                                 }
                             })
-                        ;
+                            ;
                         context.graph_selection(context.selection());
                         break;
                     default:
@@ -290,13 +305,13 @@
                                 return context._selection.isSelected(d) ||
                                     (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
                             })
-                        ;
+                            ;
                         break;
                     default:
                         break;
                 }
             })
-        ;
+            ;
 
         //  Drag  ---
         function dragstart(d) {
@@ -356,7 +371,7 @@
             .on("dragstart", dragstart)
             .on("dragend", dragend)
             .on("drag", drag)
-        ;
+            ;
         element
             .attr("width", this._size.width)
             .attr("height", this._size.height)
@@ -437,6 +452,8 @@
                 this.shrinkToFit(bounds, transitionDuration);
                 break;
             case "selection":
+                console.log('this.getVertexBounds()');
+                console.log(this.getVertexBounds());
                 this.shrinkToFit(this._selection.isEmpty() ? this.getVertexBounds() : this.getSelectionBounds(), transitionDuration);
                 break;
             default:
@@ -448,6 +465,7 @@
                 this.applyZoom(transitionDuration);
                 break;
         }
+        this.draw();
     };
 
     GraphC.prototype.centerOn = function (bounds, transitionDuration) {
@@ -485,14 +503,14 @@
                                 if (vertex) {
                                     vertex
                                         .move({ x: item.x, y: item.y })
-                                    ;
+                                        ;
                                 }
                             }
                         });
                         context.graphData.edgeValues().forEach(function (item) {
                             item
                                 .points([], false, false)
-                            ;
+                                ;
                         });
                         if (context.applyScaleOnLayout()) {
                             var vBounds = context.getVertexBounds(layoutEngine);
@@ -512,14 +530,14 @@
                                 .width(pos.width)
                                 .height(pos.height)
                                 .render()
-                            ;
+                                ;
                         }
                     });
                     context.graphData.edgeValues().forEach(function (item) {
                         var points = layoutEngine.edgePoints(item);
                         item
                             .points(points, transitionDuration)
-                        ;
+                            ;
                     });
 
                     if (context.applyScaleOnLayout()) {
@@ -531,6 +549,7 @@
                     }, transitionDuration ? transitionDuration + 50 : 50);  //  Prevents highlighting during morph  ---
                 }
             }
+            context.draw();
         }
         return retVal;
     };
@@ -538,19 +557,19 @@
     //  Render  ---
     GraphC.prototype.update = function (domNode, element) {
         CanvasWidget.prototype.update.apply(this, arguments);
-        console.log('CANVAS (before)',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
+        console.log('CANVAS (before)', JSON.stringify(this.graphData.nodeValues().map(n => [n.x(), n.y()])));
         var context = this;
 
         if (!this._renderCount) {
             this._renderCount++;
-            this.setZoom([this._size.width/2, this._size.height/2], 1);
+            this.setZoom([this._size.width / 2, this._size.height / 2], 1);
             this.layout(this.layout());
         }
         this.clearCanvas();
         this.drawLinks();
         this.drawNodes();
-        
-        console.log('CANVAS (after)',JSON.stringify(this.graphData.nodeValues().map(n=>[n.x(),n.y()])));
+
+        console.log('CANVAS (after)', JSON.stringify(this.graphData.nodeValues().map(n => [n.x(), n.y()])));
     };
 
     //  Methods  ---
@@ -633,7 +652,7 @@
                 }
                 return context.highlight.opacity;
             })
-        ;
+            ;
         return this;
     };
 
@@ -654,7 +673,7 @@
                 }
                 return context.highlight.opacity;
             })
-        ;
+            ;
         return this;
     };
 
@@ -695,7 +714,7 @@
             var edge = context.graphData.edge(id);
             edge
                 .points([], false, skipPushMarkers)
-            ;
+                ;
         });
     };
 

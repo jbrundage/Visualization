@@ -1,12 +1,12 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/SVGWidget", "../common/TextBox", "css!./CanvasEdge"], factory);
+        define(["d3", "../common/SVGWidget", "../common/TextBox", "css!./EdgeC"], factory);
     } else {
-        root.graph_CanvasEdge = factory(root.d3, root.common_SVGWidget, root.common_TextBox);
+        root.graph_EdgeC = factory(root.d3, root.common_SVGWidget, root.common_TextBox);
     }
 }(this, function (d3, SVGWidget, TextBox) {
-    function CanvasEdge() {
+    function EdgeC() {
         SVGWidget.call(this);
 
         this._points = [];
@@ -16,40 +16,40 @@
 
         this._textBox = new TextBox()
             .padding(0)
-        ;
+            ;
     }
-    CanvasEdge.prototype = Object.create(SVGWidget.prototype);
-    CanvasEdge.prototype.constructor = CanvasEdge;
-    CanvasEdge.prototype._class += " graph_CanvasEdge";
+    EdgeC.prototype = Object.create(SVGWidget.prototype);
+    EdgeC.prototype.constructor = EdgeC;
+    EdgeC.prototype._class += " graph_EdgeC";
 
-    CanvasEdge.prototype.publish("arcDepth", 16, "number", "Arc Depth", null, { tags: ["Basic"] });
-    CanvasEdge.prototype.publish("showArc", true, "boolean", "Show/Hide Arc", null, { tags: ["Basic"] });
-    CanvasEdge.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
+    EdgeC.prototype.publish("arcDepth", 16, "number", "Arc Depth", null, { tags: ["Basic"] });
+    EdgeC.prototype.publish("showArc", true, "boolean", "Show/Hide Arc", null, { tags: ["Basic"] });
+    EdgeC.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
 
-    CanvasEdge.prototype.publish("sourceMarker", "circle", "set", "Source Marker", ["circle"], { optional: true });
-    CanvasEdge.prototype.publish("targetMarker", "arrow", "set", "Source Marker", ["arrow", "circle"], { optional: true });
-    CanvasEdge.prototype.publish("strokeDasharray", null, "string", "Stroke Dash Array", null, { optional: true });
-    CanvasEdge.prototype.publish("strokeColor", null, "html-color", "Stroke Color", null, { optional: true });
+    EdgeC.prototype.publish("sourceMarker", "circle", "set", "Source Marker", ["circle"], { optional: true });
+    EdgeC.prototype.publish("targetMarker", "arrow", "set", "Source Marker", ["arrow", "circle"], { optional: true });
+    EdgeC.prototype.publish("strokeDasharray", null, "string", "Stroke Dash Array", null, { optional: true });
+    EdgeC.prototype.publish("strokeColor", null, "html-color", "Stroke Color", null, { optional: true });
 
-    CanvasEdge.prototype.sourceVertex = function (_) {
+    EdgeC.prototype.sourceVertex = function (_) {
         if (!arguments.length) return this._sourceVertex;
         this._sourceVertex = _;
         return this;
     };
 
-    CanvasEdge.prototype.targetVertex = function (_) {
+    EdgeC.prototype.targetVertex = function (_) {
         if (!arguments.length) return this._targetVertex;
         this._targetVertex = _;
         return this;
     };
 
-    CanvasEdge.prototype.weight = function (_) {
+    EdgeC.prototype.weight = function (_) {
         if (!arguments.length) return this._weight;
         this._weight = _;
         return this;
     };
 
-    CanvasEdge.prototype.points = function (_, transitionDuration, skipPushMarkers) {
+    EdgeC.prototype.points = function (_, transitionDuration, skipPushMarkers) {
         if (!arguments.length) return this._points;
         this._points = _;
         if (this._elementPath) {
@@ -58,19 +58,19 @@
         return this;
     };
 
-    CanvasEdge.prototype.hidden = function (_) {
+    EdgeC.prototype.hidden = function (_) {
         if (!arguments.length) return this._hidden;
         this._hidden = _;
         return this;
     };
 
-    CanvasEdge.prototype.text = function (_) {
+    EdgeC.prototype.text = function (_) {
         if (!arguments.length) return this._textBox.text();
         this._textBox.text(_);
         return this;
     };
 
-    CanvasEdge.prototype.enter = function (domNode, element) {
+    EdgeC.prototype.enter = function (domNode, element) {
         SVGWidget.prototype.enter.apply(this, arguments);
         this._elementPath = element.append("path");
         this._tooltipElement = this._elementPath.append("title");
@@ -80,11 +80,11 @@
                 .target(domNode)
                 .tooltip(this.tooltip())
                 .render()
-            ;
+                ;
         }
     };
 
-    CanvasEdge.prototype.update = function (domNode, element, transitionDuration, skipPushMarkers) {
+    EdgeC.prototype.update = function (domNode, element, transitionDuration, skipPushMarkers) {
         SVGWidget.prototype.update.apply(this, arguments);
         var context = this;
         if (this.svgMarkerGlitch && !skipPushMarkers) {
@@ -95,7 +95,7 @@
                 .each("end", function (d) {
                     context._popMarkers(element, d);
                 })
-            ;
+                ;
         }
         var points = context._calculateEdgePoints(this._sourceVertex, this._targetVertex, this._points);
         var line = "";
@@ -106,18 +106,18 @@
                 .interpolate("bundle")
                 .tension(0.75)
                 (points)
-            ;
+                ;
         } else {
             //  Faster but does not transition as well  ---
             var dx = points[2].x - points[0].x,
-                        dy = points[2].y - points[0].y,
-                        dr = Math.sqrt(dx * dx + dy * dy) * 2;
+                dy = points[2].y - points[0].y,
+                dr = Math.sqrt(dx * dx + dy * dy) * 2;
             line = "M" +
-                        points[0].x + "," +
-                        points[0].y + "A" +
-                        dr + "," + dr + " 0 0,1 " +
-                        points[2].x + "," +
-                        points[2].y;
+                points[0].x + "," +
+                points[0].y + "A" +
+                dr + "," + dr + " 0 0,1 " +
+                points[2].x + "," +
+                points[2].y;
         }
         var pathElements = this._elementPath;
         if (transitionDuration) {
@@ -130,22 +130,22 @@
             .attr("stroke", this.strokeColor_exists() ? this.strokeColor() : null)
             .attr("stroke-dasharray", this.strokeDasharray_exists() ? this.strokeDasharray() : null)
             .attr("d", line)
-        ;
+            ;
         this._tooltipElement.text(this.tooltip());
 
         if (this._textBox.text()) {
             this._textBox
                 .tooltip(this.tooltip())
                 .move(this._findMidPoint(points), transitionDuration)
-            ;
+                ;
         }
     };
 
-    CanvasEdge.prototype._findMidPoint = function (points) {
+    EdgeC.prototype._findMidPoint = function (points) {
         var midIdx = points.length / 2;
         if (points.length % 2) {
             return points[Math.floor(midIdx)];
-        } else if (points.length){
+        } else if (points.length) {
             var p0 = points[midIdx - 1];
             var p1 = points[midIdx];
             return { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
@@ -153,7 +153,7 @@
         return { x: 0, y: 0 };
     };
 
-    CanvasEdge.prototype._calculateEdgePoints = function (source, target, _points) {
+    EdgeC.prototype._calculateEdgePoints = function (source, target, _points) {
         if (!source || !target) {
             return [{ x: 0, y: 0 }, { x: 0, y: 0 }];
         }
@@ -175,7 +175,7 @@
             var dy = points[0].y - points[1].y;
             var dist = Math.sqrt(dx * dx + dy * dy);
             if (dist) {
-                if(this.showArc()){
+                if (this.showArc()) {
                     var midX = (points[0].x + points[1].x) / 2 - dy * this.arcDepth() / 100;
                     var midY = (points[0].y + points[1].y) / 2 + dx * this.arcDepth() / 100;
                     points = [{ x: points[0].x, y: points[0].y }, { x: midX, y: midY }, { x: points[1].x, y: points[1].y }];
@@ -188,5 +188,5 @@
         return points;
     };
 
-    return CanvasEdge;
+    return EdgeC;
 }));
