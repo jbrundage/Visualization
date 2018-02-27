@@ -9,6 +9,8 @@
     function VertexC() {
         SVGWidget.call(this);
 
+        this.poly_arr = [];
+
         this._icon = new Icon();
         this._textBox = new TextBox();
         this._annotationWidgets = {};
@@ -34,6 +36,7 @@
     VertexC.prototype.publish("iconAnchor", "start", "set", "Icon Anchor Position", ["", "start", "middle", "end"], { tags: ["Basic"] });
 
     VertexC.prototype.publish("tooltip", "", "string", "Tooltip", null, { tags: ["Private"] });
+    VertexC.prototype.publish("iconTooltip", "", "string", "iconTooltip", null, { tags: ["Private"] });
 
     VertexC.prototype.publish("annotationDiameter", 14, "number", "Annotation Diameter", null, { tags: ["Private"] });
     VertexC.prototype.publish("annotationSpacing", 3, "number", "Annotation Spacing", null, { tags: ["Private"] });
@@ -63,6 +66,8 @@
         var label_h = label_font_size + (pr * 2);
         var icon_h = label_h * 2;
         var annotations_h = label_h;
+        var center_x = 0;
+        var center_x_offset = 0;
         this.min_x = x;
         this.max_x = x;
         this.min_y = y;
@@ -70,9 +75,14 @@
         //debugger;
         ctx.textBaseline = 'top';
 
-        draw_icon(this.faChar());
         draw_label(this.text());
+        draw_icon(this.faChar());
         draw_annotations();
+        // ctx.closePath();
+        // ctx.beginPath();
+        // ctx.strokeStyle = '#ff0000';
+        // ctx.strokeRect(this.x(),this.y(),2,2);
+        // ctx.closePath();
 
         this.size({
             height: this.max_y - this.min_y,
@@ -86,19 +96,25 @@
                 icon_shape_colorStroke
                 icon_image_colorFill
             */
+            var poly_info_obj = {
+                vertex: this,
+                tooltip: context.iconTooltip() 
+            };
             var icon_w = icon_h;
             var _x = x - icon_w;
             var _y = y - icon_h / 2;
+            ctx.font = icon_font_size + 'px ' + icon_font_family;
             ctx.beginPath();
             ctx.font = icon_font_size + 'px ' + icon_font_family;
-            ctx.rect(_x, _y, icon_w, icon_h);
+            ctx.rect(_x - center_x_offset, _y, icon_w, icon_h);
+            context.poly_arr.push([_x - center_x_offset, _y, icon_w, icon_h, poly_info_obj]);
             ctx.strokeStyle = context.icon_shape_colorStroke() ? context.icon_shape_colorStroke() : "#777";
             ctx.stroke();
             ctx.fillStyle = context.icon_shape_colorFill() ? context.icon_shape_colorFill() : "#fff";
             ctx.fill();
             ctx.fillStyle = context.icon_image_colorFill() ? context.icon_image_colorFill() : "#fff";
             ctx.textAlign = 'center';
-            ctx.fillText(txt, _x + (icon_w / 2), _y + pr + icon_y_offset);
+            ctx.fillText(txt, _x + (icon_w / 2) - center_x_offset, _y + pr + icon_y_offset);
             ctx.closePath();
             context.update_x_minmax(_x);
             context.update_x_minmax(_x + icon_w);
@@ -111,18 +127,25 @@
                 textbox_shape_colorFill
                 textbox_text_colorFill
             */
+            var poly_info_obj = {
+                vertex: this,
+                tooltip: context.tooltip()
+            };
             var _x = x;
             var _y = y - icon_h / 2;
             ctx.beginPath();
             ctx.strokeStyle = context.textbox_shape_colorStroke() ? context.textbox_shape_colorStroke() : "#777";
             ctx.font = label_font_size + 'px ' + label_font_family;
             label_w = ctx.measureText(txt).width;
-            ctx.rect(_x, _y, label_w + (pr * 2), label_h);
+            center_x = x - icon_h + ((icon_h+label_w)/2);
+            center_x_offset = center_x - x;
+            ctx.rect(_x - center_x_offset, _y, label_w + (pr * 2), label_h);
+            context.poly_arr.push([_x - center_x_offset, _y, label_w + (pr * 2), label_h, poly_info_obj]);
             ctx.fillStyle = context.textbox_shape_colorFill() ? context.textbox_shape_colorFill() : "#fff";
             ctx.fill();
             ctx.fillStyle = context.textbox_text_colorFill() ? context.textbox_text_colorFill() : "#000";
             ctx.textAlign = 'left';
-            ctx.fillText(txt, _x + pr, _y + pr);
+            ctx.fillText(txt, _x + pr - center_x_offset, _y + pr);
             ctx.stroke();
             ctx.closePath();
             context.update_x_minmax(_x);
@@ -135,15 +158,22 @@
             var _y = y;
             var _anno_width_sum = 0;
             ctx.textAlign = 'left';
+            ctx.font = label_font_size + 'px ' + label_font_family;
             context.annotationIcons().forEach(function (anno_obj) {
+                var poly_info_obj = {
+                    vertex: this,
+                    tooltip: anno_obj.tooltip,
+                    direction: "down"
+                };
                 ctx.beginPath();
                 ctx.strokeStyle = "#777";
-                ctx.rect(_x - _anno_width_sum, _y, annotations_h, annotations_h);
+                ctx.rect(_x - _anno_width_sum - center_x_offset, _y, annotations_h, annotations_h);
+                context.poly_arr.push([_x - _anno_width_sum - center_x_offset, _y, annotations_h, annotations_h, poly_info_obj]);
                 ctx.stroke();
                 ctx.fillStyle = anno_obj.shape_colorFill ? anno_obj.shape_colorFill : "#fff";
                 ctx.fill();
                 ctx.fillStyle = anno_obj.image_colorFill ? anno_obj.image_colorFill : "#000";
-                ctx.fillText(anno_obj.faChar, _x - _anno_width_sum + pr, _y + pr);
+                ctx.fillText(anno_obj.faChar, _x - _anno_width_sum + pr - center_x_offset, _y + pr);
                 ctx.closePath();
                 _anno_width_sum += annotations_h;
             });
@@ -151,7 +181,17 @@
     };
 
     VertexC.prototype.drawSelf = function (ctx, canvas) {
+        this.poly_arr = [];
         this.drawKeyLayout(ctx, canvas);
+    };
+
+    VertexC.prototype.getHoveredPolygons = function (x,y) {
+        // debugger;
+        return this.poly_arr.filter(n=>{
+            var in_x_bounds = x > n[0] && x < n[0] + n[2];
+            var in_y_bounds = y > n[1] && y < n[1] + n[3];
+            return in_x_bounds && in_y_bounds;
+        })
     };
 
     VertexC.prototype.update_x_minmax = function (_x) {
@@ -164,6 +204,7 @@
     }
 
     VertexC.prototype.getBBox = function () {
+        // console.log(this.size());
         return this.size();
     };
 

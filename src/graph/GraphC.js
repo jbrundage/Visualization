@@ -18,8 +18,13 @@
         };
         this._selection = new Utility.Selection();
         this.log = [];
-        this._translate = { x: 0, y: 0 };
-        this._scale = { k: 1 };
+        this._translate = {
+            x: 0,
+            y: 0
+        };
+        this._scale = {
+            k: 1
+        };
     }
     GraphC.prototype = Object.create(CanvasWidget.prototype);
     GraphC.prototype.constructor = GraphC;
@@ -29,28 +34,68 @@
     GraphC.prototype.Vertex = VertexC;
     GraphC.prototype.Edge = EdgeC;
 
-    GraphC.prototype.publish("allowDragging", true, "boolean", "Allow Dragging of Vertices", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("layout", "Circle", "set", "Default Layout", ["Circle", "ForceDirected", "ForceDirected2", "Hierarchy", "None"], { tags: ["Basic"] });
-    GraphC.prototype.publish("scale", "100%", "set", "Zoom Level", ["all", "width", "selection", "100%", "90%", "75%", "50%", "25%", "10%"], { tags: ["Basic"] });
-    GraphC.prototype.publish("applyScaleOnLayout", false, "boolean", "Shrink to fit on Layout", null, { tags: ["Basic"] });
-    GraphC.prototype.publish("highlightOnMouseOverVertex", false, "boolean", "Highlight Vertex on Mouse Over", null, { tags: ["Basic"] });
-    GraphC.prototype.publish("highlightOnMouseOverEdge", false, "boolean", "Highlight Edge on Mouse Over", null, { tags: ["Basic"] });
-    GraphC.prototype.publish("transitionDuration", 250, "number", "Transition Duration", null, { tags: ["Intermediate"] });
-    GraphC.prototype.publish("showEdges", true, "boolean", "Show Edges", null, { tags: ["Intermediate"] });
-    GraphC.prototype.publish("snapToGrid", 0, "number", "Snap to Grid", null, { tags: ["Private"] });
+    GraphC.prototype.publish("allowDragging", true, "boolean", "Allow Dragging of Vertices", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("layout", "Circle", "set", "Default Layout", ["Circle", "ForceDirected", "ForceDirected2", "Hierarchy", "None"], {
+        tags: ["Basic"]
+    });
+    GraphC.prototype.publish("scale", "100%", "set", "Zoom Level", ["all", "width", "selection", "100%", "90%", "75%", "50%", "25%", "10%"], {
+        tags: ["Basic"]
+    });
+    GraphC.prototype.publish("applyScaleOnLayout", false, "boolean", "Shrink to fit on Layout", null, {
+        tags: ["Basic"]
+    });
+    GraphC.prototype.publish("highlightOnMouseOverVertex", false, "boolean", "Highlight Vertex on Mouse Over", null, {
+        tags: ["Basic"]
+    });
+    GraphC.prototype.publish("highlightOnMouseOverEdge", false, "boolean", "Highlight Edge on Mouse Over", null, {
+        tags: ["Basic"]
+    });
+    GraphC.prototype.publish("transitionDuration", 250, "number", "Transition Duration", null, {
+        tags: ["Intermediate"]
+    });
+    GraphC.prototype.publish("showEdges", true, "boolean", "Show Edges", null, {
+        tags: ["Intermediate"]
+    });
+    GraphC.prototype.publish("snapToGrid", 0, "number", "Snap to Grid", null, {
+        tags: ["Private"]
+    });
 
-    GraphC.prototype.publish("hierarchyRankDirection", "TB", "set", "Direction for Rank Nodes", ["TB", "BT", "LR", "RL"], { tags: ["Advanced"] });
-    GraphC.prototype.publish("hierarchyNodeSeparation", 50, "number", "Number of pixels that separate nodes horizontally in the layout", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("hierarchyEdgeSeparation", 10, "number", "Number of pixels that separate edges horizontally in the layout", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("hierarchyRankSeparation", 50, "number", "Number of pixels between each rank in the layout", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("hierarchyRankDirection", "TB", "set", "Direction for Rank Nodes", ["TB", "BT", "LR", "RL"], {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("hierarchyNodeSeparation", 50, "number", "Number of pixels that separate nodes horizontally in the layout", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("hierarchyEdgeSeparation", 10, "number", "Number of pixels that separate edges horizontally in the layout", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("hierarchyRankSeparation", 50, "number", "Number of pixels between each rank in the layout", null, {
+        tags: ["Advanced"]
+    });
 
-    GraphC.prototype.publish("forceDirectedLinkDistance", 300, "number", "Target distance between linked nodes", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedLinkStrength", 1, "number", "Strength (rigidity) of links", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedFriction", 0.9, "number", "Friction coefficient", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedCharge", -25, "number", "Charge strength ", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedChargeDistance", 10000, "number", "Maximum distance over which charge forces are applied", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedTheta", 0.8, "number", "Barnes–Hut approximation criterion", null, { tags: ["Advanced"] });
-    GraphC.prototype.publish("forceDirectedGravity", 0.1, "number", "Gravitational strength", null, { tags: ["Advanced"] });
+    GraphC.prototype.publish("forceDirectedLinkDistance", 300, "number", "Target distance between linked nodes", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedLinkStrength", 1, "number", "Strength (rigidity) of links", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedFriction", 0.9, "number", "Friction coefficient", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedCharge", -25, "number", "Charge strength ", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedChargeDistance", 10000, "number", "Maximum distance over which charge forces are applied", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedTheta", 0.8, "number", "Barnes–Hut approximation criterion", null, {
+        tags: ["Advanced"]
+    });
+    GraphC.prototype.publish("forceDirectedGravity", 0.1, "number", "Gravitational strength", null, {
+        tags: ["Advanced"]
+    });
 
     GraphC.prototype.draw = function () {
         if (this.element().node() === null) return;
@@ -95,7 +140,10 @@
     }
     //  Properties  ---
     GraphC.prototype.getOffsetPos = function () {
-        return { x: 0, y: 0 };
+        return {
+            x: 0,
+            y: 0
+        };
     };
 
     GraphC.prototype.size = function (_) {
@@ -105,14 +153,18 @@
                 .attr("x", -this._size.width / 2)
                 .attr("y", -this._size.height / 2)
                 .attr("width", this._size.width)
-                .attr("height", this._size.height)
-                ;
+                .attr("height", this._size.height);
         }
         return retVal;
     };
 
     GraphC.prototype.clear = function () {
-        this.data({ vertices: [], edges: [], hierarchy: [], merge: false });
+        this.data({
+            vertices: [],
+            edges: [],
+            hierarchy: [],
+            merge: false
+        });
     };
 
     GraphC.prototype.data = function (_) {
@@ -173,12 +225,16 @@
     GraphC.prototype.applyZoom = function (transitionDuration) {
         if (d3.event && d3.event.sourceEvent && d3.event.sourceEvent.ctrlKey && (d3.event.sourceEvent.type === "wheel" || d3.event.sourceEvent.type === "mousewheel" || d3.event.sourceEvent.type === "DOMMouseScroll")) {
             if (d3.event.sourceEvent.wheelDelta) {
+                debugger;
                 this.zoom.translate([this.prevTranslate[0], this.prevTranslate[1] + d3.event.sourceEvent.wheelDelta]);
                 this.zoom.scale(this.prevScale);
             }
         }
 
         var _translate = this.zoom.translate();
+        _translate[0] += this._size.width / 2;
+        _translate[1] += this._size.height / 2;
+        this._translate = _translate;
         var _scale = this.zoom.scale();
 
         this.log['translate x'] = _translate[0];
@@ -195,13 +251,14 @@
         console.log(_scale);
         console.log('----------------------------------------------');
 
-        var is_setting_transform = !this.prevTranslate || (this.prevTranslate[0] !== _translate[0] && this.prevTranslate[1] !== _translate[1]);
+        var is_setting_transform = !this.prevTranslate || this.prevTranslate[0] !== _translate[0] || this.prevTranslate[1] !== _translate[1];
         var is_setting_scale = this.prevScale !== this.zoom.scale();
+        console.log(`is_setting_transform: ${is_setting_transform}`);
+        console.log(`is_setting_scale: ${is_setting_scale}`);
 
         if (is_setting_transform || is_setting_scale) {
-            // this.ctx.setTransform(_scale, 0, 0, _scale, _translate[0], _translate[1]);
-            this.ctx.setTransform(1, 0, 0, 1, this._size.width / 2, this._size.height / 2);
-            this.ctx.translate(_translate[0], _translate[1]);
+            this.ctx.setTransform(1, 0, 0, 1, _translate[0], _translate[1]);
+            // this.ctx.translate(_translate[0], _translate[1]);
             this.ctx.scale(_scale, _scale);
         }
 
@@ -215,7 +272,69 @@
     GraphC.prototype.enter = function (domNode, element) {
         CanvasWidget.prototype.enter.apply(this, arguments);
         var context = this;
+        element.on("mousemove", function () {
+            var ctx = context.ctx;
+            context.draw();
+            var x = (d3.event.layerX - context._translate[0]) / context.zoom.scale();
+            var y = (d3.event.layerY - context._translate[1]) / context.zoom.scale();
+            context.data().vertices.forEach(vertex => {
+                var hovered_arr = vertex.getHoveredPolygons(x, y);
+                if (hovered_arr.length > 0) {
+                    hovered_arr.forEach(n => {
+                        console.log(n[4].tooltip);
+                        draw_poly_tooltip(n);
+                    });
+                }
+            });
 
+            function draw_poly_tooltip(poly_obj) {
+                var _x = poly_obj[0] + (poly_obj[2] / 2);
+                var _y = poly_obj[1] + (poly_obj[3] / 2);
+                var direction = poly_obj[4].direction ? poly_obj[4].direction : "up";
+                switch (direction) {
+                    case 'up':
+                        draw_tooltip(_x, _y, poly_obj[4].tooltip);
+                        break;
+                    case 'down':
+                        draw_tooltip(_x, _y, poly_obj[4].tooltip, true);
+                        break;
+                }
+            }
+
+            function draw_tooltip(x, y, txt, invert_y) {
+                ctx.textBaseline="bottom";
+                var text_h = 14;
+                ctx.font = text_h + "px Arial";
+                var padding = 4;
+                var text_w = ctx.measureText(txt).width;
+                var arrow_w = 16;
+                var arrow_h = 10;
+                var tooltip_w = text_w + (padding * 2);
+                var tooltip_h = text_h + (padding * 2);
+                if(invert_y){
+                    arrow_h *= -1;
+                    tooltip_h *= -1;
+                }
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - (arrow_w / 2), y - arrow_h);
+                ctx.lineTo(x - (tooltip_w / 2), y - arrow_h);
+                ctx.lineTo(x - (tooltip_w / 2), y - (arrow_h + tooltip_h));
+                ctx.lineTo(x + (tooltip_w / 2), y - (arrow_h + tooltip_h));
+                ctx.lineTo(x + (tooltip_w / 2), y - arrow_h);
+                ctx.lineTo(x + (arrow_w / 2), y - arrow_h);
+                ctx.lineTo(x, y);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = "#FFF";
+                if(invert_y){
+                    ctx.fillText(txt, x - (tooltip_w / 2) + padding, y - arrow_h + padding + text_h);
+                } else {
+                    ctx.fillText(txt, x - (tooltip_w / 2) + padding, y - arrow_h - padding);
+                }
+            }
+        })
         //  Zoom  ---
         this.prevTranslate = [0, 0];
         this.prevScale = 1;
@@ -235,13 +354,11 @@
                 switch (context._zoomMode) {
                     case "selection":
                         element.select(".extent")
-                            .style("visibility", null)
-                            ;
+                            .style("visibility", null);
                         break;
                     default:
                         element.select(".extent")
-                            .style("visibility", "hidden")
-                            ;
+                            .style("visibility", "hidden");
                         break;
                 }
             })
@@ -254,7 +371,6 @@
                     default:
                         break;
                 }
-                //context._svgBrush.call(context.brush.clear());
             })
             .on("zoom", function (d) {
                 switch (context._zoomMode) {
@@ -264,8 +380,8 @@
                         context.applyZoom();
                         break;
                 }
-            })
-            ;
+                context.draw();
+            });
         this.brush = d3.svg.brush()
             .x(d3.scale.identity().domain([-context._size.width / 2, context._size.width / 2]))
             .y(d3.scale.identity().domain([-context._size.height / 2, context._size.height / 2]))
@@ -286,8 +402,7 @@
                                 if (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]) {
                                     context._selection.append(d);
                                 }
-                            })
-                            ;
+                            });
                         context.graph_selection(context.selection());
                         break;
                     default:
@@ -304,14 +419,12 @@
                             .classed("selected", function (d) {
                                 return context._selection.isSelected(d) ||
                                     (extent[0][0] <= d.x() && d.x() < extent[1][0] && extent[0][1] <= d.y() && d.y() < extent[1][1]);
-                            })
-                            ;
+                            });
                         break;
                     default:
                         break;
                 }
-            })
-            ;
+            });
 
         //  Drag  ---
         function dragstart(d) {
@@ -330,10 +443,14 @@
                 }
             }
         }
+
         function drag(d) {
             if (context.allowDragging()) {
                 d3.event.sourceEvent.stopPropagation();
-                d.move({ x: d3.event.x, y: d3.event.y });
+                d.move({
+                    x: d3.event.x,
+                    y: d3.event.y
+                });
                 if (context.forceLayout) {
                     var forceNode = context.forceLayout.vertexMap[d.id()];
                     forceNode.fixed = true;
@@ -341,8 +458,10 @@
                     forceNode.y = forceNode.py = d3.event.y;
                 }
                 context.refreshIncidentEdges(d, true);
+                context.draw();
             }
         }
+
         function dragend(d) {
             if (context.allowDragging()) {
                 d3.event.sourceEvent.stopPropagation();
@@ -370,21 +489,32 @@
             })
             .on("dragstart", dragstart)
             .on("dragend", dragend)
-            .on("drag", drag)
-            ;
+            .on("drag", drag);
         element
             .attr("width", this._size.width)
-            .attr("height", this._size.height)
-            ;
+            .attr("height", this._size.height);
         this.ctx = domNode.getContext('2d');
 
         element.call(this.zoom);
+        this.draw();
+
+        setTimeout(function(){
+            context.draw();
+        },1000);
     };
 
     GraphC.prototype.getBounds = function (items, layoutEngine) {
-        var vBounds = [[null, null], [null, null]];
+        var vBounds = [
+            [null, null],
+            [null, null]
+        ];
         items.forEach(function (item) {
-            var pos = layoutEngine ? layoutEngine.nodePos(item._id) : { x: item.x(), y: item.y(), width: item.width(), height: item.height() };
+            var pos = layoutEngine ? layoutEngine.nodePos(item._id) : {
+                x: item.x(),
+                y: item.y(),
+                width: item.width(),
+                height: item.height()
+            };
             if (pos) {
                 var leftX = pos.x - pos.width / 2;
                 var rightX = pos.x + pos.width / 2;
@@ -502,15 +632,16 @@
                                 var vertex = context.graphData.node(item.id);
                                 if (vertex) {
                                     vertex
-                                        .move({ x: item.x, y: item.y })
-                                        ;
+                                        .move({
+                                            x: item.x,
+                                            y: item.y
+                                        });
                                 }
                             }
                         });
                         context.graphData.edgeValues().forEach(function (item) {
                             item
-                                .points([], false, false)
-                                ;
+                                .points([], false, false);
                         });
                         if (context.applyScaleOnLayout()) {
                             var vBounds = context.getVertexBounds(layoutEngine);
@@ -524,20 +655,21 @@
                     context._dragging = true;
                     context.graphData.nodeValues().forEach(function (item) {
                         var pos = layoutEngine.nodePos(item._id);
-                        item.move({ x: pos.x, y: pos.y }, transitionDuration);
+                        item.move({
+                            x: pos.x,
+                            y: pos.y
+                        }, transitionDuration);
                         if (pos.width && pos.height && !item.width() && !item.height()) {
                             item
                                 .width(pos.width)
                                 .height(pos.height)
-                                .render()
-                                ;
+                                .render();
                         }
                     });
                     context.graphData.edgeValues().forEach(function (item) {
                         var points = layoutEngine.edgePoints(item);
                         item
-                            .points(points, transitionDuration)
-                            ;
+                            .points(points, transitionDuration);
                     });
 
                     if (context.applyScaleOnLayout()) {
@@ -546,10 +678,10 @@
                     }
                     setTimeout(function () {
                         context._dragging = false;
-                    }, transitionDuration ? transitionDuration + 50 : 50);  //  Prevents highlighting during morph  ---
+                    }, transitionDuration ? transitionDuration + 50 : 50); //  Prevents highlighting during morph  ---
                 }
             }
-            context.draw();
+            context.zoomTo('all');
         }
         return retVal;
     };
@@ -557,19 +689,16 @@
     //  Render  ---
     GraphC.prototype.update = function (domNode, element) {
         CanvasWidget.prototype.update.apply(this, arguments);
-        console.log('CANVAS (before)', JSON.stringify(this.graphData.nodeValues().map(n => [n.x(), n.y()])));
         var context = this;
 
         if (!this._renderCount) {
             this._renderCount++;
-            this.setZoom([this._size.width / 2, this._size.height / 2], 1);
+            this.setZoom([0.1, 0], 1);
             this.layout(this.layout());
         }
         this.clearCanvas();
         this.drawLinks();
         this.drawNodes();
-
-        console.log('CANVAS (after)', JSON.stringify(this.graphData.nodeValues().map(n => [n.x(), n.y()])));
     };
 
     //  Methods  ---
@@ -606,7 +735,7 @@
                     ranksep: this.hierarchyRankSeparation()
                 });
         }
-        return null;//new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
+        return null; //new GraphLayouts.None(this.graphData, this._size.width, this._size.height);
     };
 
     GraphC.prototype.getNeighborMap = function (vertex) {
@@ -637,7 +766,9 @@
         var context = this;
         var vertexElements = this.svgV.selectAll(".graphVertex");
         vertexElements
-            .classed("graphVertex-highlighted", function (d) { return !vertexMap || vertexMap[d.id()]; })
+            .classed("graphVertex-highlighted", function (d) {
+                return !vertexMap || vertexMap[d.id()];
+            })
             .transition().duration(this.transitionDuration())
             .each("end", function (d) {
                 if (vertexMap && vertexMap[d.id()]) {
@@ -651,8 +782,7 @@
                     return 1;
                 }
                 return context.highlight.opacity;
-            })
-            ;
+            });
         return this;
     };
 
@@ -660,7 +790,9 @@
         var context = this;
         var edgeElements = this.svgE.selectAll(".graphEdge");
         edgeElements
-            .classed("graphEdge-highlighted", function (d) { return !edgeMap || edgeMap[d.id()]; })
+            .classed("graphEdge-highlighted", function (d) {
+                return !edgeMap || edgeMap[d.id()];
+            })
             .style("stroke-width", function (o) {
                 if (edgeMap && edgeMap[o.id()]) {
                     return context.highlight.edge;
@@ -672,8 +804,7 @@
                     return 1;
                 }
                 return context.highlight.opacity;
-            })
-            ;
+            });
         return this;
     };
 
@@ -713,14 +844,12 @@
         this.graphData.nodeEdges(d.id()).forEach(function (id) {
             var edge = context.graphData.edge(id);
             edge
-                .points([], false, skipPushMarkers)
-                ;
+                .points([], false, skipPushMarkers);
         });
     };
 
     //  Events  ---
-    GraphC.prototype.graph_selection = function (selection) {
-    };
+    GraphC.prototype.graph_selection = function (selection) {};
 
     GraphC.prototype.vertex_click = function (row, col, sel, more) {
         if (more && more.vertex) {
@@ -729,8 +858,7 @@
         IGraph.prototype.vertex_click.apply(this, arguments);
     };
 
-    GraphC.prototype.vertex_dblclick = function (row, col, sel, more) {
-    };
+    GraphC.prototype.vertex_dblclick = function (row, col, sel, more) {};
 
     GraphC.prototype.vertex_mouseover = function (element, d) {
         this.highlightVertex(element, d);
