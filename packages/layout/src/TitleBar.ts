@@ -94,6 +94,8 @@ export class TitleBar extends HTMLWidget {
     _divMain: d3SelectionType;
     _divIconBar: d3SelectionType;
     _divTitle: d3SelectionType;
+    _divTitleText: d3SelectionType;
+    _divTitleIcon: d3SelectionType;
     _buttons: Widget[] = [];
 
     constructor() {
@@ -105,6 +107,14 @@ export class TitleBar extends HTMLWidget {
         this._divTitle = element.append<HTMLElement>("div")
             .attr("class", "title")
             ;
+        this._divTitleIcon = this._divTitle.append<HTMLElement>("div")
+            .attr("class", "title-icon")
+            .style("font", this.titleIconFont())
+            ;
+        this._divTitleText = this._divTitle.append<HTMLElement>("div")
+            .attr("class", "title-text")
+            .style("font", this.titleFont())
+        ;
         this._divIconBar = element.append<HTMLElement>("div")
             .attr("class", "icon-bar")
             ;
@@ -121,7 +131,13 @@ export class TitleBar extends HTMLWidget {
     update(domNode, element) {
         super.update(domNode, element);
 
-        this._divTitle.text(this.title());
+        this._divTitleIcon.text(this.titleIcon());
+        if (this.titleIcon() !== "") {
+            this._divTitleIcon.style("display", "inline-block");
+        } else {
+            this._divTitleIcon.style("display", "none");
+        }
+        this._divTitleText.text(this.title());
 
         const icons = this._divIconBar.selectAll(".icon-bar-item").data(this.buttons());
         icons.enter().append("div")
@@ -148,6 +164,15 @@ TitleBar.prototype._class += " layout_TitleBar";
 export interface TitleBar {
     title(): string;
     title(_: string): this;
+    titleFont(): string;
+    titleFont(_: string): this;
+    titleIcon(): string;
+    titleIcon(_: string): this;
+    titleIconFont(): string;
+    titleIconFont(_: string): this;
 }
 TitleBar.prototype.publish("title", "", "string");
+TitleBar.prototype.publish("titleFont", "", "string");
+TitleBar.prototype.publish("titleIcon", "", "string");
+TitleBar.prototype.publish("titleIconFont", "FontAwesome", "string");
 TitleBar.prototype.publish("buttons", [], "widgetArray", null, { internal: true });

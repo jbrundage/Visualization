@@ -1,21 +1,44 @@
 .layout_TitleBar {
-    display: flex;
-    flex-flow: row;    
-    justify-content: space-between;    
+    /* display: flex;
+    flex-flow: row;     */
+    /* justify-content: space-between;     */
+    display: inline-block;
+    width: 100%;
 }
 
 .layout_TitleBar .title {
-    padding:4px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     font-size:20px;
     font-weight: bold;
+    float: left;
+}
+.layout_TitleBar .title-text {
+    display: inline-block;
+    padding: 4px;
+    /* margin-left: 28px; */
+    /* float: left; */
+}
+.layout_TitleBar .title-icon {
+    padding: 4px;
+    height: 20px;
+    width: 20px;
+    float: left;
 }
 
 .layout_TitleBar .icon-bar {
-    display: flex;
-    flex-flow: row;    
+    float: right;
+    /* display: flex;
+    flex-flow: row;     */
+    padding: 4px;
+    margin: 4px;
+    white-space: nowrap;
+    line-height: 28px;
+}
+.layout_TitleBar .icon-bar > .icon-bar-item{
+    display: inline-block;
+    float: left;
     margin:4px;
     white-space: nowrap;
     line-height: 28px;
