@@ -140,7 +140,7 @@
             var _y = y;
             var _anno_width_sum = 0;
             ctx.textAlign = 'left';
-            ctx.font = label_font_size + 'px ' + label_font_family;
+            ctx.font = label_font_size + 'px ' + icon_font_family;
             context.annotationIcons().forEach(function (anno_obj) {
                 var poly_info_obj = {
                     vertex: context,
