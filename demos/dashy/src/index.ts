@@ -373,7 +373,10 @@ export class App {
         commands.addCommand("dash_add_ddl", {
             label: "Add DDL",
             execute: () => {
-                this.importV1DDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
+                let _url = 'http://10.241.100.159:8002/WsEcl/submit/query/roxie/prichajx_govottocustomerstats.ins109_service_1/json';
+                // let _url = 'http://10.241.100.157:8002/WsEcl/submit/query/roxie/carmigjx_healthcaresuspectaddressgraph.ins005_service_1/json';
+                this.importV1DDL(_url, ddl);
+                // this.importV1DDL("http://10.173.147.1:8010/WsWorkunits/WUResult.json?Wuid=W20170905-105711&ResultName=pro2_Comp_Ins122_DDL", ddl);
             }
         });
 
