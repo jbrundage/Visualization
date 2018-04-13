@@ -78,7 +78,7 @@ function safeEncode(item) {
 const LINE_SPLITTER = `<br><hr class='dgrid-fakeline'>`;
 const LINE_SPLITTER2 = `<br><hr class='dgrid-fakeline' style='visibility: hidden'>`;
 
-class RowFormatter {
+export class RowFormatter {
     private _columns;
     private _flattenedColumns = [];
     private _columnIdx = {};
