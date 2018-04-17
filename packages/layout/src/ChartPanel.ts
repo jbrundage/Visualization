@@ -17,6 +17,7 @@ export class ChartPanel extends Border2 implements IHighlight {
     private _modal = new Modal();
     private _highlight: boolean;
     private _scale: number;
+    private _orig_size: any;
 
     private _toggleInfo = new ToggleButton("fa-info-circle", ".Description")
         .selected(false)
@@ -231,14 +232,22 @@ export class ChartPanel extends Border2 implements IHighlight {
     }
 
     preUpdateSmall(element) {
-        const scale_x = this.size().width / this._resolutions.small.width;
-        const scale_y = this.size().height / this._resolutions.small.height;
+        console.log('-------------------------------');
+        console.log(this.title());
+        console.log('before',JSON.stringify(this._orig_size));
+        const scale_x = (this._orig_size.width - 2) / this._resolutions.small.width;
+        const scale_y = (this._orig_size.height - 2) / this._resolutions.small.height;
         this._scale = Math.min(scale_x, scale_y);
         const x_is_smaller = this._scale === scale_x;
-        this.size({
-            width: x_is_smaller ? this._resolutions.small.width : this.size().width * (1 / this._scale),
-            height: !x_is_smaller ? this._resolutions.small.height : this.size().height * (1 / this._scale)
-        });
+        console.dir(this._orig_size.width);
+        const _new_size = {
+            width: x_is_smaller ? this._resolutions.small.width : this._orig_size.width * (1 / this._scale),
+            height: !x_is_smaller ? this._resolutions.small.height : this._orig_size.height * (1 / this._scale)
+        };
+        console.log(this._scale);
+        console.log('after',JSON.stringify(_new_size));
+        console.log('-------------------------------');
+        this.size(_new_size);
         element.select("div.title-icon").style("position", "static");
         element.selectAll("lhs").style("display", "none");
         element.selectAll("div.body,div.title-text,div.icon-bar").style("display", "");
@@ -255,6 +264,7 @@ export class ChartPanel extends Border2 implements IHighlight {
 
     private _prevChartDataFamily;
     update(domNode, element) {
+        if(!this._orig_size)this.resetOrigSize();
         const _responsiveMode = this.getResponsiveMode();
         switch (_responsiveMode) {
             case "tiny":
@@ -296,7 +306,9 @@ export class ChartPanel extends Border2 implements IHighlight {
                 break;
         }
     }
-
+    resetOrigSize() {
+        this._orig_size = JSON.parse(JSON.stringify(this.size()));
+    }
     postUpdateTiny(element) {
         element.selectAll("div.body,div.title-text,div.icon-bar").style("display", "none");
         element.selectAll("div.data-count")

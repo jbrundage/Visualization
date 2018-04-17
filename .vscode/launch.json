@@ -5,11 +5,10 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "file:///${workspaceRoot}/demos/dermatology/www/index-dev.html",
+            "url": "file:///${workspaceRoot}/demos/catalog/index.html",
             "webRoot": "${workspaceRoot}",
             "runtimeArgs": [
-                "--allow-file-access-from-files",
-                "--allow-file-access",
+                "--disable-web-security"
             ]
         }
     ]

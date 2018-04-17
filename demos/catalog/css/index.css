@@ -1,0 +1,234 @@
+/* font-family: 'Cutive Mono', monospace; */
+
+/* font-family: 'Share Tech Mono', monospace; */
+
+/* font-family: 'Fira Mono', monospace; */
+
+/* font-family: 'Nova Mono', monospace; */
+
+/* font-family: 'Source Code Pro', monospace; */
+
+/* font-family: 'Inconsolata', monospace; */
+body {
+    font-family: 'Cutive Mono', monospace;
+    overflow: hidden;
+}
+#wrapper .layout_Modal-title {
+    font-family: 'Source Code Pro', monospace;
+}
+#topnav #label {
+    font-family: 'Fira Mono', monospace;
+    font-family: 'Cutive Mono', monospace;
+}
+.icon-btn > span {
+    font-family: 'Source Code Pro', monospace;
+    display: inline-block;
+    position: relative;
+    top: 0px;
+    font-size: 36px;
+}
+#topnav ul>li {
+    font-family: 'Source Code Pro', monospace;
+}
+
+.widget-thumb>b,
+.widget-thumb>i {
+    font-family: 'Source Code Pro', monospace;
+    /* font-family: 'Nova Mono', monospace; */
+    /* font-family: 'Fira Mono', monospace; */
+}
+
+#topnav {
+    width: 100%;
+    height: 45px;
+    border-bottom: 1px solid #DDD;
+}
+
+#topnav>div {
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    font-size: 38px;
+    margin: 4px;
+}
+
+#topnav ul {
+    margin: 0;
+    margin-top: 0;
+    padding: 0;
+    max-width: 200px;
+    overflow-x: visible;
+}
+
+#topnav ul>li {
+    font-size: 38px;
+    list-style-type: none;
+    text-align: center;
+    margin: 20px;
+}
+
+#topnav>div>div {
+    float: left;
+    margin: 0;
+    margin-top: -2px;
+}
+
+#topnav>#left_controls {
+    float: left;
+}
+
+#topnav>#right_controls {
+    float: right;
+}
+#data_list{
+    display: none;
+}
+#data_list *{
+    font-style: italic;
+    font-weight: normal!important;
+}
+#package_list_wrapper,
+#widget_list_wrapper,
+#data_list_wrapper {
+    height: 32px;
+    padding: 4px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+#package_list_wrapper:hover,
+#widget_list_wrapper:hover,
+#data_list_wrapper:hover {
+    background-color: #DDD;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+#wrapper {
+    width: 100%;
+    height: calc(100vh - 54px);
+    overflow-y: scroll;
+    padding-top: 15px;
+}
+
+.widget-thumb {
+    float: left;
+    height: 180px;
+    width: 30.3333%;
+    margin: 0px 1% 15px 1%;
+    padding-top: 15px;
+    overflow: hidden;
+}
+
+.widget-thumb > span{
+    float: left;
+    margin-top: -15px;
+    width: 100%;
+}
+.widget-thumb > *{
+    clear: both;
+}
+
+
+.widget-thumb-xl {
+    height: 390px;
+}
+
+.hidden {
+    display: none;
+}
+
+#expanded-list {
+    position: relative;
+    overflow: hidden;
+}
+
+.expanded-item {
+    padding: 4px;
+    background-color: #FFFFFF;
+    line-height: 27px;
+    padding-left: 12px;
+    font-weight: bold;
+}
+
+.expanded-item:hover {
+    background-color: #DDD;
+    cursor: pointer;
+    /* border-radius: 4px; */
+}
+
+#expanded-list {
+    border-top: 4px solid #DDD;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    column-gap: 0px;
+    -webkit-column-break-inside: avoid;
+}
+
+#topnav .icon-btn {
+    font-size: 32px;
+    padding: 5px 6px 4px 6px;
+}
+.icon-btn {
+    padding: 0px 2px;
+}
+
+.icon-btn:hover {
+    cursor: pointer;
+    background-color: #DDD;
+    border-radius: 4px;
+}
+.icon-btn:active {
+    background-color: #CCC;
+}
+.clickable-text:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+#wrapper .layout_Modal .layout_Modal-header {
+    width: 100%;
+    background-color: #FFF;
+}
+#wrapper .layout_Modal-title {
+    color: #000;
+}
+#wrapper .layout_Modal-closeButton > .fa-close {
+    color: #BBB;
+}
+#wrapper .layout_Modal-closeButton > .fa-close:hover {
+    color: #000;
+}
+#wrapper .layout_Modal-body .other_Html{
+    overflow: hidden;
+    height: 100%;
+}
+#myHtmlElementId{
+    position: absolute;
+}
+#modal_code_preview{
+    position: absolute;
+}
+#modal_code_preview > div,
+#modal_code_preview > div > div{
+    height: 100%;
+}
+#modal_code_preview .CodeMirror{
+    height: 100%!important;
+    width: 100%!important;
+}
+.right{
+    float: right;
+}
+.red-text{
+    color: red;
+}
+ul#widget_list {
+    max-width: 400px;
+}
+
+ul#widget_list li.active {
+    text-align: left;
+}

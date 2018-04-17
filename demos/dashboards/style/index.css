@@ -1,0 +1,135 @@
+/* *{box-sizing: border-box;} */
+body{
+    padding:0;
+    margin:0;
+    overflow-x:hidden;
+    height: 100vh;
+    width: 100%;
+    position: relative;
+}
+#topnav{
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid #DDD;
+    z-index: 1000;
+}
+#placeholder{
+    position: relative;
+    top: -17px;
+    width: calc(100% - 0px);
+    height: calc(100% - 51px);
+    z-index: 900;
+}
+body{
+    font-family: 'Source Code Pro';
+}
+#topnav h1,
+#topnav h2,
+#topnav h3,
+#topnav > i{
+    padding: 3px 0px 2px 8px;
+    /* font-size: 16px; */
+    margin: 0px;
+    float: left;
+}
+#topnav h2{
+    margin-top: 5px;
+    margin-left: 6px;
+}
+#topnav > i{
+    margin-top: 3px;
+}
+#topnav > #topnav-left-options{
+    float: left;
+    padding: 9px 0;
+    height: 50px;
+}
+#topnav > #topnav-right-options{
+    float: right;
+    padding: 9px 0;
+    height: 50px;
+    padding-right: 10px;
+    position: fixed;
+    right: 0px;
+}
+#topnav > .spacer{
+    float: left;
+    height: 31px;
+    border-left: 1px solid #DDD;
+    margin: 9px 7px 0 15px;
+}
+#dashboard-dropdown{
+    float: left;
+}
+#dashboard-dropdown{
+    overflow: hidden;
+    height: 30px;
+    background-color: #DDD;
+    border-radius: 4px;
+}
+#dashboard-dropdown:hover{
+    cursor: pointer;
+}
+#dashboard-dropdown.expanded > ul{
+    cursor: pointer;
+    padding: 0 4px 4px 4px;
+    border: 1px solid #ddd;
+    border-top: 0;
+}
+#dashboard-dropdown i{
+    height: 20px;
+    width: 20px;
+}
+#dashboard-dropdown ul{
+    display: none;
+}
+#dashboard-dropdown.expanded{
+    overflow: visible;
+}
+#dashboard-dropdown.expanded ul{
+    display: block;
+}
+#dashboard-dropdown > i{
+    float: left;
+    margin-top: 7px;
+    margin-left: 6px;
+}
+#dashboard-dropdown > span{
+    float: left;
+    margin-top: -2px;
+    margin-left: 6px;
+    margin-right: 2px;
+}
+#dashboard-dropdown span{
+    font-size: 1.5em;
+}
+#dashboard-dropdown ul{
+    padding: 0;
+    margin: 0;
+    margin-top: 11px;
+    margin-left: -8px;
+    float: left;
+    clear: both;
+    background-color: #FFF;
+}
+#dashboard-dropdown ul > li{
+    list-style-type: none;
+}
+#dashboard-dropdown ul > li:hover{
+    background-color: #DDD;
+    border-radius: 4px;
+}
+#dashboard-dropdown ul > li > span{
+    padding-right: 23px;
+}
+#dashboard-dropdown ul > li > i{
+    margin: 0px 6px 0px 9px;
+}
+#topnav-right-options .icon-btn{
+    line-height: 31px;
+    height: 31px;
+    width: 31px;
+    text-align: center;
+    background-color: #ddd;
+    border-radius: 4px;
+}

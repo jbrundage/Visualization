@@ -1,0 +1,99 @@
+
+<html>
+
+<head>
+    <title>HPCCJS Demo Page</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+    <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'></link>
+    
+    <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+    <script src='lib/d3.js'></script>
+
+    <script src='js/temp_marshaller.js'></script>
+    <script src='js/sample_dashboards.js'></script>
+    <script src='js/main.js'></script>
+
+    <script src='js/layout_converter.js'></script>
+
+    <link rel="stylesheet" href="css/index.css">
+
+    <script src='js/default_widget_params.js'></script>
+    <script src='js/random_widget_params.js'></script>
+
+    <script src='js/generate_data.js'></script>
+    <script src='js/click_interactions.js'></script>
+
+    <script src='js/package_special_handling.js'></script>
+    <script src='js/widget_special_handling.js'></script>
+
+    <script src='js/font_awesome_mappings.js'></script>
+    <script src='js/favorites.js'></script>
+    <script src='js/logging.js'></script>
+
+    <script src="../../packages/loader/dist/index.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.dev("../../../packages", { "test": "../tests" }, "../../../node_modules");
+        var packages = [
+            "@hpcc-js/common",
+            "@hpcc-js/comms",
+            // "@hpcc-js/amchart",
+            "@hpcc-js/marshaller",
+            "@hpcc-js/layout",
+            "@hpcc-js/phosphor",
+            "@hpcc-js/chart",
+            "@hpcc-js/codemirror",
+            "@hpcc-js/other",
+            "@hpcc-js/map",
+            "@hpcc-js/dgrid"
+        ];
+        require(packages,function(a,b,c){
+            let _args = arguments;
+            packages.forEach(function(_pack,i){
+                window[_pack] = _args[i];
+            });
+            init_page();
+            attach_log();
+        });
+        
+    </script>
+</head>
+
+<body style="padding:0;margin:0;">
+    <div id="topnav">
+        <div id="label">hpccjs</div>
+        <div id="left_controls">
+            <div id="package_list_wrapper" class="list-wrapper">
+                <ul id="package_list"></ul>
+            </div>
+            <div id="widget_list_wrapper" class="list-wrapper">
+                <ul id="widget_list"></ul>
+            </div>
+            <div id="data_list_wrapper" class="list-wrapper">
+                <ul id="data_list"></ul>
+            </div>
+        </div>
+        <div id="right_controls">
+            <label style="float: left;margin-top: 9px;">
+                <select id="data_filter_select" onchange="changed_data_filter()">
+                    <option value="1">Only Show Compatible Data Shapes</option>
+                    <option value="2">Show All Data Shapes</option>
+                    <option value="3">Select A Data Shape</option>
+                </select>
+            </label>
+            <div id="zoomin_button" class="icon-btn fa fa-search-minus" onclick="clicked_search_minus()"></div>
+            <div id="zoomout_button" class="icon-btn fa fa-search-plus" onclick="clicked_search_plus()"></div>
+            <div id="randomize_button" class="icon-btn fa fa-random" onclick="clicked_randomize()"></div>
+            <div id="favorites_button" class="icon-btn fa fa-heart" onclick="clicked_view_favorites()"></div>
+            <!-- <div id="movies_button" class="icon-btn fa fa-film" onclick="clicked_movies()"></div> -->
+        </div>
+    </div>
+    <div id="wrapper">
+        <div id="head-wrapper"></div>
+        <div id="body-wrapper"></div>
+        <div id="foot-wrapper"></div>
+    </div>
+</body>
+
+</html>

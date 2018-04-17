@@ -1,0 +1,85 @@
+<html>
+
+<head>
+    <title>THREEjs</title>
+    <script src='js/three.js'></script>
+    <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+</head>
+
+<body>
+
+<script>
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    var lights = [];
+    lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+    lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+    lights[ 2 ] = new THREE.PointLight( 0xffffff, 1, 0 );
+
+    lights[ 0 ].position.set( 0, 200, 0 );
+    lights[ 1 ].position.set( 100, 200, 100 );
+    lights[ 2 ].position.set( - 100, - 200, - 100 );
+
+    scene.add( lights[ 0 ] );
+    scene.add( lights[ 1 ] );
+    scene.add( lights[ 2 ] );
+
+    var arr = [2,3];
+    var size = 5;
+    arr.forEach(function(n,i){
+        var geometry = new THREE.BoxGeometry(0.99, 0.29, 0.99);
+        var cube = new THREE.Mesh(
+            geometry,
+            new THREE.MeshPhongMaterial( {
+					color: 0x156289,
+					emissive: 0x072534,
+					side: THREE.DoubleSide,
+					flatShading: true
+				} )
+        );
+        cube.position.x += (i%size);
+        cube.position.y -= 1;
+        scene.add(cube);
+    });
+
+    camera.position.z = 5;
+
+    var animate = function () {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    };
+    $(n=>{
+        animate();
+        window.is_dragging = false;
+        window.drag_start_x = 0;
+        window.drag_start_y = 0;
+        $('body').on("mousedown",function(){
+            is_dragging = true;
+            window.drag_start_x = event.clientX;
+            window.drag_start_y = event.clientY;
+            window.drag_prev_x = event.clientX;
+            window.drag_prev_y = event.clientY;
+        });
+        $('body').on("mouseup",function(){
+            is_dragging = false;
+        });
+        $('body').on("mousemove",function(){
+            if(is_dragging){
+                window.drag_delta_x = event.clientX - drag_prev_x;
+                window.drag_delta_y = event.clientY - drag_prev_y;
+                drag_prev_x = event.clientX;
+                drag_prev_y = event.clientY;
+                camera.position.x -= drag_delta_x*0.01;
+                camera.position.y += drag_delta_y*0.01;
+            }
+        });
+    })
+    animate();
+</script>
+</body>
+
+</html>

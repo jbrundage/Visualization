@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Dashboards</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+    <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css'></link>
+    
+    <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+
+    <script src='js/temp_marshaller.js'></script>
+    <script src='js/sample_dashboards.js'></script>
+    <script src='js/main.js'></script>
+
+    <script src='js/layout_converter.js'></script>
+
+    <link rel="stylesheet" href="style/index.css">
+
+    <script src="../../packages/loader/dist/index.js"></script>
+    <script>
+        var hpccLoader = window["@hpcc-js/loader"];
+        var require = hpccLoader.dev("../../../packages", { "test": "../tests" }, "../../../node_modules");
+        var packages = [
+            "@hpcc-js/comms",
+            // "@hpcc-js/amchart",
+            "@hpcc-js/marshaller",
+            "@hpcc-js/phosphor",
+            "@hpcc-js/chart",
+            "@hpcc-js/codemirror",
+            "@hpcc-js/other",
+            "@hpcc-js/map",
+            "@hpcc-js/dgrid"
+        ];
+        require(packages,function(a,b,c){
+            let _args = arguments;
+            packages.forEach(function(_pack,i){
+                window[_pack] = _args[i];
+            });
+            init_page();
+        });
+    </script>
+</head>
+
+<body>
+    <div id="topnav">
+        <h1>hpcc-js</h1>
+        <h2>dashboards</h2>
+        <div class="spacer"></div>
+        <div id="topnav-left-options">
+            <select id="dashboard-select" onchange="dashboard_selected(this)">
+
+            </select>
+            <div id="dashboard-dropdown" style="display:none;" class="dropdown-list" onclick="clicked_dashboard_dropdown()">
+                <i id="icon" class="fa fa-user"></i>
+                <span id="dashboard_title">loading...</span>
+                <i class="fa fa-caret-down"></i>
+                <ul>
+                    <li><i class="fa fa-user"></i><span>asdf</span></li>
+                    <li><i class="fa fa-user"></i><span>asdf</span></li>
+                    <li><i class="fa fa-user"></i><span>asdf</span></li>
+                    <li><i class="fa fa-user"></i><span>asdf</span></li>
+                    <li><i class="fa fa-user"></i><span>asdf</span></li>
+                </ul>
+            </div>
+        </div>
+        <div id="topnav-right-options">
+            <div class="icon-btn fa fa-bug"></div>
+            <div class="icon-btn fa fa-cogs"></div>
+        </div>
+    </div>
+    <div id="placeholder"></div>
+</body>
+
+</html>
