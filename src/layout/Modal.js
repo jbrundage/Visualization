@@ -35,6 +35,8 @@
     Modal.prototype.publish("minHeight", "400px", "string", "minHeight");
     Modal.prototype.publish("maxWidth", "800px", "string", "maxWidth");
     Modal.prototype.publish("maxHeight", "800px", "string", "maxHeight");
+    Modal.prototype.publish("fixedWidth", null, "string", "fixedWidth");
+    Modal.prototype.publish("fixedHeight", null, "string", "fixedHeight");
 
     Modal.prototype.closeModal = function () {
         this.visible(false);
@@ -57,15 +59,31 @@
         return document.body;
     };
     
-    Modal.prototype.setModalSizeLimits = function () {
-        if(this.minHeight() || this.minWidth()){
+    Modal.prototype.setModalSize = function () {
+        if (this.fixedHeight() !== null && this.fixedWidth() !== null) {
+            this._modal.style({
+                'height':this.fixedHeight(),
+                'width':this.fixedWidth(),
+                'min-height':null,
+                'min-width':null,
+                'max-height':null,
+                'max-width':null
+            });
+        } else if(this.minHeight() || this.minWidth()){
             this._modal.style({
                 'min-height':this.minHeight(),
                 'min-width':this.minWidth(),
                 'max-height':this.maxHeight(),
-                'max-width':this.maxWidth(),
+                'max-width':this.maxWidth()
             });
         }
+        var modalRect = this._modal.node().getBoundingClientRect();
+        var headerRect = this._modalHeader.node().getBoundingClientRect();
+        this._modalBody
+            .style("height",(modalRect.height - headerRect.height) + "px")
+            .style("width",modalRect.width);
+
+        return modalRect;
     };
     
     Modal.prototype.setFadePosition = function(rect) {
@@ -79,18 +97,19 @@
     };
     
     Modal.prototype.setModalPosition = function(rect) {
-        var contentRect = this._modal.node().getBoundingClientRect();
-        var _contentStyles = {
-            top: (rect.top + (rect.height/2) - (contentRect.height/2))+"px",
-            left: (rect.left + (rect.width/2) - (contentRect.width/2))+"px",
-            width: contentRect.width+"px",
-            height: contentRect.height+"px",
-        };
-        if(this.minHeight() || this.minWidth()){
-            _contentStyles['min-height'] = this.minHeight();
-            _contentStyles['min-width'] = this.minWidth();
+        var modalRect = this.setModalSize();
+        if (this.fixedHeight() !== null && this.fixedWidth() !== null) {
+            this._modal.style({
+                top: (rect.top + (rect.height/2) - (modalRect.height/2))+"px",
+                left: (rect.left + (rect.width/2) - (modalRect.width/2))+"px",
+            });
+        } else if(this.minHeight() || this.minWidth()){
+            var contentRect = this._modal.node().getBoundingClientRect();
+            this._modal.style({
+                top: (rect.top + (rect.height/2) - (contentRect.height/2))+"px",
+                left: (rect.left + (rect.width/2) - (contentRect.width/2))+"px",
+            });
         }
-        this._modal.style(_contentStyles);
     };
 
     Modal.prototype.enter = function (domNode, element) {
@@ -114,10 +133,14 @@
         ;
 
         this._modalHeaderTitle = this._modalHeader.append('div').classed('layout_Modal-title',true).text(this.title());
+        this._modalHeaderTitle.style({
+            "left": this.headerPadding(),
+            "top": this.headerPadding()
+        });
         this._modalHeaderAnnotations = this._modalHeader.append('div').classed('layout_Modal-annotations',true);
         this._modalHeaderAnnotations.style({
-            "right": this._modalHeader.style('padding-right'),
-            "top": this._modalHeader.style('padding-top')
+            "right": this.headerPadding(),
+            "top": this.headerPadding()
         });
 
         this._modalHeaderCloseButton = this._modalHeaderAnnotations.append('div').classed('layout_Modal-closeButton',true).html('<i class="fa fa-close"></i>');
@@ -131,7 +154,7 @@
         });
 
         this._widget.target(this._modalBody.node());
-        this.setModalSizeLimits();
+        // this.setModalSize();
     };    
     
     Modal.prototype.update = function (domNode, element) {
@@ -140,13 +163,16 @@
         this._fade.classed('layout_Modal-fade-hidden', !this.showFade());
         this._relativeTarget = this.getRelativeTarget();
 
-        this.setModalSizeLimits();
+        this._modalHeaderTitle.text(this.title());
+
+        var rect = this._relativeTarget.getBoundingClientRect();
+        this.setModalPosition(rect);
     };
 
     Modal.prototype.exit = function (domNode, element) {
         HTMLWidget.prototype.exit.apply(this, arguments);
         this._widget.target(null);
-    }
+    };
 
     Modal.prototype.render = function (callback) {
         var context = this;
