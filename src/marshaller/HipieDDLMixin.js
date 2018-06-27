@@ -1,11 +1,11 @@
 "use strict";
 (function (root, factory) {
     if (typeof define === "function" && define.amd) {
-        define(["d3", "../common/Class", "../common/PropertyExt", "../common/Utility", "./HipieDDL", "../other/Persist", "../layout/Surface", "./FlyoutButton"], factory);
+        define(["d3", "../common/Class", "../common/PropertyExt", "../common/Utility", "./HipieDDL", "../other/Persist", "../layout/Modal", "../layout/Surface", "./FlyoutButton"], factory);
     } else {
-        root.marshaller_HipieDDLMixin = factory(root.d3, root.common_Class, root.common_PropertyExt, root.common_PropertyExt, root.common_Utility, root.other_Persist, root.layout_Surface, root.marshaller_FlyoutButton);
+        root.marshaller_HipieDDLMixin = factory(root.d3, root.common_Class, root.common_PropertyExt, root.common_PropertyExt, root.common_Utility, root.other_Persist, root.layout_Modal, root.layout_Surface, root.marshaller_FlyoutButton);
     }
-}(this, function (d3, Class, PropertyExt, Utility, HipieDDL, Persist, Surface, FlyoutButton) {
+}(this, function (d3, Class, PropertyExt, Utility, HipieDDL, Persist, Modal, Surface, FlyoutButton) {
 
     function HipieDDLMixin() {
         Class.call(this);
@@ -56,7 +56,7 @@
                     }
                 } else if (item instanceof HipieDDL.Visualization) {
                     if (item.widget) {
-                        if (item.properties.flyout) {
+                        if (item.properties.flyout || item.id === "SuspectAddressHistoryData") {  // DO NOT CHECKIN
                             curr.popupVisualizations.push(item);
                             context._ddlPopupVisualizations.push(item);
                         } else if (item.parentVisualization) {
@@ -172,6 +172,42 @@
                             break;
                     }
                 });
+
+                //  If widget is flyout and has no targetViz then it should open in a modal (but only when it has data)...
+                if (!targetVizs.length) {
+                    var sourceVizs = viz.getInputVisualizations();
+                    if (sourceVizs.length && !viz._modal) {
+                        viz._modalTarget = d3.select("body").append("div").node();
+                        viz._modal = new Modal().target(viz._modalTarget);
+                        viz._modal._widget = viz.widget;
+                        var origWidget = viz.widget;
+                        var origRender = viz.widget.render;
+                        viz.widget.render = function (callback) {
+                            if (this.__inModal) {
+                                return origRender.apply(this, arguments);
+                            }
+                            if (this.data().length) {
+                                this.__inModal = true;
+                                var context = this;
+                                viz._modal
+                                    .visible(true)
+                                    .render(function (w) {
+                                        if (callback) {
+                                            callback(context);
+                                        }
+                                        setTimeout(function () {
+                                            context.__inModal = false;
+                                        }, 300);  //  Must be longer than debounce timeout...
+                                    });
+                            } else {
+                                if (callback) {
+                                    callback(this);
+                                }
+                            }
+                            return this;
+                        }
+                    }
+                }
             });
             removedMap.forEach(function (key, value) {
                 context.clearContent(value);

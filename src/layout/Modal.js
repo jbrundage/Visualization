@@ -9,7 +9,7 @@
     function Modal() {
         HTMLWidget.call(this);
         this._tag = "div";
-        this._html = new Html()
+        this._widget = new Html()
             .overflowX("visible")
             .overflowY("visible")
         ;
@@ -18,9 +18,9 @@
     Modal.prototype.constructor = Modal;
     Modal.prototype._class += " layout_Modal";
     
-    Modal.prototype.publishProxy("html","_html");
+    Modal.prototype.publishProxy("html","_widget");
 
-    Modal.prototype.publish("title", null, "string", "title");
+    Modal.prototype.publish("title", "", "string", "title");
     Modal.prototype.publish("titleFontSize", "18px", "string", "titleFontSize");
     Modal.prototype.publish("titleFontColor", "#ffffff", "html-color", "titleFontColor");
     Modal.prototype.publish("relativeTargetId", null, "string", "relativeTargetId");
@@ -28,7 +28,6 @@
     Modal.prototype.publish("headerPadding", "15px", "string", "headerPadding");
     Modal.prototype.publish("bodyPadding", "15px", "string", "bodyPadding");
 
-    Modal.prototype.publish("show", true, "boolean", "show");
     Modal.prototype.publish("showFade", true, "boolean", "showFade");
     Modal.prototype.publish("enableClickFadeToClose", true, "boolean", "enableClickFadeToClose");
 
@@ -36,9 +35,9 @@
     Modal.prototype.publish("minHeight", "400px", "string", "minHeight");
     Modal.prototype.publish("maxWidth", "800px", "string", "maxWidth");
     Modal.prototype.publish("maxHeight", "800px", "string", "maxHeight");
-    
-    Modal.prototype.closeModal = function(){
-        this.exit();
+
+    Modal.prototype.closeModal = function () {
+        this.visible(false);
     };
 
     Modal.prototype.getRelativeTarget = function(){
@@ -131,23 +130,37 @@
             }
         });
 
-        this._html.target(this._modalBody.node());
+        this._widget.target(this._modalBody.node());
         this.setModalSizeLimits();
     };    
     
     Modal.prototype.update = function (domNode, element) {
         HTMLWidget.prototype.update.apply(this, arguments);
         
-        this._fade.classed('layout_Modal-fade-hidden',!this.showFade());
+        this._fade.classed('layout_Modal-fade-hidden', !this.showFade());
         this._relativeTarget = this.getRelativeTarget();
 
         this.setModalSizeLimits();
+    };
 
+    Modal.prototype.exit = function (domNode, element) {
+        HTMLWidget.prototype.exit.apply(this, arguments);
+        this._widget.target(null);
+    }
+
+    Modal.prototype.render = function (callback) {
         var context = this;
-        this._html.html(this.html()).render(function(){
-            var rect = context._relativeTarget.getBoundingClientRect();
-            context.setFadePosition(rect);
-            context.setModalPosition(rect);
+        return HTMLWidget.prototype.render.call(this, function (w) { 
+            context._widget
+                .resize()
+                .render(function (w2) {
+                    var rect = context._relativeTarget.getBoundingClientRect();
+                    context.setFadePosition(rect);
+                    context.setModalPosition(rect);
+                    if (callback) {
+                        callback(w);
+                    }
+            });
         });
     };
     
