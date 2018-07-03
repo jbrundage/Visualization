@@ -18,10 +18,10 @@
                         .eventBackgroundColorColumn("bgColor")
                         .hideDescriptionWhenCollapsed(false)
                         .data([
-                            ["Start", "2016-07-01T09:12:15.0Z", undefined, "#ff00ff", "#ccc", "#f8f8f8"],
-                            ["Credit\nFraud", "2016-07-01T11:45:45.0Z", undefined, "#ff0000", "#ccc", "#f8f8f8"],
-                            ["Credit Fraud", "2016-07-01T11:55:45.0Z", undefined, "#00ffff", "#ccc", "#f8f8f8"],
-                            ["Finish", "2016-07-01T12:30:45.0Z", undefined, "#ffff00", "#ccc", "#f8f8f8"]
+                            ["Start", "2016-07-01T09:12:15.0Z", undefined, "red", "#ccc", "#f8f8f8"],
+                            ["Credit\nFraud", "2016-07-01T11:45:45.0Z", undefined, "black", "#ccc", "#f8f8f8"],
+                            ["Credit Fraud", "2016-07-01T11:55:45.0Z", undefined, "black", "#ccc", "#f8f8f8"],
+                            ["Finish", "2016-07-01T12:30:45.0Z", undefined, "green", "#ccc", "#f8f8f8"]
                         ])
                     );
                 });
