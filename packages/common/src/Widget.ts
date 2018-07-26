@@ -535,6 +535,7 @@ export abstract class Widget extends PropertyExt {
             }
             this._prevNow = now;
         }
+        const context = this;
 
         callback = callback || function () { };
         if (!this._placeholderElement || !this.visible() || this.isDOMHidden()) {
@@ -552,7 +553,9 @@ export abstract class Widget extends PropertyExt {
                 // .attr("opacity", 0.50)  //  Uncomment to debug position offsets  ---
                 .each(function (context2) {
                     context2._element = d3Select(this);
+                    const s1 = Date.now();
                     context2.enter(this, context2._element);
+                    context.perf("enter", s1);
                     if ((window as any).__hpcc_debug) {
                         context2.leakCheck(this);
                     }
@@ -564,9 +567,15 @@ export abstract class Widget extends PropertyExt {
                     for (const key in classed) {
                         element.classed(key, classed[key]);
                     }
+                    const s1 = Date.now();
                     context2.preUpdate(this, context2._element);
+                    context.perf("preUpdate", s1);
+                    const s2 = Date.now();
                     context2.update(this, context2._element);
+                    context.perf("update", s2);
+                    const s3 = Date.now();
                     context2.postUpdate(this, context2._element);
+                    context.perf("postUpdate", s3);
                 })
                 ;
             elements.exit()
@@ -597,7 +606,6 @@ export abstract class Widget extends PropertyExt {
             }
         }, this);
 
-        const context = this;
         switch (widgets.length) {
             case 0:
                 callback(this);
@@ -621,6 +629,13 @@ export abstract class Widget extends PropertyExt {
                 break;
         }
         return this;
+    }
+
+    perf(text, start_time: number): number {
+        if (!(window as any).__hpcc_log)(window as any).__hpcc_log = [];
+        const time = Date.now();
+        (window as any).__hpcc_log.push([this.id(), this.classID(), text, time, start_time]);
+        return time;
     }
 
     renderPromise(): Promise<Widget> {
