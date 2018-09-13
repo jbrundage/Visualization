@@ -1,13 +1,44 @@
 const active_tab_idx = 0;
 
+function init_click_handlers() {
+    $("#left-tabs").html(Object.keys(tab_options).map(tab_text => {
+        let tab_obj = tab_options[tab_text];
+        return icon_tab_html(tab_obj.icon, tab_text);
+    }).join(''))
+    $("#left-tabs .tab-div").click(function () {
+        if (event && event.ctrlKey) {
+            show_tab_as_tree(this);
+        }
+        set_active_tab(this);
+        filter_list($("#search-input").get(0));
+    });
+    $("#left-tabs .tab-div").eq(active_tab_idx).click();
+    $("#list").click(function () {
+        clicked_list(this, event, arguments);
+    });
+    $("#collapse-icon").click(function () {
+        let $nav = $("#left-nav");
+        if ($nav.is(".collapsed")) {
+            $(this).removeClass("collapsed");
+            $nav.removeClass("collapsed");
+            $("#breadcrumbs").removeClass("collapsed-nav");
+            $("#content").removeClass("collapsed-nav");
+        } else {
+            $(this).addClass("collapsed");
+            $nav.addClass("collapsed");
+            $("#breadcrumbs").addClass("collapsed-nav");
+            $("#content").addClass("collapsed-nav");
+        }
+    })
+}
 function clicked_list() {
     let element = arguments[1].target;
-    if (!$(element).is(".list-item")) {
+    if (!$(element).is(".list-item,.list-item-label-btn")) {
         element = $(element).closest('.list-item');
     }
     let active_tab = $("#left-tabs > div.selected > span").text();
-    if ($(element).is(".list-endpoint")) {
-        tab_options[active_tab].endpoint_onclick.call(element);
+    if ($(element).is(".list-item-label-btn")) {
+        tab_options[active_tab].label_onclick.call(element);
     } else {
         if ($(element).is(".selected")) {
             $(element).removeClass("selected");

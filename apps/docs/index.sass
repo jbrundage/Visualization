@@ -2,11 +2,13 @@ $lighterGrey: #f0f0f0
 $lightGrey: #eeeeee
 $darkGrey: #e1e1e1
 $darkerGrey: #d7d7d7
-$darkestGrey: #666666
-$darkestColor: #333333
+$darkestGrey: #6c757d
+$darkestColor: #212529
 $hpccBlue: #179BD7
 $p: 6px
+$fontFamily: 'Open Sans'
 $search_height: ($p * 8) + 1px
+$listlabel_height: $search_height * 0.618
 $topnav_height: $search_height
 $leftnav_width: $p * 40
 $lefttab_size: $p * 8
@@ -27,6 +29,7 @@ $search_input_width: $leftnav_width - $p - $lefttab_size
     width: calc(100% - #{$lefttab_size})
 body
     margin: 0
+    font-family: $fontFamily
 #logo
     position: fixed
     top: 0
@@ -65,9 +68,9 @@ body
             left: $p * 2
             visibility: hidden
     div:hover
-        overflow: visible
+        // overflow: visible
         i
-            top: 1px
+            top: -1px
         span
             background-color: $darkestGrey
             color: white
@@ -75,7 +78,7 @@ body
             font-size: $p * 3
             border-radius: $p
             position: relative
-            visibility: visible
+            // visibility: visible
     div.selected
         width: $lefttab_size + 1px
         position: relative
@@ -116,12 +119,17 @@ body
         border: 1px solid green
         width: 100%
         height: 30px
+    #list-label
+        height: $p * 5
+        width: 100%
+        padding: $p
+        font-weight: bold
+        text-transform: uppercase
     #list
         >.list-item
             background-color: $lightGrey
-            border-right: 1px solid $darkerGrey
     #list
-        height: calc(100vh - #{$search_height})
+        height: calc(100vh - #{$search_height + $listlabel_height})
         overflow: visible
         .list-item.click_class
             text-decoration: underline
@@ -131,18 +139,30 @@ body
             color: $darkestColor
             cursor: pointer
             overflow: hidden
+            .list-item-spacer
+                display: inline-block
+                width: $p * 4
             .list-item.empty-search
                 display: none
-            i
-                width: $p * 4
-                padding: 0 $p
+            .list-item-icon-btn
+                margin-left: $p
+                margin-top: $p
+                width: $p * 3
+                height: $p * 3
+                font-size: $p * 1.4
+            .list-item-icon-btn:before
+                position: relative
+                top: -2px
+                left: -1px
                 font-size: $p * 2
-            span
-                padding: 0 $p
-                font-size: $p * 2.8
-                b
-                    color: white
-                    background-color: $hpccBlue
+            .list-item-label-btn
+                margin-top: $p
+                min-width: calc(62% - #{($p * 6)})
+                max-width: calc(100% - #{($p * 6)})
+                text-align: left
+                line-height: $p * 3
+                padding: 0 0 0 $p
+                color: $darkestColor
         .list-item:hover
             overflow: visible
         .list-item.list-endpoint:hover
@@ -154,8 +174,7 @@ body
                 span
                     background-color: $lightGrey
         .list-item.selected
-            border-left: 1px dashed $darkestGrey
-            >i
+            >.list-item-icon-btn
                 transform: rotate(90deg)
             >.list-item
                 display: block

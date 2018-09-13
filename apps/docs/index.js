@@ -47,42 +47,14 @@ function init_page() {
 
     init_page_config();
 
+    init_click_handlers();
+
     new hpccjs.other.HPCCBadge().target("logo").render();
+
     console.log(Object.keys(tab_options).map(tab_text => {
         let tab_obj = tab_options[tab_text];
         return icon_tab_html(tab_obj.icon, tab_text);
     }).join(''));
-    // $(n => {
-    $("#left-tabs").html(Object.keys(tab_options).map(tab_text => {
-        let tab_obj = tab_options[tab_text];
-        return icon_tab_html(tab_obj.icon, tab_text);
-    }).join(''))
-    $("#left-tabs .tab-div").click(function () {
-        if (event && event.ctrlKey) {
-            show_tab_as_tree(this);
-        }
-        set_active_tab(this);
-        filter_list($("#search-input").get(0));
-    });
-    $("#left-tabs .tab-div").eq(active_tab_idx).click();
-    $("#list").click(function () {
-        clicked_list(this, event, arguments);
-    });
-    $("#collapse-icon").click(function () {
-        let $nav = $("#left-nav");
-        if ($nav.is(".collapsed")) {
-            $(this).removeClass("collapsed");
-            $nav.removeClass("collapsed");
-            $("#breadcrumbs").removeClass("collapsed-nav");
-            $("#content").removeClass("collapsed-nav");
-        } else {
-            $(this).addClass("collapsed");
-            $nav.addClass("collapsed");
-            $("#breadcrumbs").addClass("collapsed-nav");
-            $("#content").addClass("collapsed-nav");
-        }
-    })
-    // })
 }
 function tree_to_list(data, $container) {
     let $list_item;
@@ -93,6 +65,10 @@ function tree_to_list(data, $container) {
         $list_item = $(list_item_html(data.children ? "fa-caret-right" : "", data.label));
         if (data["ignore_search"]) {
             $list_item.addClass("ignore-search");
+        }
+        if (data["click_to_show_properties"]) {
+            $list_item.attr("data-meta", data.label);
+            $list_item.addClass("show-widget-properties");
         }
         if (data["path"]) {
             $list_item.attr("data-meta", data["path"]);
@@ -139,6 +115,7 @@ function set_active_tab(elm) {
     $("#left-tabs > div.selected").removeClass("selected");
     $(elm).addClass("selected");
     let active_tab = $("#left-tabs > div.selected span").text();
+    $("#list-label").text(active_tab);
     let $list = $("#list");
     $list.html(tab_options[active_tab].html.call(tab_options[active_tab]));
 }
@@ -171,8 +148,8 @@ function icon_tab_html(fa_icon_class, tab_text) {
     return `<div class="tab-div"><i class="fa ${fa_icon_class}"></i><span>${tab_text}</span></div>`;
 }
 function list_item_html(fa_icon_class, text) {
-    let _icon = fa_icon_class ? `<i class="fa ${fa_icon_class}"></i>` : '';
-    return `<div class="list-item">${_icon}<span>${text}</span></div>`;
+    let _icon_button = fa_icon_class ? `<button class="list-item-icon-btn btn btn-light btn-sm fa ${fa_icon_class}"></button>` : '<div class="list-item-spacer"></div>';
+    return `<div class="list-item">${_icon_button}<button class="list-item-label-btn btn btn-link btn-sm">${text}</button></div>`;
 }
 function gallery_iframe_html(url) {
     return `<iframe src="${url}"></iframe>`;
@@ -208,4 +185,7 @@ function samples_breadcrumbs_html(meta) {
         let _attr = url ? `class="btn btn-link" onclick="$('#content').html(gallery_iframe_html('${url}'));remove_after(this);"` : `class="btn btn-link" disabled`;
         return `<button type="button" ${_attr}>${text}</button>`;
     }
+}
+function properties_html(package_name, widget_name) {
+
 }

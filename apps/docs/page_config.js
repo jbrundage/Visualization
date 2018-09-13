@@ -13,18 +13,13 @@ function init_page_config() {
                             if (widget_sample_arr.length > 0) {
                                 return {
                                     "label": widget_name,
-                                    "children": [
-                                        {
-                                            "label": "Samples",
-                                            "ignore-search": true,
-                                            "children": widget_sample_arr.sort().map(path => {
-                                                return {
-                                                    "label": path.split('/').slice(-1),
-                                                    "path": path,
-                                                }
-                                            })
-                                        },
-                                    ]
+                                    "click_to_show_properties": true,
+                                    "children": widget_sample_arr.sort().map(path => {
+                                        return {
+                                            "label": path.split('/').slice(-1),
+                                            "path": path,
+                                        }
+                                    })
                                 }
                             }
                             return false
@@ -32,12 +27,20 @@ function init_page_config() {
                     };
                 }).filter(n => n.children && n.children.length > 0)
             },
-            "endpoint_onclick": function () {
+            "label_onclick": function () {
                 let meta = $(this).data("meta");
-                $("#breadcrumbs-list").html(samples_breadcrumbs_html(meta));
-                $("#content").html(gallery_iframe_html(
-                    playground_url + "?" + meta
-                ));
+                console.log('this === ', this);
+                let widget_name = $(this).text();
+                let package_name = $(this).parents(".list-item").last().find(".list-item-label-btn").first().text();
+                if ($(this).is(".list-item-label-btn") && $(this).closest(".list-item").is(".show-widget-properties")) {
+                    $("#breadcrumbs-list").html(`Properties for: <b>${widget_name}</b>`);
+                    $("#content").html(properties_html(widget_name));
+                } else {
+                    $("#breadcrumbs-list").html(samples_breadcrumbs_html(meta));
+                    $("#content").html(gallery_iframe_html(
+                        playground_url + "?" + meta
+                    ));
+                }
             }
         },
         {
@@ -57,12 +60,11 @@ function init_page_config() {
                                         "ignore-search": true,
                                         "children": widget_sample_arr.sort().map(path => {
                                             return {
-                                                "label": path.split('/').slice(-1),
+                                                "label": path,
                                                 "path": path,
                                             }
                                         })
                                     },
-                                    // { "label": "View Documentation", "meta": widget_name, "ignore-search": true }
                                 ]
                             });
                         }
@@ -70,7 +72,7 @@ function init_page_config() {
                 });
                 return ret.sort((a, b) => a.label > b.label ? 1 : -1);
             },
-            "endpoint_onclick": function () {
+            "label_onclick": function () {
                 let bc_arr = [];
                 $(this).parents(".list-item").each(function () {
                     let text = $(this).find("span").first().text();
@@ -90,7 +92,7 @@ function init_page_config() {
             "data": function () {
                 return config_to_tree(config.samples.children);
             },
-            "endpoint_onclick": function () {
+            "label_onclick": function () {
                 let meta = $(this).data("meta");
                 $("#breadcrumbs-list").html(samples_breadcrumbs_html(meta));
                 $("#content").html(gallery_iframe_html(
