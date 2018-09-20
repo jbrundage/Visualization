@@ -1,0 +1,40 @@
+.InputGroup-label{
+    position: absolute;
+}
+.form_InputGroup{
+    width: 100%;
+    height: 100%;
+}
+.InputGroup-content{
+    position: relative;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+}
+.InputGroup-item{
+    position: relative;
+    background-color: #FFF;
+    margin-top: 2px;
+}
+.InputGroup-item-label{
+    position: absolute;
+    top: -3px;
+    left: 2px;
+    font-size: 10px;
+}
+.InputGroup-item-content{
+    position: relative;
+}
+.InputGroup-item-content input{
+    background-color: transparent;
+    border: 1px solid #999;
+    height: 24px;
+}
+.InputGroup-item-content select{
+    background-color: transparent;
+    border: 1px solid #999;
+    height: 16px;
+    margin-top: 8px;
+    width: 100%;
+}

@@ -73,6 +73,35 @@
                 });
             }
         },
+        InputGroup: {
+            simple: function (callback) {
+                legacyRequire(["test/DataFactory", "src/form/InputGroup", "src/chart/Scatter"], function (DataFactory, InputGroup) {
+                    callback(new InputGroup()
+                        .data([
+                            ["some_param_name", "Slider", { "columns": DataFactory.Slider.simple.columns, "data": DataFactory.Slider.simple.data, "low": 10, "high": 20 }]
+                        ])
+                    );
+                });
+            },
+            scatter: function (callback) {
+                legacyRequire(["test/DataFactory", "src/form/InputGroup", "src/chart/Scatter"], function (DataFactory, InputGroup, Scatter) {
+                    callback(new InputGroup()
+                        .data(new Scatter().publishedProperties().map(prop => {
+                            switch (prop.type) {
+                                case "boolean":
+                                    return [prop.id, "OnOff"];
+                                case "set":
+                                    return [prop.id, "Select", { selectOptions: prop.set }];
+                                case "string":
+                                case "number":
+                                default:
+                                    return [prop.id, "Input"];
+                            }
+                        }))
+                    );
+                });
+            }
+        },
         FieldForm: {
             simple: function (callback) {
                 legacyRequire(["test/DataFactory", "src/form/FieldForm", "src/common/Database"], function (DataFactory, FieldForm, Database) {

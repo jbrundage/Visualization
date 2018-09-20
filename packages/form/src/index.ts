@@ -4,6 +4,7 @@ export * from "./ColorInput";
 export * from "./Form";
 export * from "./FieldForm";
 export * from "./Input";
+export * from "./InputGroup";
 export * from "./InputRange";
 export * from "./OnOff";
 export * from "./Radio";
