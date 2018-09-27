@@ -1,0 +1,58 @@
+.common_TreeMenu-button {
+    list-style-type: none;
+    border: 1px solid black;
+    display: inline-block;
+    padding: 0;
+}
+.common_TreeMenu-ul {
+    list-style-type: none;
+    position: fixed;
+    border: 1px solid black;
+    display: inline-block;
+    padding: 0;
+    display: none;
+}
+.common_TreeMenu-ul > .common_TreeMenu-li.expanded > .common_TreeMenu-ul{
+    display: inline-block;
+}
+.common_TreeMenu-li {
+    list-style-type: none;
+    background-color: #ddd;
+    cursor: pointer;
+}
+.common_TreeMenu-li > span{
+    display: inline-block;
+    width: calc(100% - 8px);
+    padding: 2px 4px;
+}
+.common_TreeMenu-li.common_TreeMenu-parent > span{
+    display: inline-block;
+    width: calc(100% - 16px);
+    padding: 2px 4px;
+}
+.common_TreeMenu-li > span:hover{
+    background-color: #ccc;
+}
+.common_TreeMenu-li.common_TreeMenu-parent > span:hover{
+    background-color: #3498db;
+}
+.common_TreeMenu.right-popover-mode .common_TreeMenu-parent:before,
+.common_TreeMenu.left-popover-mode .common_TreeMenu-parent:before{
+    position: absolute;
+    font-family: FontAwesome;
+    margin-top: 3px;
+}
+.common_TreeMenu.right-popover-mode .common_TreeMenu-parent:before{
+    content: "\f0da";
+    right: 4px;
+}
+.common_TreeMenu.left-popover-mode .common_TreeMenu-parent:before{
+    content: "\f0d9";
+    left: 4px;
+}
+.common_TreeMenu.right-popover-mode .common_TreeMenu-parent > span{
+    padding-right: 12px;
+}
+.common_TreeMenu.left-popover-mode .common_TreeMenu-parent > span{
+    padding-left: 12px;
+}
