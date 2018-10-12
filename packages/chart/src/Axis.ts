@@ -491,7 +491,7 @@ export class Axis extends SVGWidget {
             let line = [];
             let lineNumber = 0;
             const lineHeight = 1.1;
-            const x = text.attr("x");
+            const x = text.attr("x") || 0;
             const y = text.attr("y");
             const fs = parseFloat(text.style("font-size")) || 10;
             const maxLinesPerBand = Math.floor(bandSize / (fs * lineHeight)) - 1;
