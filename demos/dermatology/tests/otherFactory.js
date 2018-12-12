@@ -9,15 +9,17 @@
     return {
         IconList: {
             simple: function (callback) {
-                legacyRequire(["src/other/IconList"], function (IconList) {
+                legacyRequire(["src/chart/Column", "src/phosphor/DockPanel", "src/other/PropertyEditor2"], function (Proto, DockPanel, Editor) {
+                    const w = new Proto()
+                        .columns(["Male/Female Astronauts Per Year", "Female Astronauts", "Male Astronauts"])
+                        .data([["1985", 2, 11], ["1987", 2, 13], ["1990", 5, 18], ["1992", 3, 16], ["1995", 5, 14], ["1996", 8, 27], ["1998", 4, 21], ["2000", 3, 14], ["2004", 2, 9], ["2009", 3, 11]])
+                        .paletteID("FlatUI_Swedish")
+                        ;
+                    const pe = new Editor().widget(w);
                     callback(
-                        new IconList()
-                            .iconSize(120)
-                            .data([
-                                ["", "#e84118", '<fieldset style="text-align: center;"><legend>Test</legend><p>Test1</p></fieldset>'],
-                                ["", "#44bd32", '<fieldset style="text-align: center;"><legend>Test</legend><p>Test2</p></fieldset>'],
-                                ["", "#0097e6", '<fieldset style="text-align: center;"><legend>Test</legend><p>Test3</p></fieldset>'],
-                            ])
+                        new DockPanel()
+                            .addWidget(w)
+                            .addWidget(pe)
                     );
                 });
             }

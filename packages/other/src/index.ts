@@ -16,6 +16,8 @@ export * from "./Paginator";
 import * as Persist from "./Persist";
 export { Persist };
 export * from "./PropertyEditor";
+export * from "./PropertyEditor2";
+export * from "./PropertyInput";
 export * from "./RadioCheckbox";
 export * from "./Select";
 export * from "./Table";
