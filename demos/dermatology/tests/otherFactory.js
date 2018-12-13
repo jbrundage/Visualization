@@ -7,6 +7,24 @@
     }
 }(this, function (DataFactory, HeatMap, WordCloud, Table) {
     return {
+        PropertyEditor2: {
+            simple: function (callback) {
+                legacyRequire(["src/layout/DockPanel","src/chart/Pie","src/other/PropertyEditor2"], function (DockPanel, Pie, PropertyEditor2) {
+                    const pie = new Pie()
+                        .data([
+                            ["A", 62],
+                            ["B", 38],
+                            ["C", 100],
+                        ])
+                    const pe = new PropertyEditor2().widget(pie);
+                    const dp = new DockPanel()
+                        .addWidget(pie)
+                        .addWidget(pe)
+                        ;
+                    callback(dp);
+                });
+            }
+        },
         IconList: {
             simple: function (callback) {
                 legacyRequire(["src/other/IconList"], function (IconList) {
