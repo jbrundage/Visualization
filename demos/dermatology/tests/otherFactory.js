@@ -9,16 +9,38 @@
     return {
         PropertyEditor2: {
             simple: function (callback) {
-                legacyRequire(["src/layout/DockPanel","src/chart/Pie","src/other/PropertyEditor2"], function (DockPanel, Pie, PropertyEditor2) {
-                    const pie = new Pie()
+                legacyRequire(["src/phosphor/DockPanel","src/chart/Scatter","src/other/PropertyEditor"], function (DockPanel, Scatter, PropertyEditor2) {
+                    const w = new Scatter()
+                        .columns(["Label", "Value1", "Value2"])
+                        .data([
+                            ["A", 62, 100],
+                            ["B", 38, 62],
+                            ["C", 100, 38],
+                        ])
+                        ;
+                    const pe = new PropertyEditor2().widget(w);
+                    const dp = new DockPanel()
+                        .addWidget(w)
+                        .addWidget(pe)
+                        ;
+                    callback(dp);
+                });
+            },
+            chartPanel: function (callback) {
+                legacyRequire(["src/phosphor/DockPanel","src/layout/ChartPanel","src/chart/Pie","src/other/PropertyEditor"], function (DockPanel, ChartPanel, Pie, PropertyEditor2) {
+                    const cp = new ChartPanel()
+                        .widget(new Pie())
+                        .title("Hello and Welcome!")
+                        .columns(["Value", "Label"])
                         .data([
                             ["A", 62],
                             ["B", 38],
                             ["C", 100],
                         ])
-                    const pe = new PropertyEditor2().widget(pie);
+                        ;
+                    const pe = new PropertyEditor2().widget(cp);
                     const dp = new DockPanel()
-                        .addWidget(pie)
+                        .addWidget(cp)
                         .addWidget(pe)
                         ;
                     callback(dp);

@@ -2,7 +2,7 @@ import { Widget } from "@hpcc-js/common";
 
 export abstract class IInput extends Widget {
     _inputElement;
-
+    _disable;
     constructor() {
         super();
     }
@@ -57,6 +57,7 @@ export abstract class IInput extends Widget {
     }
 
     disable(disable) {
+        this._disable = disable;
         this._inputElement.forEach(function (e, idx) {
             e.attr("disabled", disable ? "disabled" : null);
         });

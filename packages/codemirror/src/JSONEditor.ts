@@ -1,5 +1,4 @@
 import { Editor } from "./Editor";
-
 export class JSONEditor extends Editor {
     options(): any {
         return {
@@ -17,6 +16,5 @@ export class JSONEditor extends Editor {
         this.text(JSON.stringify(_, null, "\t"));
         return this;
     }
-
 }
 JSONEditor.prototype._class += " codemirror_JSONEditor";

@@ -5,7 +5,7 @@ import "../src/Input.css";
 
 export class Select extends HTMLWidget {
     _inputElement = [];
-
+    _optionHTML;
     constructor() {
         super();
 
@@ -38,9 +38,17 @@ export class Select extends HTMLWidget {
         HTMLWidget.prototype.update.apply(this, arguments);
 
         this.insertSelectOptions(this.selectOptions());
+        const context = this;
+        if (this._optionHTML) {
+            this._inputElement[0].html(this._optionHTML);
+        }
         this._inputElement[0]
             .property("value", this.value())
             .style("max-width", this.maxWidth_exists() ? this.maxWidth() + "px" : null)
+            .on("change", function() {
+                context.value(this.value);
+                context.change(context, true);
+            })
             ;
     }
 
@@ -55,7 +63,19 @@ export class Select extends HTMLWidget {
         } else {
             optionHTML += "<option>selectOptions not set</option>";
         }
-        this._inputElement[0].html(optionHTML);
+        if (this._inputElement[0]) {
+
+            this._inputElement[0].html(optionHTML);
+        } else {
+            this._optionHTML = optionHTML;
+        }
+        return this;
+    }
+
+    change(_w, complete: boolean) {
+        if (!arguments.length) return this._inputElement[0].node().value;
+        this._inputElement[0].node().value = _;
+        return this;
     }
 
     selectOptions: { (): any[]; (_: any[]): Select };

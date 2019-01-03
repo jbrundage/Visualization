@@ -1,3 +1,4 @@
+import { IInput } from "@hpcc-js/api";
 import { CodeMirror } from "@hpcc-js/codemirror-shim";
 import { HTMLWidget } from "@hpcc-js/common";
 
@@ -38,6 +39,9 @@ export class Editor extends HTMLWidget {
         this._codemirror.on("changes", (cm: CodeMirror, changes: object[]) => {
             this.changes(changes);
         });
+        this._codemirror.on("keyup", (cm: CodeMirror) => {
+            this.change(this, true);
+        });
         this.text(this._initialText);
     }
 
@@ -50,5 +54,27 @@ export class Editor extends HTMLWidget {
     //  Events  ---
     changes(changes: object[]) {
     }
+
+    value(): object;
+    value(_: object): this;
+    value(_?: object): object | this {
+        return this.text.apply(this, arguments);
+    }
+
+    //  IInput  ---
+    name: { (): string; (_: string): Editor };
+    name_exists: () => boolean;
+    label: { (): string; (_: string): Editor };
+    label_exists: () => boolean;
+    value_exists: () => boolean;
+    validate: { (): string; (_: string): Editor };
+    validate_exists: () => boolean;
+
+    //  IInput Events ---
+    blur: (w: Editor) => void;
+    click: (w: Editor) => void;
+    dblclick: (w: Editor) => void;
+    change: (w: Editor, complete: boolean) => void;
 }
 Editor.prototype._class += " codemirror_Editor";
+Editor.prototype.implements(IInput.prototype);

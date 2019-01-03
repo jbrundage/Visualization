@@ -73,7 +73,7 @@ export class OnOff extends HTMLWidget {
             .style("width", this.minWidth() + "px")
             ;
 
-        const _switch_size = this.minHeight() - (this.gutter() * 4);
+        const _switch_size = this.minHeight() - 2 - (this.gutter() * 4);
 
         element.select(".onoffswitch-switch")
             .style("height", _switch_size + "px")
@@ -82,18 +82,22 @@ export class OnOff extends HTMLWidget {
             .style("border-radius", this.switchRadius() + "px")
             ;
         element.select(".onoffswitch-inner")
-            .style("min-height", this.minHeight() + "px")
+            .style("height", (this.minHeight() - 2) + "px")
             ;
         element.select(".onoffswitch-label")
             .style("border-radius", this.containerRadius() + "px")
+            .style("height", (this.minHeight() - 2) + "px")
             ;
         element.select(".onoffswitch-offText")
             .style("color", this.offFontColor())
             .style("background-color", this.offColor())
+            .style("height", (this.minHeight() - 2) + "px")
+            .style("padding-right", this.gutter() + "px")
             ;
         element.select(".onoffswitch-onText")
             .style("color", this.onFontColor())
             .style("background-color", this.onColor())
+            .style("height", (this.minHeight() - 2) + "px")
             ;
     }
 

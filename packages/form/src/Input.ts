@@ -88,6 +88,9 @@ export class Input extends HTMLWidget {
                 this._inputElement[0].property("value", this.value());
                 break;
         }
+        if (this._disable) {
+            this.disable(this._disable);
+        }
     }
 
     type: { (): string; (_: string): Input };
@@ -97,6 +100,8 @@ export class Input extends HTMLWidget {
     inlineLabel_exists: () => boolean;
 
     //  IInput  ---
+    _disable: boolean;
+    disable: (_: boolean) => void;
     name: { (): string; (_: string): Input };
     name_exists: () => boolean;
     label: { (): string; (_: string): Input };

@@ -36,6 +36,9 @@ export class DockPanel extends HTMLWidget implements IMessageHandler, IMessageHo
         this._dock.addWidget(wa, addMode);
         this._dock.appendContent(wa);
         this._dock.tabsMovable = true;
+        setTimeout(n => {
+            this.theWidgets_default(this.widgets());
+        }, 0);
         return this;
     }
 
@@ -157,6 +160,10 @@ DockPanel.prototype._class += " phosphor_DockPanel";
 export interface DockPanel {
     hideSingleTabs(): boolean;
     hideSingleTabs(_: boolean): this;
+    theWidgets(): any;
+    theWidgets(_: any): this;
+    theWidgets_default(_: any): this;
 }
 
 DockPanel.prototype.publish("hideSingleTabs", false, "boolean");
+DockPanel.prototype.publish("theWidgets", [], "widgetArray", "Widgets displayed within the DockPanel");

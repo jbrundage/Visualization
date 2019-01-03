@@ -3,3 +3,103 @@
     height:100%;
     width:100%;
 }
+.other_PropertyEditor2 > div{
+    float: left;
+}
+.other_PropertyEditor2 .form_Input > input{
+    width: 122px;
+}
+.other_PropertyEditor2 .property-label{
+    text-align: right;
+    /* color: #2c3e50; */
+    font-weight: normal;
+}
+.other_PropertyEditor2 .collapser{
+    font-weight: bold;
+    /* color: #2c3e50; */
+}
+.other_PropertyEditor2 fieldset{
+    margin: 4px 4px 4px 0;
+    padding: 4px;
+    /* border: 1px solid #ecf0f1; */
+}
+.other_PropertyEditor2 .self-collapser > legend{
+    /* margin: 4px 4px 4px 0;
+    padding: 4px; */
+    /* border: 1px solid #ecf0f1; */
+}
+.other_PropertyEditor2 .self-collapser > legend:after,
+.other_PropertyEditor2 .collapser:after{
+    content: "\f056";
+    font-weight: normal;
+    font-family: FontAwesome;
+    margin-left: 4px;
+}
+.other_PropertyEditor2 .collapsed.self-collapser > legend:after,
+.other_PropertyEditor2 .collapsed .collapser:after{
+    content: "\f055";
+    font-weight: normal;
+    font-family: FontAwesome;
+    margin-left: 4px;
+}
+.other_PropertyEditor2 table > tbody > tr > th{
+    text-align: right;
+    vertical-align: top;
+}
+
+.other_PropertyEditor2 table,
+.other_PropertyEditor2 fieldset,
+.other_PropertyEditor2 fieldset legend  {
+    background-color: #dfe6e9;
+    border-spacing: 1px;
+    border-collapse: separate;
+    color: #000;
+    border: 1px solid #C0C0C0;
+}
+.other_PropertyEditor2 table table,
+.other_PropertyEditor2 fieldset fieldset,
+.other_PropertyEditor2 fieldset fieldset legend  {
+    background-color: #b2bec3;
+    border-spacing: 2px;
+    color: #000;
+    border-color: 1px solid #C0C0C0;
+}
+.other_PropertyEditor2 table table table,
+.other_PropertyEditor2 fieldset fieldset fieldset,
+.other_PropertyEditor2 fieldset fieldset fieldset legend {
+    background-color: #636e72;
+    border-spacing: 3px;
+    color: #FFF;
+    border-color: 1px solid #FFF;
+}
+.other_PropertyEditor2 table table table table,
+.other_PropertyEditor2 fieldset fieldset fieldset fieldset,
+.other_PropertyEditor2 fieldset fieldset fieldset fieldset legend{
+    background-color: #2d3436;
+    border-spacing: 4px;
+    color: #FFF;
+    border-color: 1px solid #FFF;
+}
+
+.other_PropertyEditor2 .property-label+td{
+    padding: 0;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -51,5 +51,5 @@
     left: 0;
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
-    left: calc(100% - 20px);
+    left: calc(100% - 18px);
 }

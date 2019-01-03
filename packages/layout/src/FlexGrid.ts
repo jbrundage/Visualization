@@ -25,7 +25,11 @@ export class FlexGrid extends HTMLWidget {
             .append("div")
             .classed("FlexGrid-list-item", true)
             .each(function(w) {
-                w.target(this);
+                if (w.target() === null) {
+                    w.target(this);
+                } else {
+                    w.target(null).target(this);
+                }
             })
             .merge(listItems)
             .style("min-height", this.itemMinHeight() + "px")
