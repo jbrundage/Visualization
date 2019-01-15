@@ -441,7 +441,7 @@ export function d3ArrayAdapter(array) {
     };
 }
 
-export function downloadBlob(format, blob, id?, ext?) {
+export function downloadBlob(format: "TSV" | "JSON" | "TEXT", blob, id?, ext?) {
     const currentdate = new Date();
     const timeFormat = d3TimeFormat("%Y-%m-%dT%H_%M_%S");
     const nowTime = timeFormat(currentdate);
@@ -457,6 +457,7 @@ export function downloadBlob(format, blob, id?, ext?) {
         case "JSON":
             mimeType = "application/json";
             break;
+        case "TEXT":
         default:
             mimeType = "text/csv";
     }
@@ -485,6 +486,37 @@ export function downloadBlob(format, blob, id?, ext?) {
         }, 100);
         return true;
     }
+}
+export function downloadBlob2(value, name = "untitled", label = "Save"): HTMLAnchorElement {
+    const a = document.createElement("a");
+    const b = a.appendChild(document.createElement("button"));
+    b.textContent = label;
+    a.download = name;
+
+    async function reset() {
+        await new Promise(requestAnimationFrame);
+        URL.revokeObjectURL(a.href);
+        a.removeAttribute("href");
+        b.textContent = label;
+        b.disabled = false;
+    }
+
+    a.onclick = async event => {
+        b.disabled = true;
+        if (a.href) return reset(); // Already saved.
+        b.textContent = "Saving...";
+        try {
+            const object = await (typeof value === "function" ? value() : value);
+            b.textContent = "Download";
+            a.href = URL.createObjectURL(object);
+        } catch (ignore) {
+            b.textContent = label;
+        }
+        if (event.eventPhase) return reset(); // Already downloaded.
+        b.disabled = false;
+    };
+
+    return a;
 }
 export function widgetPath(classID) {
     return "../" + classID.split("_").join("/");
