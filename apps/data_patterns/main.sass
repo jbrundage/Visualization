@@ -1,0 +1,109 @@
+$p: 8px
+$radius: $p * 0.618
+$fontFamily: 'Roboto'
+$topnavHeight: $p * 6
+$leftnavWidth: $p * 6
+$leftnavOptionHeight: $p * 6
+$leftnavIconSize: $topnavHeight * 0.618
+$color1: #DDD
+$color2: #CCC
+$color3: #BBB
+$color4: #AAA
+*
+    font-family: $fontFamily
+/* COLORS/FONTS */
+#topnav
+    background-color: $color4
+    #logowrapper
+        float: left
+        background-color: $color3
+        #logo
+        #appname
+            font-family: $fontFamily
+            line-height: $topnavHeight
+            background-color: $color3
+        #appname
+            font-size: $topnavHeight - $p
+            padding: 0 $p 0 $p
+    #searchbar
+    #rightoptions
+        font-family: $fontFamily
+        line-height: $topnavHeight
+        font-size: $topnavHeight - $p
+#leftnav
+    background-color: $color3
+
+/* PLACEMENT/SIZE */
+#topnav
+    height: $topnavHeight
+    width: 100%
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 30;
+    #menutoggle
+        float: left
+        width: $leftnavWidth
+        height: $topnavHeight
+        text-align: center
+        line-height: $topnavHeight
+        .fa
+            &:before
+                content: "\f104"!important;
+    #menutoggle.menu-collapsed
+        .fa
+            &:before
+                content: "\f0c9"!important;
+        
+    #logowrapper
+    #searchbar
+    #rightoptions
+        float: left
+#leftnav
+    position: fixed
+    width: $leftnavWidth
+    height: 100%
+    top: $topnavHeight
+    left: 0
+    transition: width 200ms
+    overflow: hidden
+    z-index: 20;
+    &:hover
+        overflow: visible
+    .option
+        white-space: nowrap
+        position: relative
+        width: $leftnavWidth
+        height: $leftnavOptionHeight
+        background-color: $color1
+        margin-top: 1px
+        overflow: hidden
+        &:hover
+            overflow: visible
+        .fa
+            float: left
+            display: inline-block
+            font-size: $leftnavIconSize
+            width: $leftnavWidth
+            height: $leftnavOptionHeight
+            text-align: center
+            line-height: $topnavHeight
+            border-bottom: 1px solid $color4
+        span
+            position: absolute
+            line-height: $topnavHeight
+            font-family: $fontFamily
+            padding: 0 ($p*2) 0 ($p*2)
+            background-color: $color2
+#leftnav.menu-collapsed
+    width: 0
+#content
+    z-index: 10;
+    position: fixed
+    top: $topnavHeight
+    left: 0
+    right: 0
+    bottom: 0
+.common_IconBar
+    div.spacer.vline
+        border-left-color: transparent!important
