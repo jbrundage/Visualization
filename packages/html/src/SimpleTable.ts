@@ -5,7 +5,6 @@ export class SimpleTable extends HTMLWidget {
     protected _table;
     protected _tbody;
     protected _thead;
-    _transformedData;
     constructor() {
         super();
     }

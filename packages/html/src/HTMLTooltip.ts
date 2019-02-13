@@ -1,5 +1,6 @@
 import { HTMLWidget } from "@hpcc-js/common";
-import { scopedLogger } from "@hpcc-js/util";
+import { scopedLogger, ScopedLogging } from "@hpcc-js/util";
+import { select as d3Select } from "d3-selection";
 
 type Direction = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 type Position = { x: number, y: number };
@@ -12,7 +13,7 @@ export class HTMLTooltip extends HTMLWidget {
     _triggerElement;
     _arrowElement;
     _tooltipHTMLCallback = (data?) => "<b>_tooltipHTMLCallback is undefined</b>";
-    _logger = scopedLogger("html/HTMLTooltip");
+    _logger: ScopedLogging = scopedLogger("html/HTMLTooltip");
     constructor() {
         super();
         this.visible(false);
@@ -20,14 +21,15 @@ export class HTMLTooltip extends HTMLWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
-        this._tooltipElement = element.append("div")
+        const body = d3Select("body");
+        this._tooltipElement = body.append("div")
             .classed("tooltip-div", true)
-            .style("z-index", "10000")
+            .style("z-index", "2147483638")
             .style("position", "fixed")
             ;
-        this._arrowElement = element.append("div")
+        this._arrowElement = body.append("div")
             .classed("arrow-div", true)
-            .style("z-index", "10000")
+            .style("z-index", "2147483638")
             .style("position", "fixed")
             ;
         this._targetElement = element;
@@ -251,6 +253,24 @@ export class HTMLTooltip extends HTMLWidget {
             }
         };
         return bbox;
+    }
+    visible(): boolean;
+    visible(_: boolean): this;
+    visible(_?: boolean): boolean | this {
+        if (!arguments.length) return super.visible();
+        if (this._arrowElement) {
+            this._arrowElement.style("visibility", _ ? "visible" : "hidden");
+            this._tooltipElement.style("visibility", _ ? "visible" : "hidden");
+        }
+        super.visible(_);
+        return this;
+    }
+    exit(domNode, element) {
+        if (this._arrowElement) {
+            this._arrowElement.remove();
+            this._tooltipElement.remove();
+        }
+        super.exit(domNode, element);
     }
 }
 HTMLTooltip.prototype._class += " html_HTMLTooltip";
