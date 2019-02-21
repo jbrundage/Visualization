@@ -4,6 +4,7 @@ import { select as d3Select } from "d3-selection";
 export class SimpleTable extends HTMLWidget {
     protected _table;
     protected _tbody;
+    protected _thead;
     _transformedData;
     constructor() {
         super();
@@ -12,6 +13,7 @@ export class SimpleTable extends HTMLWidget {
         super.enter(domNode, element);
 
         this._table = element.append("table");
+        this._thead = this._table.append("thead");
         this._tbody = this._table.append("tbody");
     }
     update(domNode, element) {
@@ -19,6 +21,18 @@ export class SimpleTable extends HTMLWidget {
         this._table
             .style("width", this.autoWidth() ? "auto" : "100%")
             ;
+        const theadTrSelection = this._thead.selectAll("tr > th").data(this.columns());
+        theadTrSelection.enter()
+            .append("th")
+            .each(function(n, i) {
+                d3Select(this)
+                    .classed("th-" + i, true)
+                    ;
+            })
+            .merge(theadTrSelection)
+            .text(_d => (_d).toString())
+            ;
+        theadTrSelection.exit().remove();
         const trSelection = this._tbody.selectAll("tr").data(this._transformedData ? this._transformedData : this.data());
         trSelection.enter()
             .append("tr")

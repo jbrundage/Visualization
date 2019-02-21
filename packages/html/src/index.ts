@@ -1,3 +1,6 @@
+export * from "./BreakdownTable";
+export * from "./StatsTable";
+export * from "./StyledTable";
 export * from "./JSXWidget";
 export * from "./reactD3";
 export * from "./VizComponent";

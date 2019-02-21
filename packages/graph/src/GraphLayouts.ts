@@ -72,18 +72,26 @@ export function ForceDirected(graphData, width, height, options) {
         context.vertexMap[u] = newItem;
     });
     this.edges = [];
-    graphData.eachEdge(function (_e, s, t) {
+    const weightArr = [];
+    graphData.eachEdge(function (_e, s, t, edge) {
         context.edges.push({
             source: s,
             target: t
         });
+        if (typeof edge.weight() === "number" && (options.linkDistanceScale || options.linkStrengthScale)) {
+            weightArr.push(edge.weight());
+        }
     });
     const forceLink = d3ForceLink()
         .id(function (d: any) {
             return d.id;
         })
-        .distance(options.linkDistance)
-        .strength(options.linkStrength)
+        .distance((d, i) => {
+            return typeof weightArr[i] !== "undefined" && options.linkDistanceScale ? options.linkDistanceScale(weightArr[i]) : options.linkDistance;
+        })
+        .strength((d, i) => {
+            return typeof weightArr[i] !== "undefined" && options.linkStrengthScale ? options.linkStrengthScale(weightArr[i]) : options.linkStrength;
+        })
         ;
     const forceManyBody = d3ForceManyBody()
         .strength(function (d: any) {

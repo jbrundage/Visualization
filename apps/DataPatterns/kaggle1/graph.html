@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>DataPatterns Viz 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="../../../packages/util/dist/index.js"></script>
+    <script src="../../../packages/common/dist/index.js"></script>
+    <script src="../../../packages/api/dist/index.js"></script>
+    <script>
+        window["@hpcc-js/common"].Palette.__proto__.appendOrdinalColors = function(test){
+
+        };
+    </script>
+    <script src="../../../packages/graph/dist/index.js"></script>
+    <!-- <script src="../../../packages/dgrid-shim/dist/index.js"></script>
+    <script src="../../../packages/dgrid/dist/index.js"></script> -->
+    <script src="../../../packages/html/dist/index.js"></script>
+    <script src="../../../packages/chart/dist/index.js"></script>
+    <script src="../../../packages/other/dist/index.js"></script>
+    <script src="../../../packages/layout/dist/index.js"></script>
+    <script src="../../../packages/tree/dist/index.js"></script>
+    <script src="../../../packages/graph/dist/index.js"></script>
+    <script src="../../../packages/phosphor/dist/index.js"></script>
+</head>
+<body style="position:relative;width:100%;">
+    <div id="placeholder" style="width:940px;height:940px;"></div>
+    <script src="data.js"></script>
+    <script>
+        const attributes = {};
+        const vertices = [];
+        const edges = [];
+        const uniPairs = [];
+        const data = g_data
+            .filter(row=>row.numeric_correlations.Row.length > 0)
+            ;
+        data
+            .forEach(row=>{
+                attributes[row.attribute.trim()] = createVertex(row);
+                vertices.push(attributes[row.attribute.trim()]);
+            })
+        data
+            .forEach(row=>{
+                row.numeric_correlations.Row
+                    .forEach(correlation=>{
+                        const pair1 = `${row.attribute}_${correlation.attribute.trim()}`;
+                        const pair2 = `${correlation.attribute.trim()}_${row.attribute}`;
+                        if(uniPairs.indexOf(pair1) === -1 && uniPairs.indexOf(pair2) === -1){
+                            uniPairs.push(pair1);
+                            edges.push(
+                                createEdge(
+                                    attributes[row.attribute],
+                                    correlation.attribute.trim(),
+                                    correlation.corr
+                                )
+                            );
+                        }
+                    })
+                vertices.push(attributes[row.attribute]);
+            })
+            ;
+        const g_graph = new window["@hpcc-js/graph"].Graph()
+            .target("placeholder")
+            .data({
+                vertices,
+                edges
+            })
+            .render()
+            ;
+        function createVertex(row){
+            return new window["@hpcc-js/graph"].Vertex()
+                .text(row.attribute)
+                .faChar(row.best_attribute_type.slice(0,6) === "string" ? "" : "")
+                ;
+        }
+        function createEdge(vertex, targetAttribute, weight){
+            return new window["@hpcc-js/graph"].Edge()
+                .sourceVertex(vertex)
+                .targetVertex(attributes[targetAttribute])
+                .sourceMarker("none")
+                .targetMarker("none")
+                .showArc(false)
+                .arcDepth(0)
+                .text(weight)
+                .weight(weight)
+                ;
+        }
+    </script>
+</body>
+</html>

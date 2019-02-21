@@ -1,6 +1,7 @@
 ﻿import { IGraph, ITooltip } from "@hpcc-js/api";
 import { ISize, Platform, Spacer, SVGGlowFilter, SVGZoomWidget, ToggleButton, Utility, Widget } from "@hpcc-js/common";
 import { drag as d3Drag } from "d3-drag";
+import { scaleLinear } from "d3-scale";
 import { event as d3Event, select as d3Select } from "d3-selection";
 import "d3-transition";
 import { Edge } from "./Edge";
@@ -46,6 +47,9 @@ export class Graph extends SVGZoomWidget {
     protected svgC;
     protected svgE;
     protected svgV;
+
+    _distanceScale;
+    _strengthScale;
 
     constructor() {
         super();
@@ -509,6 +513,16 @@ export class Graph extends SVGZoomWidget {
         super.update(domNode, element);
         this.tooltip.hide();
         this._centroidFilter.update(this.centroidColor());
+        const minDimensionSize = Math.min(this.height(), this.width());
+        console.log("minDimensionSize", minDimensionSize);
+        this._distanceScale = scaleLinear<number, number>()
+            .domain([0, 1])
+            .range([minDimensionSize * 0.9, this.forceDirectedLinkDistance()])
+            ;
+        this._strengthScale = scaleLinear<number, number>()
+            .domain([0, 1])
+            .range([0, 1])
+            ;
 
         //  IconBar  ---
         const layout = this.layout();
@@ -731,6 +745,8 @@ export class Graph extends SVGZoomWidget {
                 });
             case "ForceDirected2":
                 return new GraphLayouts.ForceDirected(this._graphData, this._size.width, this._size.height, {
+                    linkDistanceScale: this._distanceScale,
+                    linkStrengthScale: this._strengthScale,
                     linkDistance: this.forceDirectedLinkDistance(),
                     linkStrength: this.forceDirectedLinkStrength(),
                     friction: this.forceDirectedFriction(),

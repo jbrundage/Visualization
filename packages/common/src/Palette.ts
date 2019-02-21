@@ -315,3 +315,6 @@ export function textColor(backgroundColor: string): string {
     const rgb = d3RGB(backgroundColor);
     return ((rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) > 149) ? "black" : "white";
 }
+export function appendOrdinalColors(wtf: any) {
+
+}
