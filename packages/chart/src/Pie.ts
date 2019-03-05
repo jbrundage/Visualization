@@ -55,6 +55,9 @@ export class Pie extends SVGWidget {
     }
 
     calcOuterRadius() {
+        if (this.hideLabels()) {
+            return Math.min(this._size.width, this._size.height) / 2;
+        }
         const maxTextWidth = this.textSize(this.data().map(d => this.getLabelText({ data: d }, false)), "Verdana", 12).width;
         const horizontalLimit = this._size.width - maxTextWidth * 2 - 20;
         const verticalLimit = this._size.height - 12 * 3 - this._smallValueLabelHeight;
@@ -115,7 +118,7 @@ export class Pie extends SVGWidget {
         const context = this;
         this
             .tooltipHTML(function (d) {
-                return context.tooltipFormat({ label: d.data[0], value: d.data[1] });
+                return context.tooltipFormat({ label: d.data[0].split("\n").join("<br/>"), value: d.data[1] });
             })
             ;
     }
@@ -191,9 +194,11 @@ export class Pie extends SVGWidget {
             .innerRadius(labelRadius)
             .outerRadius(labelRadius)
             ;
-        const text = this._labels.selectAll("text").data(this.d3Pie(this.data()), d => d.data[0]);
+        const textData = this.hideLabels() ? [] : this.d3Pie(this.data());
+        const text = this._labels.selectAll("text").data(textData, d => d.data[0]);
 
-        const mergedText = text.enter().append("text")
+        const mergedText = text.enter()
+            .append("text")
             .on("mouseout.tooltip", context.tooltip.hide)
             .on("mousemove.tooltip", context.tooltip.show)
             .attr("dy", ".35em")
@@ -219,7 +224,11 @@ export class Pie extends SVGWidget {
                     bottom: pos[1] + context.labelHeight()
                 });
             });
-        this.adjustForOverlap();
+
+        if (!this.hideLabels()) {
+            this.adjustForOverlap();
+        }
+
         mergedText.transition()
             .style("font-size", this.labelHeight() + "px")
             .attr("transform", (d, i) => {
@@ -233,7 +242,7 @@ export class Pie extends SVGWidget {
         text.exit()
             .remove();
 
-        const polyline = this._labels.selectAll("polyline").data(this.d3Pie(this.data()), d => this.getLabelText(d, true));
+        const polyline = this._labels.selectAll("polyline").data(textData, d => this.getLabelText(d, true));
 
         polyline.enter()
             .append("polyline")
@@ -406,10 +415,13 @@ export interface Pie {
     startAngle(_: number): this;
     labelHeight(): number;
     labelHeight(_: number): this;
+    hideLabels(): boolean;
+    hideLabels(_: boolean): this;
     seriesPercentageFormat(): string;
     seriesPercentageFormat(_: string): this;
 }
 Pie.prototype.publish("showSeriesPercentage", false, "boolean", "Append data series percentage next to label");
+Pie.prototype.publish("hideLabels", false, "boolean", "Hide labels");
 Pie.prototype.publish("seriesPercentageFormat", ",.0f", "string", "Number format used for formatting series percentages", null, { disable: w => !w.showSeriesPercentage() });
 Pie.prototype.publish("paletteID", "default", "set", "Color palette for this widget", Pie.prototype._palette.switch(), { tags: ["Basic", "Shared"] });
 Pie.prototype.publish("useClonedPalette", false, "boolean", "Enable or disable using a cloned palette", null, { tags: ["Intermediate", "Shared"] });
