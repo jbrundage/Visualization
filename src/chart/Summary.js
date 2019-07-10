@@ -30,6 +30,10 @@
     Summary.prototype.publish("moreFontSize", null, "number", "moreFontSize", null, { optional: true });
     Summary.prototype.publish("iconFontSize", null, "number", "iconFontSize", null, { optional: true });
 
+    Summary.prototype.publish("headerFontFamily", null, "string", "Font-family for 'header' text", null, { optional: true });
+    Summary.prototype.publish("textFontFamily", null, "string", "Font-family for 'text' text", null, { optional: true });
+    Summary.prototype.publish("moreFontFamily", null, "string", "Font-family for 'more' text", null, { optional: true });
+
     Summary.prototype.publish("hideLabel", false, "boolean", "Hide label column");
     Summary.prototype.publish("labelColumn", null, "set", "Select display value", function () { return this.columns(); }, { optional: true, disable: function (w) { return w.hideLabel(); } });
     Summary.prototype.publish("labelHTML", false, "boolean", "Allow HTML", null, { disable: function (w) { return w.hideLabel(); } });
@@ -182,10 +186,12 @@
         this._headerDiv
             .transition()
             .style("color", row.stroke)
+            .style("font-family", this.headerFontFamily_exists() ? this.headerFontFamily() : null)
             .style("font-size", this.headerFontSize_exists() ? this.headerFontSize() + "px" : null)
             [this.valueHTML() ? HTML : TEXT](row.value)
         ;
         this._textDiv
+            .style("font-family", this.textFontFamily_exists() ? this.textFontFamily() : null)
             .style("font-size", this.textFontSize_exists() ? this.textFontSize() + "px" : null)
             [this.labelHTML() ? HTML : TEXT](row.label)
         ;
@@ -204,6 +210,7 @@
             })
         ;
         moreDivs
+            .style("font-family", this.moreFontFamily_exists() ? this.moreFontFamily() : null)
             .style("font-size", this.moreFontSize_exists() ? this.moreFontSize() + "px" : null)
             .transition()
             .style("background-color", d3.rgb(row.fill).darker(0.75))
