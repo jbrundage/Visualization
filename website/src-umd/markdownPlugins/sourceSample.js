@@ -11,25 +11,18 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "@hpcc-js/codemirror", "@hpcc-js/common", "@hpcc-js/phosphor", "./sample.js"], factory);
+        define(["require", "exports", "@hpcc-js/codemirror", "@hpcc-js/phosphor", "./sample.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var codemirror_1 = require("@hpcc-js/codemirror");
-    var common_1 = require("@hpcc-js/common");
     var phosphor_1 = require("@hpcc-js/phosphor");
     var sample_js_1 = require("./sample.js");
     var SourceSample = /** @class */ (function (_super) {
@@ -39,7 +32,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             _this.jsEditor = new codemirror_1.JSEditor()
                 .on("changes", function () {
                 _this.sample
-                    .javascript(_this.jsEditor.text())
+                    .data([[_this.infostring(), _this.jsEditor.text()]])
                     .lazyRender();
             });
             _this.sample = new sample_js_1.Sample();
@@ -48,16 +41,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
                 .addWidget(_this.sample);
             return _this;
         }
+        SourceSample.prototype.infostring = function () {
+            return this.data()[0][0];
+        };
+        SourceSample.prototype.text = function () {
+            return this.data()[0][1];
+        };
         SourceSample.prototype.update = function (domNode, element) {
+            this.height(Math.max((this.text().split("\n").length + 1) * 14, 180));
             _super.prototype.update.call(this, domNode, element);
-            if (this._prevJS !== this.javascript()) {
-                this._prevJS = this.javascript();
-                this.jsEditor.javascript(this.javascript());
+            if (this._prevJS !== this.text()) {
+                this._prevJS = this.text();
+                this.jsEditor.javascript(this.text());
             }
         };
-        __decorate([
-            common_1.publish("", "string")
-        ], SourceSample.prototype, "javascript", void 0);
         return SourceSample;
     }(phosphor_1.SplitPanel));
     exports.SourceSample = SourceSample;

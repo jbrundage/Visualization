@@ -124,7 +124,7 @@ export function calcFolders(): Promise<string[]> {
         fs.readdir(path.join(wd, "../packages"), (err, files) => {
             if (err) reject(err);
             const folders = files.map(f => path.join(wd, "../packages", f)).filter(isDirectory);
-            resolve([path.join(wd, ".."), ...folders]);
+            resolve([path.join(wd, ".."), ...folders, path.join(wd, ".")]);
         });
     });
 }

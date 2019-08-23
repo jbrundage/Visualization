@@ -1,4 +1,4 @@
-import { HTMLWidget, publish, Widget } from "@hpcc-js/common";
+import { HTMLWidget, Widget } from "@hpcc-js/common";
 
 declare const System: any;
 
@@ -6,11 +6,16 @@ export class Sample extends HTMLWidget {
 
     private _sampleDiv;
 
-    @publish("", "string")
-    javascript: publish<this, string>;
-
     constructor() {
         super();
+    }
+
+    infostring(): string {
+        return this.data()[0][0];
+    }
+
+    text(): string {
+        return this.data()[0][1];
     }
 
     htmlNodeID(): string {
@@ -18,7 +23,7 @@ export class Sample extends HTMLWidget {
     }
 
     systemJSUrl(): string {
-        return `${this.id()}!./src-umd/sample.js`;
+        return `${this.id()}!./src-umd/markdownPlugins/sample.js`;
     }
 
     systemsRegistryDelete() {
@@ -27,6 +32,7 @@ export class Sample extends HTMLWidget {
 
     enter(domNode, element) {
         super.enter(domNode, element);
+        this.height(200);
         this._sampleDiv = element.append("div")
             .attr("id", this.htmlNodeID())
             .datum(null)
@@ -42,7 +48,7 @@ export class Sample extends HTMLWidget {
             .style("height", `${this.height()}px`)
             ;
 
-        const js = this.javascript();
+        const js = this.text();
         if (js && this._prevJS !== js) {
             this._prevJS = js;
             this._sampleDiv.text("");
@@ -77,5 +83,9 @@ export class Sample extends HTMLWidget {
 export function fetch(url) {
     const parts = url.address.split("/");
     const sampleWidget: Sample = document.getElementById(parts.pop())["__data__"];
-    return sampleWidget.javascript().replace('.target("target")', `.target("${sampleWidget.htmlNodeID()}")`);
+    return `\
+window.shared = window.shared || {};
+
+${sampleWidget.text().replace('.target("target")', `.target("${sampleWidget.htmlNodeID()}")`)}
+`;
 }

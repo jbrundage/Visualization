@@ -1,17 +1,13 @@
 import { JSEditor } from "@hpcc-js/codemirror";
-import { publish } from "@hpcc-js/common";
 import { SplitPanel } from "@hpcc-js/phosphor";
 import { Sample } from "./sample.js";
 
 export class SourceSample extends SplitPanel {
 
-    @publish("", "string")
-    javascript: publish<this, string>;
-
     jsEditor = new JSEditor()
         .on("changes", () => {
             this.sample
-                .javascript(this.jsEditor.text())
+                .data([[this.infostring(), this.jsEditor.text()]])
                 .lazyRender()
                 ;
         });
@@ -26,12 +22,21 @@ export class SourceSample extends SplitPanel {
             ;
     }
 
+    infostring(): string {
+        return this.data()[0][0];
+    }
+
+    text(): string {
+        return this.data()[0][1];
+    }
+
     private _prevJS;
     update(domNode, element) {
+        this.height(Math.max((this.text().split("\n").length + 1) * 14, 180));
         super.update(domNode, element);
-        if (this._prevJS !== this.javascript()) {
-            this._prevJS = this.javascript();
-            this.jsEditor.javascript(this.javascript());
+        if (this._prevJS !== this.text()) {
+            this._prevJS = this.text();
+            this.jsEditor.javascript(this.text());
         }
     }
 }

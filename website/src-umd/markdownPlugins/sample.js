@@ -11,12 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
 (function (factory) {
     if (typeof module === "object" && typeof module.exports === "object") {
         var v = factory(require, exports);
@@ -36,17 +30,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             _this._widget = null;
             return _this;
         }
+        Sample.prototype.infostring = function () {
+            return this.data()[0][0];
+        };
+        Sample.prototype.text = function () {
+            return this.data()[0][1];
+        };
         Sample.prototype.htmlNodeID = function () {
             return this.id() + "-html";
         };
         Sample.prototype.systemJSUrl = function () {
-            return this.id() + "!./src-umd/sample.js";
+            return this.id() + "!./src-umd/markdownPlugins/sample.js";
         };
         Sample.prototype.systemsRegistryDelete = function () {
             System.registry.delete(System.normalizeSync(this.systemJSUrl()));
         };
         Sample.prototype.enter = function (domNode, element) {
             _super.prototype.enter.call(this, domNode, element);
+            this.height(200);
             this._sampleDiv = element.append("div")
                 .attr("id", this.htmlNodeID())
                 .datum(null);
@@ -57,7 +58,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             this._sampleDiv
                 .style("width", this.width() + "px")
                 .style("height", this.height() + "px");
-            var js = this.javascript();
+            var js = this.text();
             if (js && this._prevJS !== js) {
                 this._prevJS = js;
                 this._sampleDiv.text("");
@@ -85,9 +86,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         };
         Sample.prototype.changed = function (widget) {
         };
-        __decorate([
-            common_1.publish("", "string")
-        ], Sample.prototype, "javascript", void 0);
         return Sample;
     }(common_1.HTMLWidget));
     exports.Sample = Sample;
@@ -95,7 +93,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     function fetch(url) {
         var parts = url.address.split("/");
         var sampleWidget = document.getElementById(parts.pop())["__data__"];
-        return sampleWidget.javascript().replace('.target("target")', ".target(\"" + sampleWidget.htmlNodeID() + "\")");
+        return "window.shared = window.shared || {};\n\n" + sampleWidget.text().replace('.target("target")', ".target(\"" + sampleWidget.htmlNodeID() + "\")") + "\n";
     }
     exports.fetch = fetch;
 });

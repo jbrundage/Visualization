@@ -23,16 +23,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
         if (v !== undefined) module.exports = v;
     }
     else if (typeof define === "function" && define.amd) {
-        define(["require", "exports", "@hpcc-js/common", "marked", "prismjs", "./sourceSample.js"], factory);
+        define(["require", "exports", "@hpcc-js/common", "marked", "prismjs", "./markdownPlugins/index.js"], factory);
     }
 })(function (require, exports) {
     "use strict";
-    var __syncRequire = typeof module === "object" && typeof module.exports === "object";
     Object.defineProperty(exports, "__esModule", { value: true });
     var common_1 = require("@hpcc-js/common");
     var marked = require("marked");
     var prism = require("prismjs");
-    var sourceSample_js_1 = require("./sourceSample.js");
+    var index_js_1 = require("./markdownPlugins/index.js");
     marked.setOptions({
         highlight: function (code, lang) {
             if (!prism.languages.hasOwnProperty(lang)) {
@@ -49,30 +48,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
             _this._renderer = new marked.Renderer();
             _this._origCode = _this._renderer.code;
             _this._codeSamples = [];
-            _this._placeholderID = 0;
-            _this._renderer.code = function (text, infostring, escaped) {
-                switch (infostring) {
-                    case "meta":
-                    case "sample":
-                    case "sample-code":
-                        return _this.renderPlaceholder(infostring, infostring, text);
-                    default:
-                        if (infostring.indexOf("@hpcc-js") === 0) {
-                            return _this.renderPlaceholder("publish-properties", infostring, text);
-                        }
-                }
-                return _this._origCode.call(_this._renderer, text, infostring, escaped);
-            };
+            //  Heading override ---
             _this._renderer.heading = function (text, level) {
                 var escapedText = text.toLowerCase().replace(/[^\w]+/g, "-");
                 return "<h" + level + ">\n    <a name=\"" + escapedText + "\" class=\"anchor\" href=\"#" + escapedText + "\">\n        <span class=\"header-link\"></span>\n    </a>\n    " + text + "\n</h" + level + ">";
             };
+            //  Code override ---
+            _this._renderer.code = function (text, infostring, escaped) {
+                var mdWidget = index_js_1.markdownWidget(infostring, text);
+                if (mdWidget) {
+                    return _this.renderPlaceholder(mdWidget);
+                }
+                return _this._origCode.call(_this._renderer, text, infostring, escaped);
+            };
             return _this;
         }
-        Markdown.prototype.renderPlaceholder = function (classID, infostring, text) {
-            var targetID = "placeholder-" + ++this._placeholderID;
-            this._codeSamples.push({ targetID: targetID, classID: classID, infostring: infostring, text: text });
-            return "<div id=\"" + targetID + "\" class=\"" + classID + "\"></div>";
+        Markdown.prototype.renderPlaceholder = function (mdWidget) {
+            this._codeSamples.push(mdWidget);
+            return "<div id=\"placeholder" + mdWidget.id() + "\"></div>";
         };
         Markdown.prototype.enter = function (domNode, element) {
             _super.prototype.enter.call(this, domNode, element);
@@ -81,55 +74,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
                 .style("overflow-y", "scroll")
                 .style("padding", "8px");
         };
-        Markdown.prototype.updateMeta = function (cs) {
-            var json = JSON.parse(cs.text);
-            var md = [];
-            if (json.source) {
-                md.push("[source](" + json.source + ")");
-            }
-            common_1.select("#" + cs.targetID).html(marked(md.join("\n")));
-        };
-        Markdown.prototype.updateSampleCode = function (cs) {
-            cs.splitPanel = new sourceSample_js_1.SourceSample()
-                .target(cs.targetID)
-                .javascript(cs.text)
-                .height(Math.max((cs.text.split("\n").length + 1) * 14, 200))
-                .render();
-        };
-        Markdown.prototype.parseClassID = function (classID) {
-            var _a = classID.split("_"), moduleName = _a[0], className = _a[1];
-            return ["@hpcc-js/" + moduleName, className];
-        };
-        Markdown.prototype.extends = function (w) {
-            var classParts = w.class().split(" ");
-            classParts.pop();
-            return this.parseClassID(classParts.pop());
-        };
-        Markdown.prototype.updatePublishProperties = function (cs) {
-            var _this = this;
-            var _a = cs.infostring.split(":"), module = _a[0], widget = _a[1];
-            (__syncRequire ? Promise.resolve().then(function () { return require(module); }) : new Promise(function (resolve_1, reject_1) { require([module], resolve_1, reject_1); })).then(function (mod) {
-                var md = [];
-                var w = new mod[widget]();
-                var derivedFrom = _this.extends(w);
-                md.push("Derived from:  " + derivedFrom[1] + " (" + derivedFrom[0] + ")\n");
-                var pp = w.publishedProperties(false, true);
-                pp.forEach(function (meta) {
-                    md.push("### " + meta.id + "\n");
-                    md.push("_" + meta.description + "_\n");
-                    md.push("* **type**: " + meta.type);
-                    md.push("* **optional**: " + !!meta.ext.optional);
-                    md.push("* **default**: " + JSON.stringify(meta.defaultValue) + " ");
-                    if (meta.type === "set") {
-                        md.push("* **options**: " + JSON.stringify(meta.set) + " ");
-                    }
-                    md.push("");
-                });
-                common_1.select("#" + cs.targetID + " ").html(marked(md.join("\n")));
-            });
-        };
         Markdown.prototype.update = function (domNode, element) {
-            var _this = this;
             _super.prototype.update.call(this, domNode, element);
             element.style("height", this.height() + "px");
             if (this._prevMarkdown !== this.markdown()) {
@@ -137,26 +82,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
                 this._codeSamples = [];
                 element.html(marked(this.markdown(), { renderer: this._renderer }));
                 this._codeSamples.forEach(function (cs) {
-                    switch (cs.classID) {
-                        case "meta":
-                            _this.updateMeta(cs);
-                            break;
-                        case "sample-code":
-                            _this.updateSampleCode(cs);
-                            break;
-                        case "publish-properties":
-                            _this.updatePublishProperties(cs);
-                            break;
-                    }
+                    cs
+                        .target("placeholder" + cs.id())
+                        .render();
                 });
             }
             else {
                 this._codeSamples.forEach(function (cs) {
-                    if (cs.splitPanel) {
-                        cs.splitPanel
-                            .width(_this.width())
-                            .lazyRender();
-                    }
+                    cs
+                        .resize()
+                        .lazyRender();
                 });
             }
         };
