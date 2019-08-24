@@ -9,15 +9,15 @@
         "path": "../docs/Introduction/xxx.md"
     },
     {
-        "path": "docs/Samples.md"
-    },
-    {
         "path": "../packages/chart/docs/Area.md"
     },
     {
         "path": "../packages/chart/docs/Column.md"
     },
     {
-        "path": "../packages/chart/docs/Test.md"
+        "path": "docs/demo.md"
+    },
+    {
+        "path": "docs/Samples.md"
     }
 ]

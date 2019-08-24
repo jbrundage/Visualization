@@ -22,6 +22,7 @@ var __extends = (this && this.__extends) || (function () {
 })(function (require, exports) {
     "use strict";
     var __syncRequire = typeof module === "object" && typeof module.exports === "object";
+    var _a;
     Object.defineProperty(exports, "__esModule", { value: true });
     var common_1 = require("@hpcc-js/common");
     var phosphor_1 = require("@hpcc-js/phosphor");
@@ -82,11 +83,32 @@ var __extends = (this && this.__extends) || (function () {
         return IndexPanel;
     }(phosphor_1.SplitPanel));
     exports.IndexPanel = IndexPanel;
+    function getJsonFromUrl(url) {
+        if (url === void 0) { url = location.search; }
+        var query = url.substr(1);
+        var result = {};
+        query.split("&").forEach(function (part) {
+            var item = part.split("=");
+            result[item[0]] = decodeURIComponent(item[1]);
+        });
+        return result;
+    }
     function createIndexPanel(placeholder) {
-        return new IndexPanel()
-            .target(placeholder)
-            .data(indexJson)
-            .render();
+        var params = getJsonFromUrl();
+        if (params.doc) {
+            (_a = params.doc, __syncRequire ? Promise.resolve().then(function () { return require(_a); }) : new Promise(function (resolve_2, reject_2) { require([_a], resolve_2, reject_2); })).then(function (md) {
+                return new markdown_js_1.Markdown()
+                    .target(placeholder)
+                    .markdown(md)
+                    .render();
+            });
+        }
+        else {
+            return new IndexPanel()
+                .target(placeholder)
+                .data(indexJson)
+                .render();
+        }
     }
     exports.createIndexPanel = createIndexPanel;
 });

@@ -16,6 +16,17 @@
             "webRoot": "${workspaceRoot}"
         },
         {
+            "name": "docs/demo.md",
+            "type": "chrome",
+            "request": "launch",
+            "url": "file:///${workspaceRoot}/index.html?doc=docs/demo.md",
+            "runtimeArgs": [
+                "--allow-file-access-from-files",
+                "--disable-web-security"
+            ],
+            "webRoot": "${workspaceRoot}"
+        },
+        {
             "name": "Generate index.json",
             "type": "node",
             "request": "launch",

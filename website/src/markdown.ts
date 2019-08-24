@@ -1,18 +1,6 @@
 import { HTMLWidget, publish, Widget } from "@hpcc-js/common";
 import * as marked from "marked";
-import * as prism from "prismjs";
 import { markdownWidget } from "./markdownPlugins/index.js";
-
-marked.setOptions({
-    highlight(code, lang) {
-        if (!prism.languages.hasOwnProperty(lang)) {
-            // Default to markup if it's not in our extensions.
-            lang = "markup";
-        }
-
-        return prism.highlight(code, prism.languages[lang], lang);
-    }
-});
 
 export class Markdown extends HTMLWidget {
 
@@ -77,11 +65,8 @@ export class Markdown extends HTMLWidget {
                     ;
             });
         } else {
-            this._codeSamples.forEach(cs => {
-                cs
-                    .resize()
-                    .lazyRender()
-                    ;
+            this._codeSamples.forEach(async (cs) => {
+                await cs.resize().renderPromise();
             });
         }
     }

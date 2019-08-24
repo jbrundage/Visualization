@@ -68,10 +68,34 @@ export class IndexPanel extends SplitPanel {
     }
 }
 
-export function createIndexPanel(placeholder: string) {
-    return new IndexPanel()
-        .target(placeholder)
-        .data(indexJson)
-        .render()
-        ;
+function getJsonFromUrl(url: string = location.search) {
+    const query = url.substr(1);
+    const result = {};
+    query.split("&").forEach(function (part) {
+        const item = part.split("=");
+        result[item[0]] = decodeURIComponent(item[1]);
+    });
+    return result;
 }
+
+export function createIndexPanel(placeholder: string) {
+    const params: any = getJsonFromUrl();
+    if (params.doc) {
+        import(params.doc).then(md => {
+            return new Markdown()
+                .target(placeholder)
+                .markdown(md)
+                .render()
+                ;
+        });
+    } else {
+        return new IndexPanel()
+            .target(placeholder)
+            .data(indexJson)
+            .render()
+            ;
+    }
+}
+
+
+myArrOfJson.map(row => [row.fname, row.lname, row.lat, row.long]);
