@@ -1,4 +1,4 @@
-import { Area, Bar, Bubble, Column, Contour, HexBin, Line, Pie, Radar, RadialBar, Scatter, Step, WordCloud } from "@hpcc-js/chart";
+import { Area, Bar, Bubble, Column, Contour, HexBin, Line, Pie, Radar, RadialBar, Scatter, StatChart, Step, WordCloud } from "@hpcc-js/chart";
 import { Database, EntityRectList, InputField, PropertyExt, publish, publishProxy, Widget } from "@hpcc-js/common";
 import { DDL2 } from "@hpcc-js/ddl-shim";
 import { Table } from "@hpcc-js/dgrid";
@@ -13,12 +13,12 @@ import { VizChartPanel } from "./vizChartPanel";
 export type VizType = "Table" | "FieldForm" |
     "Area" | "Bubble" | "Bar" | "Column" | "Contour" | "HexBin" | "Line" | "Pie" | "WordCloud" | "Radar" | "RadialBar" | "Scatter" | "Step" |
     "USCountiesChoropleth" | "USStatesChoropleth" | "ClusterPins" |
-    "EntityRectList" | "AdjacencyGraph";
+    "EntityRectList" | "AdjacencyGraph" | "StatChart";
 const VizTypeMap: { [key: string]: new (...args: any[]) => {} } = {
     Table, FieldForm,
     Area, Bubble, Bar, Column, Contour, HexBin, Line, Pie, Radar, RadialBar, Scatter, Step, WordCloud,
     USCountiesChoropleth: ChoroplethCounties, USStatesChoropleth: ChoroplethStates, ClusterPins: Leaflet.ClusterPins,
-    EntityRectList, AdjacencyGraph
+    EntityRectList, AdjacencyGraph, StatChart
 };
 export const VizTypeSet = [];
 for (const key in VizTypeMap) {
